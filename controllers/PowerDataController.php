@@ -9,6 +9,7 @@ use yii\helpers\Json;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use \app\models\ArchitectureToVehicleLayout;
+use \app\models\FlightModesToVehicleLayout;
 use \app\models\VehicleLayout;
 use \app\models\VehicleLayoutSearch;
 use \app\models\VehiclesLayoutsNames;
@@ -83,6 +84,30 @@ class PowerDataController extends Controller
                         $ArchitectureToVehicleLayoutModel->save();
 
                         $output =  $ArchitectureToVehicleLayoutModel->energySource_id;
+                        $out = Json::encode(['output'=>$output, 'message'=>'']);
+                    }
+                }
+            }
+
+            if ($this->is_in_array(array_keys($posted), 'flightModesToVehicleLayout_'))
+            {
+                foreach ($posted as $key => $value)
+                {
+                    if (stripos($key, 'flightModesToVehicleLayout_') !== FALSE) {
+                        $flightMode_id = explode('_', $key)[1];
+
+                        $FlightModesToVehicleLayoutModel = FlightModesToVehicleLayout::findOne(['vehicleLayout_id' => $VehicleLayoutModel->id, 'flightMode_id' => $flightMode_id]);
+                        if ($FlightModesToVehicleLayoutModel==null)
+                        {
+                            $FlightModesToVehicleLayoutModel = new FlightModesToVehicleLayout();
+                            $FlightModesToVehicleLayoutModel->vehicleLayout_id = $VehicleLayoutModel->id;
+                            $FlightModesToVehicleLayoutModel->flightMode_id = $flightMode_id;
+                        }
+
+                        $FlightModesToVehicleLayoutModel->usageFactor = $value;
+                        $FlightModesToVehicleLayoutModel->save();
+
+                        $output =  $FlightModesToVehicleLayoutModel->usageFactor;
                         $out = Json::encode(['output'=>$output, 'message'=>'']);
                     }
                 }

@@ -15,7 +15,7 @@ use Yii;
  * @property FlightModes $flightMode
  * @property VehicleLayout $vehicleLayout
  */
-class FlightModes_to_VehicleLayout extends \yii\db\ActiveRecord
+class FlightModesToVehicleLayout extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc

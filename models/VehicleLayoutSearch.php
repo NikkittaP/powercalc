@@ -41,8 +41,6 @@ class VehicleLayoutSearch extends VehicleLayout
     public function search($params, $vehicleLayoutName_id)
     {
         $query = VehicleLayout::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id])->indexBy('id');
-       // ->with('architectureToVehicleLayouts')->with('architectureToVehicleLayouts.energySource');
-        //$query->joinWith(['architectureToVehicleLayouts', 'architectureToVehicleLayouts.energySource']);
 
         // add conditions that should always apply here
 

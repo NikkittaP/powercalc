@@ -22,6 +22,8 @@ class VehicleLayout extends \yii\db\ActiveRecord
 {
     public $architecureAttrs;
     public $architecureAttrNames;
+    public $flightModeAttrs;
+    public $flightModeAttrNames;
 
     public function attributes()
     {
@@ -32,9 +34,19 @@ class VehicleLayout extends \yii\db\ActiveRecord
             $this->architecureAttrs[]='architectureToVehicleLayouts_'.$architecturesName->id;
             $this->architecureAttrNames[]=$architecturesName->name;
         }
+
+        $flightModeNames = FlightModes::find()->orderBy('id')->all();
+        $this->flightModeAttrs = [];
+        foreach ($flightModeNames as $flightModeName)
+        {
+            $this->flightModeAttrs[]='flightModesToVehicleLayout_'.$flightModeName->id;
+            $this->flightModeAttrNames[]=$flightModeName->name;
+        }
+
         return array_merge(
             parent::attributes(),
-            $this->architecureAttrs
+            $this->architecureAttrs,
+            $this->flightModeAttrs
         );
     }
     /**
@@ -51,16 +63,21 @@ class VehicleLayout extends \yii\db\ActiveRecord
     public function rules()
     {
 
-        $string=[];
+        $strArchitecureAttr=[];
         foreach ($this->architecureAttrs as $architecureAttr)
-            $string[]=$architecureAttr;
+            $strArchitecureAttr[]=$architecureAttr;
+        
+        $strFlightModeAttr=[];
+        foreach ($this->flightModeAttrs as $flightModeAttr)
+                $strFlightModeAttr[]=$flightModeAttr;
 
         $out = [
             [['vehicleLayoutName_id', 'consumer_id'], 'required'],
             [['vehicleLayoutName_id', 'consumer_id'], 'integer'],
             [['consumer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Consumers::className(), 'targetAttribute' => ['consumer_id' => 'id']],
             [['vehicleLayoutName_id'], 'exist', 'skipOnError' => true, 'targetClass' => VehiclesLayoutsNames::className(), 'targetAttribute' => ['vehicleLayoutName_id' => 'id']],
-            [$string, 'safe'],
+            [$strArchitecureAttr, 'safe'],
+            [$strFlightModeAttr, 'safe'],
         ];
 
         return $out;
@@ -71,17 +88,21 @@ class VehicleLayout extends \yii\db\ActiveRecord
      */
     public function attributeLabels()
     {
-        $arc = [];
+        $architecureAttrLabels = [];
         for($i = 0;$i < count($this->architecureAttrs);$i++)
-            $arc[$this->architecureAttrs[$i]] = $this->architecureAttrNames[$i];
+            $architecureAttrLabels[$this->architecureAttrs[$i]] = $this->architecureAttrNames[$i];
+            
+        $flightModeAttrLabels = [];
+        for($i = 0;$i < count($this->flightModeAttrs);$i++)
+            $flightModeAttrLabels[$this->flightModeAttrs[$i]] = $this->flightModeAttrNames[$i];
 
-        $arr= [
+        $staticLabels= [
             'id' => 'ID',
             'vehicleLayoutName_id' => 'Компоновка',
             'consumer_id' => 'Потребитель',
         ];
 
-        return array_merge($arr,$arc);
+        return array_merge($staticLabels,$architecureAttrLabels, $flightModeAttrLabels);
     }
 
     /**
