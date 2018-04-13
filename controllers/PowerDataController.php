@@ -8,6 +8,7 @@ use yii\web\Controller;
 use yii\helpers\Json;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use \app\models\ArchitectureToVehicleLayout;
 use \app\models\VehicleLayout;
 use \app\models\VehicleLayoutSearch;
 use \app\models\VehiclesLayoutsNames;
@@ -29,6 +30,15 @@ class PowerDataController extends Controller
         ];
     }
 
+    public function is_in_array($keys, $string) 
+    {
+        foreach ($keys as $key) {
+            if (stripos($key, $string) !== FALSE) {
+                return true;
+            }
+        }
+    }
+
     public function actionIndex($vehicleLayoutName_id)
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
@@ -36,51 +46,48 @@ class PowerDataController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $vehicleLayoutName_id);
 
         if (Yii::$app->request->post('hasEditable')) {
-            $data = Yii::$app->request->post();
-
-
             $rowId = Yii::$app->request->post('editableKey');
-            $model = VehicleLayout::findOne($rowId);
+            $VehicleLayoutModel = VehicleLayout::findOne($rowId);
 
-            // store a default json response as desired by editable
-            $out = Json::encode(['output'=>'', 'message'=>implode($data)]);
-
-            // fetch the first entry in posted data (there should only be one entry
-            // anyway in this array for an editable submission)
-            // - $posted is the posted data for Book without any indexes
-            // - $post is the converted array for single model validation
+            $out = Json::encode(['output'=>'', 'message'=>'']);
             $posted = current($_POST['VehicleLayout']);
-            $post = ['VehicleLayout' => $posted];
+            $output = '';
 
-            // load model like any single model validation
-            if ($model->load($post)) {
-                // can save model or do something before saving model
-                $model->save();
-
-                // custom output to return to be displayed as the editable grid cell
-                // data. Normally this is empty - whereby whatever value is edited by
-                // in the input by user is updated automatically.
-                $output = '';
-
-                if (isset($posted['consumer_id']))
-                {
-                    $output =  $model->consumer_id;
+            if (isset($posted['consumer_id']))
+            {
+                $post = ['VehicleLayout' => $posted];
+                if ($VehicleLayoutModel->load($post)) {
+                    $VehicleLayoutModel->save();
+    
+                    $output =  $VehicleLayoutModel->consumer_id;
+                    $out = Json::encode(['output'=>$output, 'message'=>'']);
                 }
-
-                // specific use case where you need to validate a specific
-                // editable column posted when you have more than one
-                // EditableColumn in the grid view. We evaluate here a
-                // check to see if buy_amount was posted for the Book model
-                //if (isset($posted['buy_amount'])) {
-                //    $output = Yii::$app->formatter->asDecimal($model->buy_amount, 2);
-                //}
-
-                // similarly you can check if the name attribute was posted as well
-                // if (isset($posted['name'])) {
-                // $output = ''; // process as you need
-                // }
-                $out = Json::encode(['output'=>$output, 'message'=>'']);
             }
+
+            if ($this->is_in_array(array_keys($posted), 'architectureToVehicleLayouts_'))
+            {
+                foreach ($posted as $key => $value)
+                {
+                    if (stripos($key, 'architectureToVehicleLayouts_') !== FALSE) {
+                        $architectureName_id = explode('_', $key)[1];
+
+                        $ArchitectureToVehicleLayoutModel = ArchitectureToVehicleLayout::findOne(['vehicleLayout_id' => $VehicleLayoutModel->id, 'architectureName_id' => $architectureName_id]);
+                        if ($ArchitectureToVehicleLayoutModel==null)
+                        {
+                            $ArchitectureToVehicleLayoutModel = new ArchitectureToVehicleLayout();
+                            $ArchitectureToVehicleLayoutModel->vehicleLayout_id = $VehicleLayoutModel->id;
+                            $ArchitectureToVehicleLayoutModel->architectureName_id = $architectureName_id;
+                        }
+
+                        $ArchitectureToVehicleLayoutModel->energySource_id = $value;
+                        $ArchitectureToVehicleLayoutModel->save();
+
+                        $output =  $ArchitectureToVehicleLayoutModel->energySource_id;
+                        $out = Json::encode(['output'=>$output, 'message'=>'']);
+                    }
+                }
+            }
+        
             return $out;
         }
 
