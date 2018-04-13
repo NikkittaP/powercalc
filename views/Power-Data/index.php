@@ -154,8 +154,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => $gridColumns,
         'toolbar' =>  [
-            ['content' =>
-                Html::button('<i class="glyphicon glyphicon-plus"></i>', ['type' => 'button', 'title' =>'Добавить потребителя', 'class' => 'btn btn-success', 'onclick' => 'alert("This will launch the book creation form.\n\nDisabled for this demo!");'])
+            [
+                'content' => $this->render('_from_insertRow', ['model' => $vehicleLayoutModel])
             ],
             '{export}',
         ],

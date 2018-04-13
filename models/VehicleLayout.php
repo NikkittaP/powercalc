@@ -62,7 +62,6 @@ class VehicleLayout extends \yii\db\ActiveRecord
      */
     public function rules()
     {
-
         $strArchitecureAttr=[];
         foreach ($this->architecureAttrs as $architecureAttr)
             $strArchitecureAttr[]=$architecureAttr;

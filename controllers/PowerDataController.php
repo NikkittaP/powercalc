@@ -43,6 +43,8 @@ class PowerDataController extends Controller
     public function actionIndex($vehicleLayoutName_id)
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
+        $vehicleLayoutModel = new VehicleLayout();
+        $vehicleLayoutModel->attributes();
         $searchModel = new VehicleLayoutSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $vehicleLayoutName_id);
 
@@ -118,6 +120,7 @@ class PowerDataController extends Controller
 
         return $this->render('index', [
             'vehicleLayoutNameModel'=>$vehicleLayoutNameModel,
+            'vehicleLayoutModel'=>$vehicleLayoutModel,
             'searchModel'=>$searchModel,
             'dataProvider'=>$dataProvider
         ]);
