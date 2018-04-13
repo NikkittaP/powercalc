@@ -126,6 +126,19 @@ class PowerDataController extends Controller
         ]);
     }
 
+    public function actionCreate()
+    {
+        $model = new VehicleLayout();
+        $model->attributes();
+
+        $model->vehicleLayoutName_id = Yii::$app->request->post('vehicleLayoutName_id');
+        $model->consumer_id = Yii::$app->request->post('VehicleLayout')['consumer_id'];
+
+        $model->save();
+
+        return $this->redirect(['index', 'vehicleLayoutName_id'=>$model->vehicleLayoutName_id]);
+    }
+
     protected function findModelVehicleLayoutNames($id)
     {
         if (($model = VehiclesLayoutsNames::findOne($id)) !== null) {

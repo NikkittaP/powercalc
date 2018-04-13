@@ -155,7 +155,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => $gridColumns,
         'toolbar' =>  [
             [
-                'content' => $this->render('_from_insertRow', ['model' => $vehicleLayoutModel])
+                'content' => $this->render('_from_insertRow', ['model' => $vehicleLayoutModel, 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id])
             ],
             '{export}',
         ],
