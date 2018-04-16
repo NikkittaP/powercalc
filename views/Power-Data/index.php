@@ -151,7 +151,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     echo GridView::widget([
         'dataProvider'=> $dataProvider,
-        'filterModel' => $searchModel,
+        //'filterModel' => $searchModel,
         'columns' => $gridColumns,
         'toolbar' =>  [
             [
@@ -161,6 +161,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         'export' => [
             'fontAwesome' => false,
+            'options' => ['style' => 'margin-top:32px;'],
         ],
         'striped' => true,
         'responsive'=>true,

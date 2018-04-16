@@ -56,7 +56,6 @@ class VehicleLayout extends \yii\db\ActiveRecord
     {
         return 'VehicleLayout';
     }
-
     /**
      * @inheritdoc
      */
