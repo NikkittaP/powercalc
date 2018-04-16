@@ -81,14 +81,23 @@ $this->params['breadcrumbs'][] = $this->title;
             'readonly' => false,
             'editableOptions' => [
                 'name' => 'architectureToVehicleLayouts_'.$architecturesName->id,
+                'value'=>function ($model, $key, $index, $column) use($architecturesName) {
+                    $m = app\models\ArchitectureToVehicleLayout::find()->where(['vehicleLayout_id'=>$model->id, 'architectureName_id'=>$architecturesName->id])->one();
+                    if ($m==null)
+                        return '';
+                    return $m->energySource_id;
+                },
                 'asPopover' => false,
                 'header' => 'Источник энергии',
-                'inputType' => \kartik\editable\Editable::INPUT_DROPDOWN_LIST,
-                'data'=>$energySources,
+                'inputType' => \kartik\editable\Editable::INPUT_SELECT2,
                 'displayValueConfig'=>$energySources,
                 'options' => [
+                    'data'=>$energySources,
                     'class'=>'form-control input-sm',
-                    'prompt'=>'Выберите источник энергии...'
+                    'size' => 'sm',
+                    'options' => [
+                        'placeholder' => 'Источник энергии',
+                    ],
                 ],
             ],
             'contentOptions' => $border,
