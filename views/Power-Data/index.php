@@ -5,6 +5,8 @@ use yii\helpers\Html;
 use kartik\grid\GridView;
 use kartik\widgets\ActiveForm;
 
+use app\components\PowerDataAlgorithm;
+
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\VehiclesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -182,3 +184,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ]);
     ?>
 </div>
+
+<?php
+ PowerDataAlgorithm::welcome();
+ ?>

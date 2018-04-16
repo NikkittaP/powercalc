@@ -44,6 +44,9 @@ $config = [
                 '<controller:\w+>/<action:\w+>/<id:\d+>/<usr:\d+>' => '<controller>/<action>',
             ],
         ],
+        //'powerdataalgorithm' =>[
+        //    'class' => 'app\components\PowerDataAlgorithm',
+        //],
     ],
     'modules' => [
         'gridview' => ['class' => 'kartik\grid\Module']
