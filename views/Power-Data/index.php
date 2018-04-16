@@ -15,8 +15,6 @@ $this->title = 'Заполнение данных для компоновки "'
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="power-data-index">
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
     <?php
     $consumers = ArrayHelper::map(app\models\Consumers::find()->orderBy('name')->asArray()->all(), 'id', 'name');
 
@@ -33,7 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 return GridView::ROW_COLLAPSED;
             },
             'detail' => function ($model, $key, $index, $column) {
-                return null;//Yii::$app->controller->renderPartial('_expand-row-details', ['model' => $model]);
+                return Yii::$app->controller->renderPartial('_detail_view', ['model' => $model]);
             },
             'headerOptions' => ['class' => 'kartik-sheet-style'],
             'expandOneOnly' => true,
@@ -158,8 +156,6 @@ $this->params['breadcrumbs'][] = $this->title;
         $i++;
     }
 
-    //\yii\helpers\VarDumper::dump($searchModel->rules(), 15, true);exit();
-
     echo GridView::widget([
         'dataProvider'=> $dataProvider,
         //'filterModel' => $searchModel,
@@ -186,5 +182,5 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <?php
- PowerDataAlgorithm::welcome();
- ?>
+    PowerDataAlgorithm::welcome();
+?>

@@ -9,6 +9,8 @@ use yii\base\InvalidConfigException;
  
 class PowerDataAlgorithm extends Component
 {
+    
+
     public function welcome()
     {
         echo "Hello..Welcome to MyComponent";
