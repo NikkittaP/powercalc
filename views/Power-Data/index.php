@@ -182,5 +182,6 @@ $this->params['breadcrumbs'][] = $this->title;
 </div>
 
 <?php
-    PowerDataAlgorithm::welcome();
+    $algo = new PowerDataAlgorithm();
+    $algo->welcome();
 ?>
