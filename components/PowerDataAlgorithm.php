@@ -58,7 +58,7 @@ class PowerDataAlgorithm extends Component
             $id => [
                 $architectureID => [
                     $flightModeID => [
-                        'consumption' => $consumption,
+                        'consumption' => $consumption,          // Расход
                     ]
                 ]
             ]
@@ -67,8 +67,10 @@ class PowerDataAlgorithm extends Component
             $id => [
                 $architectureID => [
                     $flightModeID => [
-                        'Qnas' => $Qnas,
-                        'Qraspol' => $Qraspol,
+                        'Qpump' => $Qpump,                      // Q нас
+                        'Qdisposable' => $Qdisposable,          // Q распол
+                        'P_pump_out' => $P_pump_out,            // P нас вых
+                        'Q_curr_to_Q_max' => $Q_curr_to_Q_max,  // Qтек/Qmax
                     ]
                 ]
             ]
@@ -148,25 +150,48 @@ class PowerDataAlgorithm extends Component
     }
 
     /* [1] Архитектура -> Q нас */
-    public function calcArchitectureQnas($energySourceID, $architectureID, $flightModeID)
+    public function calcArchitectureQpump($energySourceID, $architectureID, $flightModeID)
     {
-        $Qnas = 0;
+        $Qpump = 0;
 
         foreach ($this->results['consumers'] as $consumerID => $results) {
             if ($this->consumers[$consumerID]['energySourcePerArchitecture'][$architectureID]==$energySourceID)
-                $Qnas+=$results[$architectureID][$flightModeID]['consumption'];
+                $Qpump += $results[$architectureID][$flightModeID]['consumption'];
         }
 
-        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qnas'] = $Qnas;
+        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qpump'] = $Qpump;
     }
     /* [1] Архитектура -> Q распол */
-    public function calcArchitectureQraspol($energySourceID, $architectureID, $flightModeID)
+    public function calcArchitectureQdisposable($energySourceID, $architectureID, $flightModeID)
     {
-        $Qraspol = $this->energySources[$energySourceID]['qMax'] * $this->flightModes[$flightModeID]['reductionFactor'];
+        $Qdisposable = $this->energySources[$energySourceID]['qMax'] * $this->flightModes[$flightModeID]['reductionFactor'];
 
-        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qraspol'] = $Qraspol;
+        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qdisposable'] = $Qdisposable;
     }
 
+     /* [2] Архитектура -> P нас вых */
+     public function calcArchitectureP_pump_out($energySourceID, $architectureID, $flightModeID)
+     {
+        $Qpump = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qpump'];
+        $Qdisposable = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qdisposable'];
+
+        $P_pump_out = $this->energySources[$energySourceID]['pumpPressureNominal'] - 
+            ($this->energySources[$energySourceID]['pumpPressureNominal'] - $this->energySources[$energySourceID]['pumpPressureWorkQmax'])
+            /
+            ($Qdisposable * $Qpump);
+ 
+        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['P_pump_out'] = $P_pump_out;
+     }
+     /* [2] Архитектура -> Qтек/Qmax */
+     public function calcArchitectureQ_curr_to_Q_max($energySourceID, $architectureID, $flightModeID)
+     {
+        $Qpump = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qpump'];
+        $Qdisposable = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qdisposable'];
+        
+        $Q_curr_to_Q_max = $Qpump / $Qdisposable;
+
+        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Q_curr_to_Q_max'] = $Q_curr_to_Q_max;
+     }
 
 
     /***********************************************************
@@ -181,11 +206,42 @@ class PowerDataAlgorithm extends Component
 
                 foreach ($this->energySources as $energySourceID => $energySourceData)
                 {
-                    $this->calcArchitectureQnas($energySourceID, $architectureID, $flightModeID);
-                    $this->calcArchitectureQraspol($energySourceID, $architectureID, $flightModeID);
+                    if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID))
+                    {
+                        $this->calcArchitectureQpump($energySourceID, $architectureID, $flightModeID);
+                        $this->calcArchitectureQdisposable($energySourceID, $architectureID, $flightModeID);
+                    }
+                }
+
+                foreach ($this->energySources as $energySourceID => $energySourceData)
+                {
+                    if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID))
+                    {
+                        $this->calcArchitectureP_pump_out($energySourceID, $architectureID, $flightModeID);
+                        $this->calcArchitectureQ_curr_to_Q_max($energySourceID, $architectureID, $flightModeID);
+                    }
                 }
             }
         }
+
+        //VarDumper::dump( $this->results, $depth = 10, $highlight = true);
+    }
+
+
+    /***********************************************************
+    Вспомогательные функции
+    ***********************************************************/
+    public function isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID)
+    {
+        $isEnergySourceCorrespondToArchitecture = false;
+
+        foreach ($this->consumers as $consumerID => $consumerData)
+            foreach ($consumerData['energySourcePerArchitecture'] as $_architectureID => $_energySourceID) {
+                if ($_architectureID==$architectureID && $_energySourceID ==$energySourceID)
+                    $isEnergySourceCorrespondToArchitecture=true;
+            }
+        
+        return $isEnergySourceCorrespondToArchitecture;
     }
 }
 ?>

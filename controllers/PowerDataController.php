@@ -150,18 +150,7 @@ class PowerDataController extends Controller
 
         $algorithm = new PowerDataAlgorithm();
        
-        $energySourceModels = EnergySources::find()->all();
-        foreach($energySourceModels as $energySourceModel)
-        {
-            $algorithm->addEnergySource($energySourceModel->id, [
-                'isElectric' => $energySourceModel->isElectric,
-                'qMax' => $energySourceModel->qMax,
-                'pumpPressureNominal' => $energySourceModel->pumpPressureNominal,
-                'pumpPressureWorkQmax' => $energySourceModel->pumpPressureWorkQmax,
-            ]);
-        }
-
-        $architectureModels = ArchitecturesNames::find(['vehicleLayoutName_id' => $vehicleLayoutName_id])->all();
+        $architectureModels = ArchitecturesNames::find()->where(['vehicleLayoutName_id' => $vehicleLayoutName_id])->all();
         foreach($architectureModels as $architectureModel)
         {
             $algorithm->addArchitecture($architectureModel->id, [
@@ -177,12 +166,16 @@ class PowerDataController extends Controller
             ]);
         }
 
-        $vehicleLayoutModels = VehicleLayout::find(['vehicleLayoutName_id'=>$vehicleLayoutName_id])->all();
+        $usedEnergySourcesIDs = [];
+        $vehicleLayoutModels = VehicleLayout::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id])->all();
         foreach($vehicleLayoutModels as $vehicleLayoutModel)
         {
             $energySourcePerArchitecture = [];
             foreach($vehicleLayoutModel->architectureToVehicleLayouts as $architectureToVehicleLayout)
+            {
                 $energySourcePerArchitecture[$architectureToVehicleLayout->architectureName_id] = $architectureToVehicleLayout->energySource_id;
+                $usedEnergySourcesIDs[] = $architectureToVehicleLayout->energySource_id;
+            }
             
             $usageFactorPerFlightMode = [];
             foreach($vehicleLayoutModel->flightModesToVehicleLayouts as $flightModesToVehicleLayout)
@@ -198,12 +191,23 @@ class PowerDataController extends Controller
             ]);
         }
 
+        $energySourceModels = EnergySources::findAll($usedEnergySourcesIDs);
+        foreach($energySourceModels as $energySourceModel)
+        {
+            $algorithm->addEnergySource($energySourceModel->id, [
+                'isElectric' => $energySourceModel->isElectric,
+                'qMax' => $energySourceModel->qMax,
+                'pumpPressureNominal' => $energySourceModel->pumpPressureNominal,
+                'pumpPressureWorkQmax' => $energySourceModel->pumpPressureWorkQmax,
+            ]);
+        }
+
         $algorithm->setConstants([
             'useQ0' => 1,
         ]);
 
         
-        //$algorithm->welcome();
+        $algorithm->calculate();
 
         return $this->redirect(['index', 'vehicleLayoutName_id'=>$vehicleLayoutName_id]);
     }
