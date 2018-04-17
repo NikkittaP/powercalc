@@ -11,6 +11,7 @@ use yii\filters\VerbFilter;
 use \app\models\ArchitecturesNames;
 use \app\models\ArchitectureToVehicleLayout;
 use \app\models\EnergySources;
+use \app\models\FlightModes;
 use \app\models\FlightModesToVehicleLayout;
 use \app\models\VehicleLayout;
 use \app\models\VehicleLayoutSearch;
@@ -168,6 +169,14 @@ class PowerDataController extends Controller
             ]);
         }
         
+        $flightModeModels = FlightModes::find()->all();
+        foreach($flightModeModels as $flightModeModel)
+        {
+            $algorithm->addFlightMode($flightModeModel->id, [
+                'reductionFactor' => $flightModeModel->reductionFactor,
+            ]);
+        }
+
         $vehicleLayoutModels = VehicleLayout::find(['vehicleLayoutName_id'=>$vehicleLayoutName_id])->all();
         foreach($vehicleLayoutModels as $vehicleLayoutModel)
         {

@@ -43,6 +43,12 @@ class PowerDataAlgorithm extends Component
         ]
     ]
 
+    $flightModes = [
+        $id => [
+            'reductionFactor' => $reductionFactor,              // Коэффициент понижения оборотов
+        ]
+    ]
+
     $constants = [
         'useQ0' => $useQ0,                                      // Учитывать Qo
     ]
@@ -56,6 +62,16 @@ class PowerDataAlgorithm extends Component
                     ]
                 ]
             ]
+        ],
+        'energySources' => [
+            $id => [
+                $architectureID => [
+                    $flightModeID => [
+                        'Qnas' => $Qnas,
+                        'Qraspol' => $Qraspol,
+                    ]
+                ]
+            ]
         ]
     ]
     */
@@ -63,6 +79,7 @@ class PowerDataAlgorithm extends Component
     public $energySources = [];
     public $architectures = [];
     public $architectureBasicID;
+    public $flightModes = [];
 
     public $constants = [];
 
@@ -90,6 +107,11 @@ class PowerDataAlgorithm extends Component
        if ($data['isBasic']==1)
             $this->architectureBasicID = $id;
     }
+    /* Добавить режим полета */
+   public function addFlightMode($id, $data)
+   {
+      $this->flightModes[$id] = $data;
+   }
     /* Добавить потребителя */
     public function addConsumer($id, $data)
     {
@@ -122,7 +144,48 @@ class PowerDataAlgorithm extends Component
             $consumption = $consumer['usageFactorPerFlightMode'][$flightModeID] * $consumer['qMax'];
         }
         
-        $this->results['consumers'][$consumerID][$architectureID][$flightModeID] = $consumption;
+        $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['consumption'] = $consumption;
+    }
+
+    /* [1] Архитектура -> Q нас */
+    public function calcArchitectureQnas($energySourceID, $architectureID, $flightModeID)
+    {
+        $Qnas = 0;
+
+        foreach ($this->results['consumers'] as $consumerID => $results) {
+            if ($this->consumers[$consumerID]['energySourcePerArchitecture'][$architectureID]==$energySourceID)
+                $Qnas+=$results[$architectureID][$flightModeID]['consumption'];
+        }
+
+        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qnas'] = $Qnas;
+    }
+    /* [1] Архитектура -> Q распол */
+    public function calcArchitectureQraspol($energySourceID, $architectureID, $flightModeID)
+    {
+        $Qraspol = $this->energySources[$energySourceID]['qMax'] * $this->flightModes[$flightModeID]['reductionFactor'];
+
+        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qraspol'] = $Qraspol;
+    }
+
+
+
+    /***********************************************************
+    Основная функция расчёта
+    ***********************************************************/
+    public function calculate()
+    {
+        foreach ($this->flightModes as $flightModeID => $flightModeData) {
+            foreach ($this->architectures as $architectureID => $architectureData) {
+                foreach ($this->consumers as $consumerID => $consumerData)
+                    $this->calcConsumerConsumption($consumerID, $architectureID, $flightModeID);
+
+                foreach ($this->energySources as $energySourceID => $energySourceData)
+                {
+                    $this->calcArchitectureQnas($energySourceID, $architectureID, $flightModeID);
+                    $this->calcArchitectureQraspol($energySourceID, $architectureID, $flightModeID);
+                }
+            }
+        }
     }
 }
 ?>
