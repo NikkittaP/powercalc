@@ -204,6 +204,8 @@ class PowerDataController extends Controller
 
         $algorithm->setConstants([
             'useQ0' => 1,
+            'efficiencyPipeline' => 0.94,
+            'Kat2bar' => 0.980665,
         ]);
 
         
