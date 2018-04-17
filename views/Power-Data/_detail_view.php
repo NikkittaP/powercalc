@@ -6,6 +6,7 @@ $architectureToVehicleLayouts = app\models\ArchitectureToVehicleLayout::find()->
 
 ?>
 
+<div style="width:90%">
 <h3>Детали записи #<?=$model->id;?></h3>
 
 <div class="row">
@@ -48,10 +49,14 @@ $architectureToVehicleLayouts = app\models\ArchitectureToVehicleLayout::find()->
                         <tr>
                             <td>Является ли электрическим?</td><td class="text-right">
                                 <?=
-                                    ($architectureToVehicleLayout->energySource->isElectric==1) ? '<i class="glyphicon glyphicon-ok"></i> да' : '<i class="glyphicon glyphicon-remove"></i> нет';
+                                    ($architectureToVehicleLayout->energySource->isElectric==1) ? '<i class="glyphicon glyphicon-ok"></i>' : '<i class="glyphicon glyphicon-remove"></i>';
                                 ?>
                             </td>
                         </tr>
+                        <?php
+                        if ($architectureToVehicleLayout->energySource->isElectric==0)
+                        {
+                        ?>
                         <tr>
                             <td>Q max</td><td class="text-right"><?=$architectureToVehicleLayout->energySource->qMax;?></td>
                         </tr>
@@ -61,6 +66,9 @@ $architectureToVehicleLayouts = app\models\ArchitectureToVehicleLayout::find()->
                         <tr>
                             <td>P нас раб при Q max</td><td class="text-right"><?=$architectureToVehicleLayout->energySource->pumpPressureWorkQmax;?></td>
                         </tr>
+                        <?php
+                        }
+                        ?>
                         </tbody>
                     </table>
                 </div>
@@ -69,4 +77,5 @@ $architectureToVehicleLayouts = app\models\ArchitectureToVehicleLayout::find()->
             ?>
         </div>
     </div>
+</div>
 </div>
