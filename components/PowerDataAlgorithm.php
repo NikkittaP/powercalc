@@ -176,7 +176,9 @@ class PowerDataAlgorithm extends Component
         $P_pump_out = $this->energySources[$energySourceID]['pumpPressureNominal'] - 
             ($this->energySources[$energySourceID]['pumpPressureNominal'] - $this->energySources[$energySourceID]['pumpPressureWorkQmax'])
             /
-            ($Qdisposable * $Qpump);
+            $Qdisposable
+            *
+            $Qpump;
  
         $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['P_pump_out'] = $P_pump_out;
     }
@@ -220,8 +222,9 @@ class PowerDataAlgorithm extends Component
         foreach ($this->flightModes as $flightModeID => $flightModeData) {
             foreach ($this->architectures as $architectureID => $architectureData) {
                 /* [0] -------------------------------------------------------- */
-                foreach ($this->consumers as $consumerID => $consumerData)
-                    $this->calcConsumerConsumption($consumerID, $architectureID, $flightModeID);
+                if ($architectureID==$this->architectureBasicID)
+                    foreach ($this->consumers as $consumerID => $consumerData)
+                        $this->calcConsumerConsumption($consumerID, $architectureID, $flightModeID);
 
                 /* [1] -------------------------------------------------------- */
                 foreach ($this->energySources as $energySourceID => $energySourceData)
@@ -244,8 +247,9 @@ class PowerDataAlgorithm extends Component
                 }
 
                 /* [3] -------------------------------------------------------- */
-                foreach ($this->consumers as $consumerID => $consumerData)
-                    $this->calcConsumerP_in($consumerID, $architectureID, $flightModeID);
+                if ($architectureID==$this->architectureBasicID)
+                    foreach ($this->consumers as $consumerID => $consumerData)
+                        $this->calcConsumerP_in($consumerID, $architectureID, $flightModeID);
                 
                 foreach ($this->energySources as $energySourceID => $energySourceData)
                 {
