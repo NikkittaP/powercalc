@@ -8,6 +8,7 @@ use yii\web\Controller;
 use yii\helpers\Json;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use \app\models\ArchitecturesNames;
 use \app\models\ArchitectureToVehicleLayout;
 use \app\models\EnergySources;
 use \app\models\FlightModesToVehicleLayout;
@@ -158,7 +159,40 @@ class PowerDataController extends Controller
                 'pumpPressureWorkQmax' => $energySourceModel->pumpPressureWorkQmax,
             ]);
         }
+
+        $architectureModels = ArchitecturesNames::find(['vehicleLayoutName_id' => $vehicleLayoutName_id])->all();
+        foreach($architectureModels as $architectureModel)
+        {
+            $algorithm->addArchitecture($architectureModel->id, [
+                'isBasic' => $architectureModel->isBasic,
+            ]);
+        }
         
+        $vehicleLayoutModels = VehicleLayout::find(['vehicleLayoutName_id'=>$vehicleLayoutName_id])->all();
+        foreach($vehicleLayoutModels as $vehicleLayoutModel)
+        {
+            $energySourcePerArchitecture = [];
+            foreach($vehicleLayoutModel->architectureToVehicleLayouts as $architectureToVehicleLayout)
+                $energySourcePerArchitecture[$architectureToVehicleLayout->architectureName_id] = $architectureToVehicleLayout->energySource_id;
+            
+            $usageFactorPerFlightMode = [];
+            foreach($vehicleLayoutModel->flightModesToVehicleLayouts as $flightModesToVehicleLayout)
+                $usageFactorPerFlightMode[$flightModesToVehicleLayout->flightMode_id] = $flightModesToVehicleLayout->usageFactor;
+            
+            $algorithm->addConsumer($vehicleLayoutModel->consumer_id, [
+                'efficiencyHydro' => $vehicleLayoutModel->consumer->efficiencyHydro,
+                'efficiencyElectric' => $vehicleLayoutModel->consumer->efficiencyElectric,
+                'q0' => $vehicleLayoutModel->consumer->q0,
+                'qMax' => $vehicleLayoutModel->consumer->qMax,
+                'energySourcePerArchitecture' => $energySourcePerArchitecture,
+                'usageFactorPerFlightMode' => $usageFactorPerFlightMode,
+            ]);
+        }
+
+        $algorithm->setConstants([
+            'useQ0' => 1,
+        ]);
+
         
         //$algorithm->welcome();
 

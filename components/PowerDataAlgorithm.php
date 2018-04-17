@@ -70,7 +70,7 @@ class PowerDataAlgorithm extends Component
 
     public function welcome()
     {
-        VarDumper::dump( $this->energySources, $depth = 10, $highlight = true);
+        VarDumper::dump( $this->consumers, $depth = 10, $highlight = true);
     }
 
 
@@ -84,10 +84,11 @@ class PowerDataAlgorithm extends Component
        $this->energySources[$id] = $data;
     }
     /* Добавить архитектуру */
-    public function addArchitecture($id, $data, $basicID)
+    public function addArchitecture($id, $data)
     {
        $this->architectures[$id] = $data;
-       $this->architectureBasicID = $basicID;
+       if ($data['isBasic']==1)
+            $this->architectureBasicID = $id;
     }
     /* Добавить потребителя */
     public function addConsumer($id, $data)
