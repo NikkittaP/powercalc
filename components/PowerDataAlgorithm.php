@@ -6,6 +6,7 @@ namespace app\components;
 use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
+use yii\helpers\VarDumper;
  
 class PowerDataAlgorithm extends Component
 {
@@ -69,7 +70,7 @@ class PowerDataAlgorithm extends Component
 
     public function welcome()
     {
-        echo "Hello..Welcome to MyComponent";
+        VarDumper::dump( $this->energySources, $depth = 10, $highlight = true);
     }
 
 
@@ -80,23 +81,23 @@ class PowerDataAlgorithm extends Component
     /* Добавить источник энергии */
     public function addEnergySource($id, $data)
     {
-       $energySources[$id] = $data;
+       $this->energySources[$id] = $data;
     }
     /* Добавить архитектуру */
     public function addArchitecture($id, $data, $basicID)
     {
-       $architectures[$id] = $data;
-       $architectureBasicID = $basicID;
+       $this->architectures[$id] = $data;
+       $this->architectureBasicID = $basicID;
     }
     /* Добавить потребителя */
     public function addConsumer($id, $data)
     {
-        $consumers[$id] = $data;
+        $this->consumers[$id] = $data;
     }
      /* Задать константы */
      public function setConstants($data)
      {
-         $constants = $data;
+         $this->constants = $data;
      }
      
 
@@ -107,20 +108,20 @@ class PowerDataAlgorithm extends Component
     /* [0] Потребитель -> Расход */
     public function calcConsumerConsumption($consumerID, $architectureID, $flightModeID)
     {
-        $consumer = $consumers[$consumerID];
-        $energySourceBasic = $energySources[$consumer['energySourcePerArchitecture'][$architectureBasicID]];
+        $consumer = $this->consumers[$consumerID];
+        $energySourceBasic = $this->energySources[$consumer['energySourcePerArchitecture'][$this->architectureBasicID]];
 
         if ($consumer['usageFactorPerFlightMode'][$flightModeID]==0)
         {
             if ($energySourceBasic['isElectric']==1)
                 $consumption = 0;
             else
-                $consumption = $consumer['q0'] * $constants['useQ0'];
+                $consumption = $consumer['q0'] * $this->constants['useQ0'];
         } else {
             $consumption = $consumer['usageFactorPerFlightMode'][$flightModeID] * $consumer['qMax'];
         }
         
-        $results['consumers'][$consumerID][$architectureID][$flightModeID] = $consumption;
+        $this->results['consumers'][$consumerID][$architectureID][$flightModeID] = $consumption;
     }
 }
 ?>

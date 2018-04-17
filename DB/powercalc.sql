@@ -1,7 +1,7 @@
 -- --------------------------------------------------------
 -- Хост:                         127.0.0.1
--- Версия сервера:               5.6.38 - MySQL Community Server (GPL)
--- Операционная система:         Win32
+-- Версия сервера:               5.7.20 - MySQL Community Server (GPL)
+-- Операционная система:         Win64
 -- HeidiSQL Версия:              9.5.0.5196
 -- --------------------------------------------------------
 
@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS `ArchitecturesNames` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `vehicleLayoutName_id` int(10) unsigned NOT NULL,
   `name` varchar(255) NOT NULL COMMENT 'Название архитектуры для модели (компоновки) ["База", "БЭС1"]',
+  `isBasic` tinyint(4) DEFAULT NULL COMMENT 'Является ли базовой архитектурой',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `FK_ArchitecturesNames_VehiclesLayoutsNames` (`vehicleLayoutName_id`),
@@ -48,10 +49,10 @@ CREATE TABLE IF NOT EXISTS `ArchitecturesNames` (
 
 -- Дамп данных таблицы PowerDistributionData.ArchitecturesNames: ~3 rows (приблизительно)
 /*!40000 ALTER TABLE `ArchitecturesNames` DISABLE KEYS */;
-INSERT INTO `ArchitecturesNames` (`id`, `vehicleLayoutName_id`, `name`) VALUES
-	(1, 1, 'База'),
-	(2, 1, 'БЭС1'),
-	(3, 3, 'Архит. 7 ЭлКрЛГС');
+INSERT INTO `ArchitecturesNames` (`id`, `vehicleLayoutName_id`, `name`, `isBasic`) VALUES
+	(1, 1, 'База', 1),
+	(2, 1, 'БЭС1', 0),
+	(3, 3, 'Архит. 7 ЭлКрЛГС', 0);
 /*!40000 ALTER TABLE `ArchitecturesNames` ENABLE KEYS */;
 
 -- Дамп структуры для таблица PowerDistributionData.Architecture_to_VehicleLayout
@@ -69,12 +70,17 @@ CREATE TABLE IF NOT EXISTS `Architecture_to_VehicleLayout` (
   CONSTRAINT `FK_Architecture_to_VehicleLayout_ArchitecturesNames` FOREIGN KEY (`architectureName_id`) REFERENCES `ArchitecturesNames` (`id`),
   CONSTRAINT `FK_Architecture_to_VehicleLayout_EnergySources` FOREIGN KEY (`energySource_id`) REFERENCES `EnergySources` (`id`),
   CONSTRAINT `FK_Architecture_to_VehicleLayout_VehicleLayout` FOREIGN KEY (`vehicleLayout_id`) REFERENCES `VehicleLayout` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.Architecture_to_VehicleLayout: ~0 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.Architecture_to_VehicleLayout: ~6 rows (приблизительно)
 /*!40000 ALTER TABLE `Architecture_to_VehicleLayout` DISABLE KEYS */;
 INSERT INTO `Architecture_to_VehicleLayout` (`id`, `vehicleLayout_id`, `architectureName_id`, `energySource_id`) VALUES
-	(1, 1, 2, 4);
+	(1, 1, 2, 4),
+	(2, 1, 1, 3),
+	(3, 3, 1, 1),
+	(4, 3, 2, 2),
+	(5, 4, 2, 5),
+	(6, 4, 1, 4);
 /*!40000 ALTER TABLE `Architecture_to_VehicleLayout` ENABLE KEYS */;
 
 -- Дамп структуры для таблица PowerDistributionData.Consumers
@@ -160,10 +166,14 @@ CREATE TABLE IF NOT EXISTS `FlightModes_to_VehicleLayout` (
   KEY `FK_FlightModes_to_VehicleLayout_FlightModes` (`flightMode_id`),
   CONSTRAINT `FK_FlightModes_to_VehicleLayout_FlightModes` FOREIGN KEY (`flightMode_id`) REFERENCES `FlightModes` (`id`),
   CONSTRAINT `FK_FlightModes_to_VehicleLayout_VehicleLayout` FOREIGN KEY (`vehicleLayout_id`) REFERENCES `VehicleLayout` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.FlightModes_to_VehicleLayout: ~0 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.FlightModes_to_VehicleLayout: ~2 rows (приблизительно)
 /*!40000 ALTER TABLE `FlightModes_to_VehicleLayout` DISABLE KEYS */;
+INSERT INTO `FlightModes_to_VehicleLayout` (`id`, `vehicleLayout_id`, `flightMode_id`, `usageFactor`) VALUES
+	(1, 1, 1, 0.4),
+	(2, 1, 2, 1),
+	(3, 1, 3, 0.1);
 /*!40000 ALTER TABLE `FlightModes_to_VehicleLayout` ENABLE KEYS */;
 
 -- Дамп структуры для таблица PowerDistributionData.PumpEfficiency
@@ -194,13 +204,15 @@ CREATE TABLE IF NOT EXISTS `VehicleLayout` (
   KEY `FK_VehicleLayout_Consumers` (`consumer_id`),
   CONSTRAINT `FK_VehicleLayout_Consumers` FOREIGN KEY (`consumer_id`) REFERENCES `Consumers` (`id`),
   CONSTRAINT `FK_VehicleLayout_VehiclesLayoutsNames` FOREIGN KEY (`vehicleLayoutName_id`) REFERENCES `VehiclesLayoutsNames` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.VehicleLayout: ~2 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.VehicleLayout: ~4 rows (приблизительно)
 /*!40000 ALTER TABLE `VehicleLayout` DISABLE KEYS */;
 INSERT INTO `VehicleLayout` (`id`, `vehicleLayoutName_id`, `consumer_id`) VALUES
 	(1, 1, 3),
-	(2, 2, 4);
+	(2, 2, 4),
+	(3, 1, 6),
+	(4, 1, 5);
 /*!40000 ALTER TABLE `VehicleLayout` ENABLE KEYS */;
 
 -- Дамп структуры для таблица PowerDistributionData.Vehicles

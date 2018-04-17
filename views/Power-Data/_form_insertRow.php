@@ -7,8 +7,6 @@ use yii\widgets\ActiveForm;
 use app\models\VehicleLayout;
 use kartik\widgets\Select2;
 
-//VarDumper::dump( $model, $depth = 10, $highlight = true);exit();
-
 $consumers = ArrayHelper::map(app\models\Consumers::find()->orderBy('name')->asArray()->all(), 'id', 'name');
 
 $form = ActiveForm::begin([
@@ -19,7 +17,7 @@ $form = ActiveForm::begin([
 <table class="table table-sm">
     <tr>
         <td style="width:300px;vertical-align: middle;border:0px;" align="left">
-            <?= Html::hiddenInput('vehicleLayoutName_id', $vehicleLayoutName_id); //$form->field($model, 'vehicleLayoutName_id')->hiddenInput(['value' => $vehicleLayoutName_id]); ?>
+            <?= Html::hiddenInput('vehicleLayoutName_id', $vehicleLayoutName_id); ?>
             <?= $form->field($model, 'consumer_id')->widget(Select2::classname(), [
                     'data' => $consumers,
                     'options' => ['placeholder' => 'Выберите потребителя...'],
@@ -35,6 +33,4 @@ $form = ActiveForm::begin([
 </table>
 
 <?php ActiveForm::end();
-
-//echo Html::button('<i class="glyphicon glyphicon-plus"></i>', ['type' => 'button', 'title' =>'Добавить потребителя', 'class' => 'btn btn-success', 'onclick' => '$("#content").load("powerdata/insertData");'])
 ?>

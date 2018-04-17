@@ -10,6 +10,7 @@ use Yii;
  * @property string $id
  * @property string $vehicleLayoutName_id
  * @property string $name Название архитектуры для модели (компоновки) ["База", "БЭС1"]
+ * @property int $isBasic Является ли базовой архитектурой
  *
  * @property ArchitectureToVehicleLayout[] $architectureToVehicleLayouts
  * @property VehiclesLayoutsNames $vehicleLayoutName
@@ -34,6 +35,7 @@ class ArchitecturesNames extends \yii\db\ActiveRecord
             [['vehicleLayoutName_id'], 'integer'],
             [['name'], 'string', 'max' => 255],
             [['vehicleLayoutName_id'], 'exist', 'skipOnError' => true, 'targetClass' => VehiclesLayoutsNames::className(), 'targetAttribute' => ['vehicleLayoutName_id' => 'id']],
+            [['isBasic'], 'boolean'],
         ];
     }
 
@@ -46,6 +48,7 @@ class ArchitecturesNames extends \yii\db\ActiveRecord
             'id' => 'ID',
             'vehicleLayoutName_id' => 'Компоновка',
             'name' => 'Название',
+            'isBasic' => 'Базовая?',
         ];
     }
 

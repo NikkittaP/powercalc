@@ -9,10 +9,13 @@ use yii\helpers\Json;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use \app\models\ArchitectureToVehicleLayout;
+use \app\models\EnergySources;
 use \app\models\FlightModesToVehicleLayout;
 use \app\models\VehicleLayout;
 use \app\models\VehicleLayoutSearch;
 use \app\models\VehiclesLayoutsNames;
+
+use app\components\PowerDataAlgorithm;
 
 /**
  * VehiclesController implements the CRUD actions for Vehicles model.
@@ -137,6 +140,29 @@ class PowerDataController extends Controller
         $model->save();
 
         return $this->redirect(['index', 'vehicleLayoutName_id'=>$model->vehicleLayoutName_id]);
+    }
+
+    public function actionCalculate()
+    {
+        $vehicleLayoutName_id = Yii::$app->request->post('vehicleLayoutName_id');
+
+        $algorithm = new PowerDataAlgorithm();
+       
+        $energySourceModels = EnergySources::find()->all();
+        foreach($energySourceModels as $energySourceModel)
+        {
+            $algorithm->addEnergySource($energySourceModel->id, [
+                'isElectric' => $energySourceModel->isElectric,
+                'qMax' => $energySourceModel->qMax,
+                'pumpPressureNominal' => $energySourceModel->pumpPressureNominal,
+                'pumpPressureWorkQmax' => $energySourceModel->pumpPressureWorkQmax,
+            ]);
+        }
+        
+        
+        //$algorithm->welcome();
+
+        return $this->redirect(['index', 'vehicleLayoutName_id'=>$vehicleLayoutName_id]);
     }
 
     protected function findModelVehicleLayoutNames($id)

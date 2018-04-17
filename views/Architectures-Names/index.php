@@ -34,6 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => function($model) { return $model->vehicleLayoutName->vehicle->name  . ": " . $model->vehicleLayoutName->name ;},
             ],
             'name',
+            'isBasic',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

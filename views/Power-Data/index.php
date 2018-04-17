@@ -5,8 +5,6 @@ use yii\helpers\Html;
 use kartik\grid\GridView;
 use kartik\widgets\ActiveForm;
 
-use app\components\PowerDataAlgorithm;
-
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\VehiclesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -162,7 +160,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => $gridColumns,
         'toolbar' =>  [
             [
-                'content' => $this->render('_from_insertRow', ['model' => $vehicleLayoutModel, 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id])
+                'content' => $this->render('_form_insertRow', ['model' => $vehicleLayoutModel, 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id])
             ],
             '{export}',
         ],
@@ -176,12 +174,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
             'heading' => 'Заполнение данных для компоновки "<b>'.$vehicleLayoutNameModel->vehicle->name.': '.$vehicleLayoutNameModel->name.'</b>"',
+            'footer' => $this->render('_footer', ['vehicleLayoutName_id' => $vehicleLayoutNameModel->id]),
         ],
     ]);
     ?>
 </div>
-
-<?php
-    $algo = new PowerDataAlgorithm();
-    $algo->welcome();
-?>
