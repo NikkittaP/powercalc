@@ -206,6 +206,8 @@ class PowerDataController extends Controller
             'useQ0' => 1,
             'efficiencyPipeline' => 0.94,
             'Kat2bar' => 0.980665,
+            'isEfficiencyFixed' => 1,
+            'efficiencyPump' => 0.885,
         ]);
 
         

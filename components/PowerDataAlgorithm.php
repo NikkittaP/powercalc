@@ -52,7 +52,9 @@ class PowerDataAlgorithm extends Component
     $constants = [
         'useQ0' => $useQ0,                                      // Учитывать Qo
         'efficiencyPipeline' => $efficiencyPipeline,            // КПД трубопровода
-        'Kat2bar' => $Kat2bar
+        'Kat2bar' => $Kat2bar,
+        'isEfficiencyFixed' => $isEfficiencyFixed,              // КПД fix
+        'efficiencyPump' =>$efficiencyPump,                     // КПД насоса для КПД fix
     ]
 
     $results = [
@@ -62,6 +64,7 @@ class PowerDataAlgorithm extends Component
                     $flightModeID => [
                         'consumption' => $consumption,          // Расход
                         'P_in' => $P_in,                        // Pin
+                        'N_in_hydro' => $N_in_hydro,            // Nin гс
                     ]
                 ]
             ]
@@ -75,6 +78,7 @@ class PowerDataAlgorithm extends Component
                         'P_pump_out' => $P_pump_out,            // P нас вых
                         'Q_curr_to_Q_max' => $Q_curr_to_Q_max,  // Qтек/Qmax
                         'N_pump_out' => $N_pump_out,            // N нас вых
+                        'N_pump_in' => $N_pump_in,              // N нас вх
                     ]
                 ]
             ]
@@ -214,6 +218,35 @@ class PowerDataAlgorithm extends Component
         $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_pump_out'] = $N_pump_out;
     }
 
+    /* [4] Потребитель -> Nin гс */
+    public function calcConsumerN_in_hydro($consumerID, $architectureID, $flightModeID)
+    {
+        $P_in = $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['P_in'];
+        $consumption = $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['consumption'];
+
+        $N_in_hydro = $P_in * $consumption * (5.0 / 3.0) * $this->constants['Kat2bar'] / 1000.0;
+        
+        $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['N_in_hydro'] = $N_in_hydro;
+    }
+    /* [4] Архитектура -> N нас вх */
+    public function calcArchitectureN_pump_in($energySourceID, $architectureID, $flightModeID)
+    {
+        $N_pump_out = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_pump_out'];
+        $Q_curr_to_Q_max = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Q_curr_to_Q_max'];
+
+        if ($Q_curr_to_Q_max == 0)
+            $N_pump_in = 0;
+        else
+        {
+            if ($this->constants['isEfficiencyFixed']==1)
+                $N_pump_in = $N_pump_out / $this->constants['efficiencyPump'];
+            else
+                $N_pump_in = $N_pump_out / $this->getInterpolatedEfficiencyPump($Q_curr_to_Q_max);
+        }
+
+        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_pump_in'] = $N_pump_in;
+    }
+
     /***********************************************************
     Основная функция расчёта
     ***********************************************************/
@@ -252,12 +285,17 @@ class PowerDataAlgorithm extends Component
                         $this->calcConsumerP_in($consumerID, $architectureID, $flightModeID);
                 
                 foreach ($this->energySources as $energySourceID => $energySourceData)
-                {
                     if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID))
-                    {
                         $this->calcArchitectureN_pump_out($energySourceID, $architectureID, $flightModeID);
-                    }
-                }
+
+                /* [4] -------------------------------------------------------- */
+                if ($architectureID==$this->architectureBasicID)
+                    foreach ($this->consumers as $consumerID => $consumerData)
+                        $this->calcConsumerN_in_hydro($consumerID, $architectureID, $flightModeID);
+                
+                foreach ($this->energySources as $energySourceID => $energySourceData)
+                    if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID))
+                        $this->calcArchitectureN_pump_in($energySourceID, $architectureID, $flightModeID);
             }
         }
 
@@ -279,6 +317,12 @@ class PowerDataAlgorithm extends Component
             }
         
         return $isEnergySourceCorrespondToArchitecture;
+    }
+
+    /* Интерполяция КПД насоса для КПД _НЕ_ fix */
+    public function getInterpolatedEfficiencyPump($Q_curr_to_Q_max)
+    {
+        return 0.885;
     }
 }
 ?>
