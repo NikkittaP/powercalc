@@ -91,6 +91,7 @@ class PowerDataAlgorithm extends Component
                         'N_pump_in' => $N_pump_in,                          // N нас вх
                         'N_consumers_in_hydro' => $N_consumers_in_hydro,    // Nпотр_вх_гс
                         'N_consumers_out' => $N_consumers_out,              // Nпотр_вых
+                        'N_electric_total' => $N_electric_total,            // Nэс_всего
                         'N_takeoff' => $N_takeoff,                          // Nотбора
                     ]
                 ]
@@ -320,12 +321,27 @@ class PowerDataAlgorithm extends Component
             $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_consumers_out'] = $N_consumers_out;
         }
 
+/* [7] */
+    /* [7] Архитектура -> Nэс_всего */
+    public function calcArchitectureN_electric_total($energySourceID, $architectureID, $flightModeID)
+    {
+        $N_electric_total = 0;
 
+        foreach ($this->results['consumers'] as $consumerID => $results) {
+            if ($this->consumers[$consumerID]['energySourcePerArchitecture'][$architectureID] == $energySourceID)
+                if ($results[$architectureID][$flightModeID]['N_in_electric'] != '-')
+                    $N_electric_total += $results[$architectureID][$flightModeID]['N_in_electric'];
+        }
 
+        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_electric_total'] = $N_electric_total;
+    }
+
+/* [8] */
     /* [8] Архитектура -> Nотбора */
         public function calcArchitectureN_takeoff($energySourceID, $architectureID, $flightModeID)
         {
             $N_pump_in = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_pump_in'];
+            $N_electric_total = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_electric_total'];
 
             if ($this->energySources[$energySourceID]['type'] == 1) // Гидросистема
             {
@@ -338,11 +354,10 @@ class PowerDataAlgorithm extends Component
                 $N_takeoff = $N_pump_in / ($this->constants['efficiencyElectricMotor'] * $this->constants['efficiencyCables'] * $this->constants['efficiencyGenerator'] * $this->constants['efficiencyDriveBox']);
             } else if ($this->energySources[$energySourceID]['type'] == 4) // Электросистема
             {
-                
+                $N_takeoff = $N_electric_total / ($this->constants['efficiencyCables'] * $this->constants['efficiencyGenerator'] * $this->constants['efficiencyDriveBox']);
             }
-          
 
-            $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_consumers_in_hydro'] = $N_consumers_in_hydro;
+            $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_takeoff'] = $N_takeoff;
         }
 
 
@@ -413,6 +428,16 @@ class PowerDataAlgorithm extends Component
                 foreach ($this->energySources as $energySourceID => $energySourceData)
                     if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID))
                         $this->calcArchitectureN_consumers_out($energySourceID, $architectureID, $flightModeID);
+
+                /* [7] -------------------------------------------------------- */
+                foreach ($this->energySources as $energySourceID => $energySourceData)
+                    if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID))
+                        $this->calcArchitectureN_electric_total($energySourceID, $architectureID, $flightModeID);
+
+                /* [8] -------------------------------------------------------- */
+                foreach ($this->energySources as $energySourceID => $energySourceData)
+                    if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID))
+                        $this->calcArchitectureN_takeoff($energySourceID, $architectureID, $flightModeID);
             }
         }
 
