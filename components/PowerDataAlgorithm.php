@@ -11,6 +11,8 @@ use yii\helpers\VarDumper;
 class PowerDataAlgorithm extends Component
 {
     /*
+    Структуры используемых массивов данных:
+
     $consumers = [
         $id => [
             'efficiencyHydro' => $efficiencyHydro,          // КПД гидро
@@ -57,6 +59,8 @@ class PowerDataAlgorithm extends Component
         'efficiencyPump' =>$efficiencyPump,                     // КПД насоса для КПД fix
     ]
 
+
+    Полученные в ходе расчётов данные:
     $results = [
         'consumers' => [
             $id => [
@@ -65,6 +69,7 @@ class PowerDataAlgorithm extends Component
                         'consumption' => $consumption,          // Расход
                         'P_in' => $P_in,                        // Pin
                         'N_in_hydro' => $N_in_hydro,            // Nin гс
+                        'N_out' => $N_out,                      // Nвых
                     ]
                 ]
             ]
@@ -73,12 +78,14 @@ class PowerDataAlgorithm extends Component
             $id => [
                 $architectureID => [
                     $flightModeID => [
-                        'Qpump' => $Qpump,                      // Q нас
-                        'Qdisposable' => $Qdisposable,          // Q распол
-                        'P_pump_out' => $P_pump_out,            // P нас вых
-                        'Q_curr_to_Q_max' => $Q_curr_to_Q_max,  // Qтек/Qmax
-                        'N_pump_out' => $N_pump_out,            // N нас вых
-                        'N_pump_in' => $N_pump_in,              // N нас вх
+                        'Qpump' => $Qpump,                                  // Q нас
+                        'Qdisposable' => $Qdisposable,                      // Q распол
+                        'P_pump_out' => $P_pump_out,                        // P нас вых
+                        'Q_curr_to_Q_max' => $Q_curr_to_Q_max,              // Qтек/Qmax
+                        'N_pump_out' => $N_pump_out,                        // N нас вых
+                        'N_pump_in' => $N_pump_in,                          // N нас вх
+                        'N_consumers_in_hydro' => $N_consumers_in_hydro,    // Nпотр_вх_гс
+                        'N_takeoff' => $N_takeoff,                          // Nотбора
                     ]
                 ]
             ]
@@ -95,9 +102,9 @@ class PowerDataAlgorithm extends Component
 
     public $results = [];
 
-    /***********************************************************
-    Инициализации
-    ***********************************************************/
+/***********************************************************
+Инициализации. Передача данных в массивы из БД внешним запросом.
+***********************************************************/
 
     /* Добавить источник энергии */
     public function addEnergySource($id, $data)
@@ -128,128 +135,174 @@ class PowerDataAlgorithm extends Component
      }
      
 
-    /***********************************************************
-    Функции расчета параметров
-    ***********************************************************/
+/***********************************************************
+Функции расчета параметров
+***********************************************************/
 
+ /* [0] */
     /* [0] Потребитель -> Расход */
-    public function calcConsumerConsumption($consumerID, $architectureID, $flightModeID)
-    {
-        $consumer = $this->consumers[$consumerID];
-        $energySourceBasic = $this->energySources[$consumer['energySourcePerArchitecture'][$this->architectureBasicID]];
-
-        if ($consumer['usageFactorPerFlightMode'][$flightModeID]==0)
+        public function calcConsumerConsumption($consumerID, $architectureID, $flightModeID)
         {
-            if ($energySourceBasic['isElectric']==1)
-                $consumption = 0;
-            else
-                $consumption = $consumer['q0'] * $this->constants['useQ0'];
-        } else {
-            $consumption = $consumer['usageFactorPerFlightMode'][$flightModeID] * $consumer['qMax'];
-        }
-        
-        $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['consumption'] = $consumption;
-    }
+            $consumer = $this->consumers[$consumerID];
+            $energySourceBasic = $this->energySources[$consumer['energySourcePerArchitecture'][$this->architectureBasicID]];
 
+            if ($consumer['usageFactorPerFlightMode'][$flightModeID]==0)
+            {
+                if ($energySourceBasic['isElectric']==1)
+                    $consumption = 0;
+                else
+                    $consumption = $consumer['q0'] * $this->constants['useQ0'];
+            } else {
+                $consumption = $consumer['usageFactorPerFlightMode'][$flightModeID] * $consumer['qMax'];
+            }
+            
+            $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['consumption'] = $consumption;
+        }
+
+ /* [1] */
     /* [1] Архитектура -> Q нас */
-    public function calcArchitectureQpump($energySourceID, $architectureID, $flightModeID)
-    {
-        $Qpump = 0;
-
-        foreach ($this->results['consumers'] as $consumerID => $results) {
-            if ($this->consumers[$consumerID]['energySourcePerArchitecture'][$architectureID]==$energySourceID)
-                $Qpump += $results[$architectureID][$flightModeID]['consumption'];
-        }
-
-        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qpump'] = $Qpump;
-    }
-    /* [1] Архитектура -> Q распол */
-    public function calcArchitectureQdisposable($energySourceID, $architectureID, $flightModeID)
-    {
-        $Qdisposable = $this->energySources[$energySourceID]['qMax'] * $this->flightModes[$flightModeID]['reductionFactor'];
-
-        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qdisposable'] = $Qdisposable;
-    }
-
-     /* [2] Архитектура -> P нас вых */
-    public function calcArchitectureP_pump_out($energySourceID, $architectureID, $flightModeID)
-    {
-        $Qpump = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qpump'];
-        $Qdisposable = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qdisposable'];
-
-        $P_pump_out = $this->energySources[$energySourceID]['pumpPressureNominal'] - 
-            ($this->energySources[$energySourceID]['pumpPressureNominal'] - $this->energySources[$energySourceID]['pumpPressureWorkQmax'])
-            /
-            $Qdisposable
-            *
-            $Qpump;
- 
-        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['P_pump_out'] = $P_pump_out;
-    }
-    /* [2] Архитектура -> Qтек/Qmax */
-    public function calcArchitectureQ_curr_to_Q_max($energySourceID, $architectureID, $flightModeID)
-    {
-        $Qpump = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qpump'];
-        $Qdisposable = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qdisposable'];
-        
-        $Q_curr_to_Q_max = $Qpump / $Qdisposable;
-
-        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Q_curr_to_Q_max'] = $Q_curr_to_Q_max;
-    }
-
-     /* [3] Потребитель -> Pin */
-    public function calcConsumerP_in($consumerID, $architectureID, $flightModeID)
-    {
-        $consumer = $this->consumers[$consumerID];
-        $energySourceBasicID = $consumer['energySourcePerArchitecture'][$this->architectureBasicID];
- 
-        $P_in = $this->results['energySources'][$energySourceBasicID][$architectureID][$flightModeID]['P_pump_out'] * $this->constants['efficiencyPipeline'];
-         
-        $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['P_in'] = $P_in;
-    }
-    /* [3] Архитектура -> N нас вых */
-    public function calcArchitectureN_pump_out($energySourceID, $architectureID, $flightModeID)
-    {
-        $P_pump_out = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['P_pump_out'];
-        $Qpump = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qpump'];
-        
-        $N_pump_out = $P_pump_out * $Qpump * (5.0 / 3.0) * $this->constants['Kat2bar'] / 1000.0;
-
-        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_pump_out'] = $N_pump_out;
-    }
-
-    /* [4] Потребитель -> Nin гс */
-    public function calcConsumerN_in_hydro($consumerID, $architectureID, $flightModeID)
-    {
-        $P_in = $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['P_in'];
-        $consumption = $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['consumption'];
-
-        $N_in_hydro = $P_in * $consumption * (5.0 / 3.0) * $this->constants['Kat2bar'] / 1000.0;
-        
-        $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['N_in_hydro'] = $N_in_hydro;
-    }
-    /* [4] Архитектура -> N нас вх */
-    public function calcArchitectureN_pump_in($energySourceID, $architectureID, $flightModeID)
-    {
-        $N_pump_out = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_pump_out'];
-        $Q_curr_to_Q_max = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Q_curr_to_Q_max'];
-
-        if ($Q_curr_to_Q_max == 0)
-            $N_pump_in = 0;
-        else
+        public function calcArchitectureQpump($energySourceID, $architectureID, $flightModeID)
         {
-            if ($this->constants['isEfficiencyFixed']==1)
-                $N_pump_in = $N_pump_out / $this->constants['efficiencyPump'];
-            else
-                $N_pump_in = $N_pump_out / $this->getInterpolatedEfficiencyPump($Q_curr_to_Q_max);
+            $Qpump = 0;
+
+            foreach ($this->results['consumers'] as $consumerID => $results) {
+                if ($this->consumers[$consumerID]['energySourcePerArchitecture'][$architectureID]==$energySourceID)
+                    $Qpump += $results[$architectureID][$flightModeID]['consumption'];
+            }
+
+            $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qpump'] = $Qpump;
+        }
+    /* [1] Архитектура -> Q распол */
+        public function calcArchitectureQdisposable($energySourceID, $architectureID, $flightModeID)
+        {
+            $Qdisposable = $this->energySources[$energySourceID]['qMax'] * $this->flightModes[$flightModeID]['reductionFactor'];
+
+            $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qdisposable'] = $Qdisposable;
         }
 
-        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_pump_in'] = $N_pump_in;
-    }
+ /* [2] */
+     /* [2] Архитектура -> P нас вых */
+        public function calcArchitectureP_pump_out($energySourceID, $architectureID, $flightModeID)
+        {
+            $Qpump = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qpump'];
+            $Qdisposable = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qdisposable'];
 
-    /***********************************************************
-    Основная функция расчёта
-    ***********************************************************/
+            $P_pump_out = $this->energySources[$energySourceID]['pumpPressureNominal'] - 
+                ($this->energySources[$energySourceID]['pumpPressureNominal'] - $this->energySources[$energySourceID]['pumpPressureWorkQmax'])
+                /
+                $Qdisposable
+                *
+                $Qpump;
+    
+            $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['P_pump_out'] = $P_pump_out;
+        }
+    /* [2] Архитектура -> Qтек/Qmax */
+        public function calcArchitectureQ_curr_to_Q_max($energySourceID, $architectureID, $flightModeID)
+        {
+            $Qpump = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qpump'];
+            $Qdisposable = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qdisposable'];
+            
+            $Q_curr_to_Q_max = $Qpump / $Qdisposable;
+
+            $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Q_curr_to_Q_max'] = $Q_curr_to_Q_max;
+        }
+
+ /* [3] */
+     /* [3] Потребитель -> Pin */
+        public function calcConsumerP_in($consumerID, $architectureID, $flightModeID)
+        {
+            $consumer = $this->consumers[$consumerID];
+            $energySourceBasicID = $consumer['energySourcePerArchitecture'][$this->architectureBasicID];
+    
+            $P_in = $this->results['energySources'][$energySourceBasicID][$architectureID][$flightModeID]['P_pump_out'] * $this->constants['efficiencyPipeline'];
+            
+            $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['P_in'] = $P_in;
+        }
+    /* [3] Архитектура -> N нас вых */
+        public function calcArchitectureN_pump_out($energySourceID, $architectureID, $flightModeID)
+        {
+            $P_pump_out = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['P_pump_out'];
+            $Qpump = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qpump'];
+            
+            $N_pump_out = $P_pump_out * $Qpump * (5.0 / 3.0) * $this->constants['Kat2bar'] / 1000.0;
+
+            $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_pump_out'] = $N_pump_out;
+        }
+
+ /* [4] */
+    /* [4] Потребитель -> Nin гс */
+        public function calcConsumerN_in_hydro($consumerID, $architectureID, $flightModeID)
+        {
+            $P_in = $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['P_in'];
+            $consumption = $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['consumption'];
+
+            $N_in_hydro = $P_in * $consumption * (5.0 / 3.0) * $this->constants['Kat2bar'] / 1000.0;
+            
+            $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['N_in_hydro'] = $N_in_hydro;
+        }
+    /* [4] Архитектура -> N нас вх */
+        public function calcArchitectureN_pump_in($energySourceID, $architectureID, $flightModeID)
+        {
+            $N_pump_out = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_pump_out'];
+            $Q_curr_to_Q_max = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Q_curr_to_Q_max'];
+
+            if ($Q_curr_to_Q_max == 0)
+                $N_pump_in = 0;
+            else
+            {
+                if ($this->constants['isEfficiencyFixed']==1)
+                    $N_pump_in = $N_pump_out / $this->constants['efficiencyPump'];
+                else
+                    $N_pump_in = $N_pump_out / $this->getInterpolatedEfficiencyPump($Q_curr_to_Q_max);
+            }
+
+            $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_pump_in'] = $N_pump_in;
+        }
+
+/* [5] */
+    /* [5] Потребитель -> Nвых */
+        public function calcConsumerN_out($consumerID, $architectureID, $flightModeID)
+        {
+            $consumer = $this->consumers[$consumerID];
+            $N_in_hydro = $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['N_in_hydro'];
+
+            $N_out = 0;
+            if ($consumer['usageFactorPerFlightMode'][$flightModeID]==0)
+                $N_out = 0;
+            else
+                $N_out = $N_in_hydro * $consumer['efficiencyHydro'];
+
+            $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['N_out'] = $N_out;
+        }
+    /* [5] Архитектура -> Nпотр_вх_гс */
+        public function calcArchitectureN_consumers_in_hydro($energySourceID, $architectureID, $flightModeID)
+        {
+            $N_consumers_in_hydro = 0;
+
+            foreach ($this->results['consumers'] as $consumerID => $results) {
+                if ($this->consumers[$consumerID]['energySourcePerArchitecture'][$architectureID]==$energySourceID)
+                    $N_consumers_in_hydro += $results[$architectureID][$flightModeID]['N_in_hydro'];
+            }
+
+            $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_consumers_in_hydro'] = $N_consumers_in_hydro;
+        }
+    /* [5] Архитектура -> Nотбора */
+        public function calcArchitectureN_takeoff($energySourceID, $architectureID, $flightModeID)
+        {
+            $N_consumers_in_hydro = 0;
+
+            foreach ($this->results['consumers'] as $consumerID => $results) {
+                if ($this->consumers[$consumerID]['energySourcePerArchitecture'][$architectureID]==$energySourceID)
+                    $N_consumers_in_hydro += $results[$architectureID][$flightModeID]['N_in_hydro'];
+            }
+
+            $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_consumers_in_hydro'] = $N_consumers_in_hydro;
+        }
+
+
+/***********************************************************
+Основная функция расчёта
+***********************************************************/
     public function calculate()
     {
         foreach ($this->flightModes as $flightModeID => $flightModeData) {
@@ -296,6 +349,15 @@ class PowerDataAlgorithm extends Component
                 foreach ($this->energySources as $energySourceID => $energySourceData)
                     if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID))
                         $this->calcArchitectureN_pump_in($energySourceID, $architectureID, $flightModeID);
+
+                /* [5] -------------------------------------------------------- */
+                if ($architectureID==$this->architectureBasicID)
+                    foreach ($this->consumers as $consumerID => $consumerData)
+                        $this->calcConsumerN_out($consumerID, $architectureID, $flightModeID);
+                
+                foreach ($this->energySources as $energySourceID => $energySourceData)
+                    if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID))
+                        $this->calcArchitectureN_consumers_in_hydro($energySourceID, $architectureID, $flightModeID);
             }
         }
 
@@ -303,9 +365,10 @@ class PowerDataAlgorithm extends Component
     }
 
 
-    /***********************************************************
-    Вспомогательные функции
-    ***********************************************************/
+/***********************************************************
+Вспомогательные функции
+***********************************************************/
+    /* Выбирает только те источники энергии, что присутствуют в текущей архитектуре */
     public function isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID)
     {
         $isEnergySourceCorrespondToArchitecture = false;

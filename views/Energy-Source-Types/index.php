@@ -4,19 +4,19 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\EnergySourcesSearch */
+/* @var $searchModel app\models\EnergySourceTypesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Источники энергии';
+$this->title = 'Типы источников энергии';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="energy-sources-index">
+<div class="energy-source-types-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Создать источник энергии', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Создать тип источника энергии', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([
@@ -27,13 +27,6 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             'name',
-            [
-                'attribute' => 'energySourceType_id',
-                'value' => 'energySourceType.name',
-            ],
-            'qMax',
-            'pumpPressureNominal',
-            'pumpPressureWorkQmax',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

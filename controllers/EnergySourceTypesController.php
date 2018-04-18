@@ -3,16 +3,16 @@
 namespace app\controllers;
 
 use Yii;
-use app\models\AircraftParts;
-use app\models\AircraftPartsSearch;
+use app\models\EnergySourceTypes;
+use app\models\EnergySourceTypesSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * AircraftPartsController implements the CRUD actions for AircraftParts model.
+ * EnergySourceTypesController implements the CRUD actions for EnergySourceTypes model.
  */
-class AircraftPartsController extends Controller
+class EnergySourceTypesController extends Controller
 {
     /**
      * @inheritdoc
@@ -30,12 +30,12 @@ class AircraftPartsController extends Controller
     }
 
     /**
-     * Lists all AircraftParts models.
+     * Lists all EnergySourceTypes models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new AircraftPartsSearch();
+        $searchModel = new EnergySourceTypesSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -45,8 +45,8 @@ class AircraftPartsController extends Controller
     }
 
     /**
-     * Displays a single AircraftParts model.
-     * @param string $id
+     * Displays a single EnergySourceTypes model.
+     * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -58,13 +58,13 @@ class AircraftPartsController extends Controller
     }
 
     /**
-     * Creates a new AircraftParts model.
+     * Creates a new EnergySourceTypes model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new AircraftParts();
+        $model = new EnergySourceTypes();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             //return $this->redirect(['view', 'id' => $model->id]);
@@ -77,9 +77,9 @@ class AircraftPartsController extends Controller
     }
 
     /**
-     * Updates an existing AircraftParts model.
+     * Updates an existing EnergySourceTypes model.
      * If update is successful, the browser will be redirected to the 'view' page.
-     * @param string $id
+     * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -98,9 +98,9 @@ class AircraftPartsController extends Controller
     }
 
     /**
-     * Deletes an existing AircraftParts model.
+     * Deletes an existing EnergySourceTypes model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param string $id
+     * @param integer $id
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
@@ -112,15 +112,15 @@ class AircraftPartsController extends Controller
     }
 
     /**
-     * Finds the AircraftParts model based on its primary key value.
+     * Finds the EnergySourceTypes model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
-     * @param string $id
-     * @return AircraftParts the loaded model
+     * @param integer $id
+     * @return EnergySourceTypes the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = AircraftParts::findOne($id)) !== null) {
+        if (($model = EnergySourceTypes::findOne($id)) !== null) {
             return $model;
         }
 

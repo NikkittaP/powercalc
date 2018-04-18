@@ -6,6 +6,7 @@ use \app\models\AircraftParts;
 use \app\models\ArchitecturesNames;
 use \app\models\Consumers;
 use \app\models\EnergySources;
+use \app\models\EnergySourceTypes;
 use \app\models\FlightModes;
 use \app\models\Vehicles;
 use \app\models\VehiclesLayoutsNames;
@@ -152,7 +153,7 @@ $this->title = 'PowerCalc';
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4">
+            <div class="col-lg-2">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h3 class="panel-title">
@@ -193,6 +194,30 @@ $this->title = 'PowerCalc';
                             {
                                 echo '<tr><td>';
                                 echo Html::a($architectureName->name, ['architectures-names/view', 'id' => $architectureName->id]);
+                                echo ' </td></tr>';
+                            }
+                            ?>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <?= Html::a('Типы источников энергии', ['energy-source-types/index']) ?>
+                        </h3>
+                    </div>
+
+                    <div class="panel-body" style="padding:0px;">
+                        <table class="table table-striped">
+
+                            <?php
+                            $energySourceTypes = EnergySourceTypes::find()->all();
+                            foreach ($energySourceTypes as $energySourceType)
+                            {
+                                echo '<tr><td>';
+                                echo Html::a($energySourceType->name, ['energy-source-types/view', 'id' => $energySourceType->id]);
                                 echo ' </td></tr>';
                             }
                             ?>

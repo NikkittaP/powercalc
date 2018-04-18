@@ -8,9 +8,9 @@ use yii\data\ActiveDataProvider;
 use app\models\AircraftParts;
 
 /**
- * VehiclesLayoutsNamesSearchAircraftParts represents the model behind the search form of `app\models\AircraftParts`.
+ * AircraftPartsSearch represents the model behind the search form of `app\models\AircraftParts`.
  */
-class VehiclesLayoutsNamesSearchAircraftParts extends AircraftParts
+class AircraftPartsSearch extends AircraftParts
 {
     /**
      * @inheritdoc

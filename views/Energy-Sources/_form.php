@@ -1,6 +1,8 @@
 <?php
 
+use \app\models\EnergySourceTypes;
 use yii\helpers\Html;
+use yii\helpers\ArrayHelper;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
@@ -14,7 +16,16 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-    <?= $form->field($model, 'isElectric')->checkbox() ?>
+<div class="compactRadioGroup">
+    <?php
+        $items = ArrayHelper::map(EnergySourceTypes::find()->all(), 'id', 'name');
+        echo $form->field($model, 'energySourceType_id')->radioList($items,
+            array(
+                'labelOptions'=>array('style'=>'display:inline'),
+                'separator'=>'<br />',
+            ));
+    ?>
+</div>
 
     <?= $form->field($model, 'qMax')->textInput() ?>
 

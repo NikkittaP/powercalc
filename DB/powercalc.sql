@@ -72,14 +72,14 @@ CREATE TABLE IF NOT EXISTS `Architecture_to_VehicleLayout` (
   CONSTRAINT `FK_Architecture_to_VehicleLayout_VehicleLayout` FOREIGN KEY (`vehicleLayout_id`) REFERENCES `VehicleLayout` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.Architecture_to_VehicleLayout: ~6 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.Architecture_to_VehicleLayout: ~7 rows (приблизительно)
 /*!40000 ALTER TABLE `Architecture_to_VehicleLayout` DISABLE KEYS */;
 INSERT INTO `Architecture_to_VehicleLayout` (`id`, `vehicleLayout_id`, `architectureName_id`, `energySource_id`) VALUES
 	(1, 1, 2, 4),
-	(2, 1, 1, 3),
+	(2, 1, 1, 2),
 	(3, 3, 1, 1),
 	(4, 3, 2, 2),
-	(5, 4, 2, 5),
+	(5, 4, 2, 6),
 	(6, 4, 1, 4);
 /*!40000 ALTER TABLE `Architecture_to_VehicleLayout` ENABLE KEYS */;
 
@@ -116,24 +116,65 @@ DROP TABLE IF EXISTS `EnergySources`;
 CREATE TABLE IF NOT EXISTS `EnergySources` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL COMMENT 'Название источника энергии ["ГС1", "ЛГС3", "ЭС1"]',
-  `isElectric` tinyint(4) DEFAULT NULL COMMENT 'Является ли электросистемой',
+  `energySourceType_id` int(10) unsigned NOT NULL COMMENT 'Является ли электросистемой',
   `qMax` float unsigned DEFAULT NULL COMMENT 'Qmax для расчёта Q располагаемого',
   `pumpPressureNominal` float unsigned DEFAULT NULL COMMENT 'Pнас ном',
   `pumpPressureWorkQmax` float unsigned DEFAULT NULL COMMENT 'Pнас раб при Qmax',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
-  UNIQUE KEY `name_UNIQUE` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+  UNIQUE KEY `name_UNIQUE` (`name`),
+  KEY `FK_EnergySources_EnergySourceTypes` (`energySourceType_id`),
+  CONSTRAINT `FK_EnergySources_EnergySourceTypes` FOREIGN KEY (`energySourceType_id`) REFERENCES `energysourcetypes` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.EnergySources: ~5 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.EnergySources: ~6 rows (приблизительно)
 /*!40000 ALTER TABLE `EnergySources` DISABLE KEYS */;
-INSERT INTO `EnergySources` (`id`, `name`, `isElectric`, `qMax`, `pumpPressureNominal`, `pumpPressureWorkQmax`) VALUES
-	(1, 'ГС1', 0, 180, 211, 195),
-	(2, 'ГС2', 0, 180, 211, 195),
-	(3, 'ЭС', 1, NULL, NULL, NULL),
-	(4, 'ЛГС1', 0, 50, 211, 195),
-	(5, 'ЛГС3', 0, 10, 211, 195);
+INSERT INTO `EnergySources` (`id`, `name`, `energySourceType_id`, `qMax`, `pumpPressureNominal`, `pumpPressureWorkQmax`) VALUES
+	(1, 'ГС1', 1, 180, 211, 195),
+	(2, 'ГС2', 1, 180, 211, 195),
+	(3, 'ГС3', 2, 180, 211, 195),
+	(4, 'ЛГС1', 3, 50, 211, 195),
+	(5, 'ЛГС3', 3, 10, 211, 195),
+	(6, 'ЭС', 4, NULL, NULL, NULL);
 /*!40000 ALTER TABLE `EnergySources` ENABLE KEYS */;
+
+-- Дамп структуры для таблица PowerDistributionData.EnergySources_
+DROP TABLE IF EXISTS `EnergySources_`;
+CREATE TABLE IF NOT EXISTS `EnergySources_` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL COMMENT 'Название источника энергии ["ГС1", "ЛГС3", "ЭС1"]',
+  `energySourceType_id` int(10) unsigned NOT NULL COMMENT 'Является ли электросистемой',
+  `qMax` float unsigned DEFAULT NULL COMMENT 'Qmax для расчёта Q располагаемого',
+  `pumpPressureNominal` float unsigned DEFAULT NULL COMMENT 'Pнас ном',
+  `pumpPressureWorkQmax` float unsigned DEFAULT NULL COMMENT 'Pнас раб при Qmax',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  UNIQUE KEY `name_UNIQUE` (`name`),
+  CONSTRAINT `fk_EnergySources_Architecture_to_VehicleLayout1` FOREIGN KEY (`id`) REFERENCES `Architecture_to_VehicleLayout` (`energySource_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Дамп данных таблицы PowerDistributionData.EnergySources_: ~0 rows (приблизительно)
+/*!40000 ALTER TABLE `EnergySources_` DISABLE KEYS */;
+/*!40000 ALTER TABLE `EnergySources_` ENABLE KEYS */;
+
+-- Дамп структуры для таблица PowerDistributionData.EnergySourceTypes
+DROP TABLE IF EXISTS `EnergySourceTypes`;
+CREATE TABLE IF NOT EXISTS `EnergySourceTypes` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL COMMENT 'Название источника энергии ["Гидросистема", "Электросистема"]',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  UNIQUE KEY `name_UNIQUE` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+-- Дамп данных таблицы PowerDistributionData.EnergySourceTypes: ~4 rows (приблизительно)
+/*!40000 ALTER TABLE `EnergySourceTypes` DISABLE KEYS */;
+INSERT INTO `EnergySourceTypes` (`id`, `name`) VALUES
+	(1, 'Гидросистема'),
+	(2, 'Гидроэлектросистема'),
+	(3, 'Зональная гидроэлектросистема'),
+	(4, 'Электросистема');
+/*!40000 ALTER TABLE `EnergySourceTypes` ENABLE KEYS */;
 
 -- Дамп структуры для таблица PowerDistributionData.FlightModes
 DROP TABLE IF EXISTS `FlightModes`;

@@ -5,12 +5,12 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\EnergySources;
+use app\models\EnergySourceTypes;
 
 /**
- * EnergySourcesSearch represents the model behind the search form of `app\models\EnergySources`.
+ * EnergySourceTypesSearch represents the model behind the search form of `app\models\EnergySourceTypes`.
  */
-class EnergySourcesSearch extends EnergySources
+class EnergySourceTypesSearch extends EnergySourceTypes
 {
     /**
      * @inheritdoc
@@ -18,9 +18,8 @@ class EnergySourcesSearch extends EnergySources
     public function rules()
     {
         return [
-            [['id', 'energySourceType_id'], 'integer'],
+            [['id'], 'integer'],
             [['name'], 'safe'],
-            [['qMax', 'pumpPressureNominal', 'pumpPressureWorkQmax'], 'number'],
         ];
     }
 
@@ -42,7 +41,7 @@ class EnergySourcesSearch extends EnergySources
      */
     public function search($params)
     {
-        $query = EnergySources::find();
+        $query = EnergySourceTypes::find();
 
         // add conditions that should always apply here
 
@@ -61,10 +60,6 @@ class EnergySourcesSearch extends EnergySources
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'energySourceType_id' => $this->energySourceType_id,
-            'qMax' => $this->qMax,
-            'pumpPressureNominal' => $this->pumpPressureNominal,
-            'pumpPressureWorkQmax' => $this->pumpPressureWorkQmax,
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name]);

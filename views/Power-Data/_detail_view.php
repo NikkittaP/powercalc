@@ -47,28 +47,19 @@ $architectureToVehicleLayouts = app\models\ArchitectureToVehicleLayout::find()->
                             <th colspan="2" class="text-center text-warning"><?= $architectureToVehicleLayout->energySource->name;?></th>
                         </tr>
                         <tr>
-                            <td>Является ли электрическим?</td><td class="text-right">
-                                <?=
-                                    ($architectureToVehicleLayout->energySource->isElectric==1) ? '<i class="glyphicon glyphicon-ok"></i>' : '<i class="glyphicon glyphicon-remove"></i>';
-                                ?>
+                            <td>Тип энергосистемы</td><td class="text-right">
+                                <?= $architectureToVehicleLayout->energySource->energySourceType->name;?>
                             </td>
                         </tr>
-                        <?php
-                        if ($architectureToVehicleLayout->energySource->isElectric==0)
-                        {
-                        ?>
                         <tr>
-                            <td>Q max</td><td class="text-right"><?=$architectureToVehicleLayout->energySource->qMax;?></td>
+                            <td>Q max</td><td class="text-right"><?=($architectureToVehicleLayout->energySource->qMax==null) ? '-' : $architectureToVehicleLayout->energySource->qMax;?></td>
                         </tr>
                         <tr>
-                            <td>Pнас ном</td><td class="text-right"><?=$architectureToVehicleLayout->energySource->pumpPressureNominal;?></td>
+                            <td>Pнас ном</td><td class="text-right"><?=($architectureToVehicleLayout->energySource->pumpPressureNominal==null) ? '-' : $architectureToVehicleLayout->energySource->pumpPressureNominal;?></td>
                         </tr>
                         <tr>
-                            <td>P нас раб при Q max</td><td class="text-right"><?=$architectureToVehicleLayout->energySource->pumpPressureWorkQmax;?></td>
+                            <td>P нас раб при Q max</td><td class="text-right"><?=($architectureToVehicleLayout->energySource->pumpPressureWorkQmax==null) ? '-' : $architectureToVehicleLayout->energySource->pumpPressureWorkQmax;?></td>
                         </tr>
-                        <?php
-                        }
-                        ?>
                         </tbody>
                     </table>
                 </div>
