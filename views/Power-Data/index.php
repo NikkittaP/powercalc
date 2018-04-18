@@ -63,9 +63,15 @@ $this->params['breadcrumbs'][] = $this->title;
     $i=0;
     foreach ($architecturesNames as $architecturesName)
     {
-        $border = [];
+        $border = '';
+        $background ='';
         if ($i==0)
-            $border = ['style' => 'border-left:5px solid green;'];
+            $border = 'border-left:5px solid green;';
+        
+        if ($architecturesName->isBasic == 1)
+            $background = 'background-color:#e0f0d7;';
+
+        $style =['style' => $border.$background];
 
         $gridColumns[] = [
             'class' => 'kartik\grid\EditableColumn',
@@ -98,9 +104,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     ],
                 ],
             ],
-            'contentOptions' => $border,
-            'headerOptions' => $border,
-            'filterOptions' => $border,
+            'contentOptions' => $style,
+            'headerOptions' => $style,
+            'filterOptions' => $style,
             'width' => '10%',
         ];
 
