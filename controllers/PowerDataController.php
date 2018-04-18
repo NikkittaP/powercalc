@@ -195,7 +195,7 @@ class PowerDataController extends Controller
         foreach($energySourceModels as $energySourceModel)
         {
             $algorithm->addEnergySource($energySourceModel->id, [
-                'isElectric' => $energySourceModel->isElectric,
+                'type' => $energySourceModel->energySourceType->id,
                 'qMax' => $energySourceModel->qMax,
                 'pumpPressureNominal' => $energySourceModel->pumpPressureNominal,
                 'pumpPressureWorkQmax' => $energySourceModel->pumpPressureWorkQmax,

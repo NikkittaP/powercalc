@@ -32,7 +32,7 @@ class PowerDataAlgorithm extends Component
 
     $energySources = [
         $id => [
-            'isElectric' => $isElectric,                        // Является ли электросистемой
+            'type' => $type,                                    // Тип энергосистемы. [1 => 'Гидросистема', 2 => 'Гидроэлектросистема', 3 => 'Зональная гидроэлектросистема', 4 => 'Электросистема',]
             'qMax' => $qMax,                                    // Qmax для расчёта Q располагаемого
             'pumpPressureNominal' => $pumpPressureNominal,      // Pнас ном
             'pumpPressureWorkQmax' => $pumpPressureWorkQmax,    // Pнас раб при Qmax
@@ -148,7 +148,7 @@ class PowerDataAlgorithm extends Component
 
             if ($consumer['usageFactorPerFlightMode'][$flightModeID]==0)
             {
-                if ($energySourceBasic['isElectric']==1)
+                if ($energySourceBasic['type'] == 4) // Электросистема
                     $consumption = 0;
                 else
                     $consumption = $consumer['q0'] * $this->constants['useQ0'];
@@ -375,7 +375,7 @@ class PowerDataAlgorithm extends Component
 
         foreach ($this->consumers as $consumerID => $consumerData)
             foreach ($consumerData['energySourcePerArchitecture'] as $_architectureID => $_energySourceID) {
-                if ($_architectureID == $architectureID && $_energySourceID == $energySourceID && $this->energySources[$_energySourceID]['isElectric'] == 0)
+                if ($_architectureID == $architectureID && $_energySourceID == $energySourceID && $this->energySources[$_energySourceID]['type'] != 4)  // НЕ электросистема
                     $isEnergySourceCorrespondToArchitecture = true;
             }
         
