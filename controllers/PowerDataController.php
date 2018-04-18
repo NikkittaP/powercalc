@@ -205,6 +205,10 @@ class PowerDataController extends Controller
         $algorithm->setConstants([
             'useQ0' => 1,
             'efficiencyPipeline' => 0.94,
+            'efficiencyDriveBox' => 0.94,
+            'efficiencyElectricMotor' => 0.95,
+            'efficiencyCables' => 0.98,
+            'efficiencyGenerator' => 0.9,
             'Kat2bar' => 0.980665,
             'isEfficiencyFixed' => 1,
             'efficiencyPump' => 0.885,
