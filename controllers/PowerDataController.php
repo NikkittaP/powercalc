@@ -223,7 +223,20 @@ class PowerDataController extends Controller
         $this->clearPreviousResults($vehicleLayoutName_id);
         $this->saveResults($vehicleLayoutName_id, $algorithm->getResults());
 
-        return $this->redirect(['index', 'vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+        return $this->redirect(['results', 'vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+    }
+
+    public function actionResults($vehicleLayoutName_id)
+    {
+        $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
+        $resultsConsumersModel = ResultsConsumers::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id])->all();
+        $resultsEnergySourcesModel = ResultsEnergySources::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id])->all();
+
+        return $this->render('results', [
+            'vehicleLayoutNameModel'=>$vehicleLayoutNameModel,
+            'resultsConsumers'=>$resultsConsumersModel,
+            'resultsEnergySources'=>$resultsEnergySourcesModel,
+        ]);
     }
 
     protected function clearPreviousResults($vehicleLayoutName_id)
