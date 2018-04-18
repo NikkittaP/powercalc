@@ -214,6 +214,63 @@ CREATE TABLE IF NOT EXISTS `PumpEfficiency` (
 /*!40000 ALTER TABLE `PumpEfficiency` DISABLE KEYS */;
 /*!40000 ALTER TABLE `PumpEfficiency` ENABLE KEYS */;
 
+-- Дамп структуры для таблица PowerDistributionData.ResultsConsumers
+DROP TABLE IF EXISTS `ResultsConsumers`;
+CREATE TABLE IF NOT EXISTS `ResultsConsumers` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `vehicleLayoutName_id` int(10) unsigned NOT NULL,
+  `architectureName_id` int(10) unsigned NOT NULL,
+  `flightMode_id` int(10) unsigned NOT NULL,
+  `consumption` double DEFAULT NULL COMMENT 'Расход',
+  `P_in` double DEFAULT NULL COMMENT 'Pin',
+  `N_in_hydro` double DEFAULT NULL COMMENT 'Nin_гс',
+  `N_out` double DEFAULT NULL COMMENT 'Nвых',
+  `N_in_electric` double DEFAULT NULL COMMENT 'Nin_эс',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  KEY `FK_ResultsConsumers_VehiclesLayoutsNames` (`vehicleLayoutName_id`),
+  KEY `FK_ResultsConsumers_ArchitecturesNames` (`architectureName_id`),
+  KEY `FK_ResultsConsumers_FlightModes` (`flightMode_id`),
+  CONSTRAINT `FK_ResultsConsumers_ArchitecturesNames` FOREIGN KEY (`architectureName_id`) REFERENCES `ArchitecturesNames` (`id`),
+  CONSTRAINT `FK_ResultsConsumers_FlightModes` FOREIGN KEY (`flightMode_id`) REFERENCES `FlightModes` (`id`),
+  CONSTRAINT `FK_ResultsConsumers_VehiclesLayoutsNames` FOREIGN KEY (`vehicleLayoutName_id`) REFERENCES `VehiclesLayoutsNames` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Дамп данных таблицы PowerDistributionData.ResultsConsumers: ~0 rows (приблизительно)
+/*!40000 ALTER TABLE `ResultsConsumers` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ResultsConsumers` ENABLE KEYS */;
+
+-- Дамп структуры для таблица PowerDistributionData.ResultsEnergySources
+DROP TABLE IF EXISTS `ResultsEnergySources`;
+CREATE TABLE IF NOT EXISTS `ResultsEnergySources` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `vehicleLayoutName_id` int(10) unsigned NOT NULL,
+  `architectureName_id` int(10) unsigned NOT NULL,
+  `flightMode_id` int(10) unsigned NOT NULL,
+  `Qpump` double DEFAULT NULL COMMENT 'Q нас',
+  `Qdisposable` double DEFAULT NULL COMMENT 'Q распол',
+  `P_pump_out` double DEFAULT NULL COMMENT 'P нас вых',
+  `Q_curr_to_Q_max` double DEFAULT NULL COMMENT 'Qтек/Qmax',
+  `N_pump_out` double DEFAULT NULL COMMENT 'N нас вых',
+  `N_pump_in` double DEFAULT NULL COMMENT 'N нас вх',
+  `N_consumers_in_hydro` double DEFAULT NULL COMMENT 'Nпотр_вх_гс',
+  `N_consumers_out` double DEFAULT NULL COMMENT 'Nпотр_вых',
+  `N_electric_total` double DEFAULT NULL COMMENT 'Nэс_всего',
+  `N_takeoff` double DEFAULT NULL COMMENT 'Nотбора',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  KEY `FK_ResultsEnergySources_VehiclesLayoutsNames` (`vehicleLayoutName_id`),
+  KEY `FK_ResultsEnergySources_ArchitecturesNames` (`architectureName_id`),
+  KEY `FK_ResultsEnergySources_FlightModes` (`flightMode_id`),
+  CONSTRAINT `FK_ResultsEnergySources_ArchitecturesNames` FOREIGN KEY (`architectureName_id`) REFERENCES `ArchitecturesNames` (`id`),
+  CONSTRAINT `FK_ResultsEnergySources_FlightModes` FOREIGN KEY (`flightMode_id`) REFERENCES `FlightModes` (`id`),
+  CONSTRAINT `FK_ResultsEnergySources_VehiclesLayoutsNames` FOREIGN KEY (`vehicleLayoutName_id`) REFERENCES `VehiclesLayoutsNames` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Дамп данных таблицы PowerDistributionData.ResultsEnergySources: ~0 rows (приблизительно)
+/*!40000 ALTER TABLE `ResultsEnergySources` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ResultsEnergySources` ENABLE KEYS */;
+
 -- Дамп структуры для таблица PowerDistributionData.VehicleLayout
 DROP TABLE IF EXISTS `VehicleLayout`;
 CREATE TABLE IF NOT EXISTS `VehicleLayout` (
