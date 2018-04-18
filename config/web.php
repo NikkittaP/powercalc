@@ -40,13 +40,9 @@ $config = [
 			'enablePrettyUrl' => true,
 			'showScriptName' => false,
 			'rules' => [
-                '<controller:\w+>/<id:\d+>' => '<controller>/view',
-                '<controller:\w+>/<action:\w+>/<id:\d+>/<usr:\d+>' => '<controller>/<action>',
+                '<controller:\w+>/<action:\w+>/<id:\d+>' => '<controller>/<action>/<id>',
             ],
         ],
-        //'powerdataalgorithm' =>[
-        //    'class' => 'app\components\PowerDataAlgorithm',
-        //],
     ],
     'modules' => [
         'gridview' => ['class' => 'kartik\grid\Module']

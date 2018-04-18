@@ -11,6 +11,7 @@ use Yii;
  * @property int $vehicleLayoutName_id
  * @property int $architectureName_id
  * @property int $flightMode_id
+ * @property int $energySource_id
  * @property double $Qpump Q нас
  * @property double $Qdisposable Q распол
  * @property double $P_pump_out P нас вых
@@ -23,6 +24,7 @@ use Yii;
  * @property double $N_takeoff Nотбора
  *
  * @property ArchitecturesNames $architectureName
+ * @property EnergySources $energySource
  * @property FlightModes $flightMode
  * @property VehiclesLayoutsNames $vehicleLayoutName
  */
@@ -42,10 +44,11 @@ class ResultsEnergySources extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['vehicleLayoutName_id', 'architectureName_id', 'flightMode_id'], 'required'],
-            [['vehicleLayoutName_id', 'architectureName_id', 'flightMode_id'], 'integer'],
+            [['vehicleLayoutName_id', 'architectureName_id', 'flightMode_id', 'energySource_id'], 'required'],
+            [['vehicleLayoutName_id', 'architectureName_id', 'flightMode_id', 'energySource_id'], 'integer'],
             [['Qpump', 'Qdisposable', 'P_pump_out', 'Q_curr_to_Q_max', 'N_pump_out', 'N_pump_in', 'N_consumers_in_hydro', 'N_consumers_out', 'N_electric_total', 'N_takeoff'], 'number'],
             [['architectureName_id'], 'exist', 'skipOnError' => true, 'targetClass' => ArchitecturesNames::className(), 'targetAttribute' => ['architectureName_id' => 'id']],
+            [['energySource_id'], 'exist', 'skipOnError' => true, 'targetClass' => EnergySources::className(), 'targetAttribute' => ['energySource_id' => 'id']],
             [['flightMode_id'], 'exist', 'skipOnError' => true, 'targetClass' => FlightModes::className(), 'targetAttribute' => ['flightMode_id' => 'id']],
             [['vehicleLayoutName_id'], 'exist', 'skipOnError' => true, 'targetClass' => VehiclesLayoutsNames::className(), 'targetAttribute' => ['vehicleLayoutName_id' => 'id']],
         ];
@@ -61,6 +64,7 @@ class ResultsEnergySources extends \yii\db\ActiveRecord
             'vehicleLayoutName_id' => 'Vehicle Layout Name ID',
             'architectureName_id' => 'Architecture Name ID',
             'flightMode_id' => 'Flight Mode ID',
+            'energySource_id' => 'Energy Source ID',
             'Qpump' => 'Q нас',
             'Qdisposable' => 'Q распол',
             'P_pump_out' => 'P нас вых',
@@ -80,6 +84,14 @@ class ResultsEnergySources extends \yii\db\ActiveRecord
     public function getArchitectureName()
     {
         return $this->hasOne(ArchitecturesNames::className(), ['id' => 'architectureName_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getEnergySource()
+    {
+        return $this->hasOne(EnergySources::className(), ['id' => 'energySource_id']);
     }
 
     /**

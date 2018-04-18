@@ -440,10 +440,12 @@ class PowerDataAlgorithm extends Component
                         $this->calcArchitectureN_takeoff($energySourceID, $architectureID, $flightModeID);
             }
         }
-
-        //VarDumper::dump( $this->results, $depth = 10, $highlight = true);
     }
 
+    public function getResults()
+    {
+        return $this->results;
+    }
 
 /***********************************************************
 Вспомогательные функции

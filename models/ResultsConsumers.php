@@ -11,6 +11,7 @@ use Yii;
  * @property int $vehicleLayoutName_id
  * @property int $architectureName_id
  * @property int $flightMode_id
+ * @property int $consumer_id
  * @property double $consumption Расход
  * @property double $P_in Pin
  * @property double $N_in_hydro Nin_гс
@@ -18,6 +19,7 @@ use Yii;
  * @property double $N_in_electric Nin_эс
  *
  * @property ArchitecturesNames $architectureName
+ * @property Consumers $consumer
  * @property FlightModes $flightMode
  * @property VehiclesLayoutsNames $vehicleLayoutName
  */
@@ -37,10 +39,11 @@ class ResultsConsumers extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['vehicleLayoutName_id', 'architectureName_id', 'flightMode_id'], 'required'],
-            [['vehicleLayoutName_id', 'architectureName_id', 'flightMode_id'], 'integer'],
+            [['vehicleLayoutName_id', 'architectureName_id', 'flightMode_id', 'consumer_id'], 'required'],
+            [['vehicleLayoutName_id', 'architectureName_id', 'flightMode_id', 'consumer_id'], 'integer'],
             [['consumption', 'P_in', 'N_in_hydro', 'N_out', 'N_in_electric'], 'number'],
             [['architectureName_id'], 'exist', 'skipOnError' => true, 'targetClass' => ArchitecturesNames::className(), 'targetAttribute' => ['architectureName_id' => 'id']],
+            [['consumer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Consumers::className(), 'targetAttribute' => ['consumer_id' => 'id']],
             [['flightMode_id'], 'exist', 'skipOnError' => true, 'targetClass' => FlightModes::className(), 'targetAttribute' => ['flightMode_id' => 'id']],
             [['vehicleLayoutName_id'], 'exist', 'skipOnError' => true, 'targetClass' => VehiclesLayoutsNames::className(), 'targetAttribute' => ['vehicleLayoutName_id' => 'id']],
         ];
@@ -56,6 +59,7 @@ class ResultsConsumers extends \yii\db\ActiveRecord
             'vehicleLayoutName_id' => 'Vehicle Layout Name ID',
             'architectureName_id' => 'Architecture Name ID',
             'flightMode_id' => 'Flight Mode ID',
+            'consumer_id' => 'Consumer ID',
             'consumption' => 'Расход',
             'P_in' => 'Pin',
             'N_in_hydro' => 'Nin_гс',
@@ -70,6 +74,14 @@ class ResultsConsumers extends \yii\db\ActiveRecord
     public function getArchitectureName()
     {
         return $this->hasOne(ArchitecturesNames::className(), ['id' => 'architectureName_id']);
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getConsumer()
+    {
+        return $this->hasOne(Consumers::className(), ['id' => 'consumer_id']);
     }
 
     /**

@@ -30,7 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'name',
-            'isElectric',
+            [
+                'label' => 'Тип энергосистемы',
+                'attribute' => 'energySourceType.name',
+            ],
             'qMax',
             'pumpPressureNominal',
             'pumpPressureWorkQmax',

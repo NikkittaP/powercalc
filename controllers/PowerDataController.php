@@ -3,16 +3,19 @@
 namespace app\controllers;
 
 use Yii;
+use yii\filters\VerbFilter;
+use yii\helpers\Json;
 use yii\helpers\VarDumper;
 use yii\web\Controller;
-use yii\helpers\Json;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
+
 use \app\models\ArchitecturesNames;
 use \app\models\ArchitectureToVehicleLayout;
 use \app\models\EnergySources;
 use \app\models\FlightModes;
 use \app\models\FlightModesToVehicleLayout;
+use \app\models\ResultsConsumers;
+use \app\models\ResultsEnergySources;
 use \app\models\VehicleLayout;
 use \app\models\VehicleLayoutSearch;
 use \app\models\VehiclesLayoutsNames;
@@ -217,7 +220,64 @@ class PowerDataController extends Controller
         
         $algorithm->calculate();
 
+        $this->clearPreviousResults($vehicleLayoutName_id);
+        $this->saveResults($vehicleLayoutName_id, $algorithm->getResults());
+
         return $this->redirect(['index', 'vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+    }
+
+    protected function clearPreviousResults($vehicleLayoutName_id)
+    {
+        ResultsConsumers::deleteAll(['vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+        ResultsEnergySources::deleteAll(['vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+    }
+
+    protected function saveResults($vehicleLayoutName_id, $results)
+    {
+        foreach ($results['consumers'] as $consumer_id => $array1) {
+           foreach ($array1 as $architecture_id => $array2) {
+                foreach ($array2 as $flightMode_id => $data) {
+                    $resultsConsumersModel = new ResultsConsumers();
+
+                    $resultsConsumersModel->vehicleLayoutName_id = $vehicleLayoutName_id;
+                    $resultsConsumersModel->consumer_id = $consumer_id;
+                    $resultsConsumersModel->architectureName_id = $architecture_id;
+                    $resultsConsumersModel->flightMode_id = $flightMode_id;
+                    $resultsConsumersModel->consumption = $data['consumption'];
+                    $resultsConsumersModel->P_in = $data['P_in'];
+                    $resultsConsumersModel->N_in_hydro = $data['N_in_hydro'];
+                    $resultsConsumersModel->N_out = $data['N_out'];
+                    $resultsConsumersModel->N_in_electric = $data['N_in_electric'];
+
+                    $resultsConsumersModel->save();
+                }
+           }
+        }
+
+        foreach ($results['energySources'] as $energySource_id => $array1) {
+            foreach ($array1 as $architecture_id => $array2) {
+                 foreach ($array2 as $flightMode_id => $data) {
+                     $resultsEnergySourcesModel = new ResultsEnergySources();
+ 
+                     $resultsEnergySourcesModel->vehicleLayoutName_id = $vehicleLayoutName_id;
+                     $resultsEnergySourcesModel->energySource_id = $energySource_id;
+                     $resultsEnergySourcesModel->architectureName_id = $architecture_id;
+                     $resultsEnergySourcesModel->flightMode_id = $flightMode_id;
+                     $resultsEnergySourcesModel->Qpump = $data['Qpump'];
+                     $resultsEnergySourcesModel->Qdisposable = $data['Qdisposable'];
+                     $resultsEnergySourcesModel->P_pump_out = $data['P_pump_out'];
+                     $resultsEnergySourcesModel->Q_curr_to_Q_max = $data['Q_curr_to_Q_max'];
+                     $resultsEnergySourcesModel->N_pump_out = $data['N_pump_out'];
+                     $resultsEnergySourcesModel->N_pump_in = $data['N_pump_in'];
+                     $resultsEnergySourcesModel->N_consumers_in_hydro = $data['N_consumers_in_hydro'];
+                     $resultsEnergySourcesModel->N_consumers_out = $data['N_consumers_out'];
+                     $resultsEnergySourcesModel->N_electric_total = $data['N_electric_total'];
+                     $resultsEnergySourcesModel->N_takeoff = $data['N_takeoff'];
+ 
+                     $resultsEnergySourcesModel->save();
+                 }
+            }
+         }
     }
 
     protected function findModelVehicleLayoutNames($id)

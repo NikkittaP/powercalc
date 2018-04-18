@@ -221,6 +221,7 @@ CREATE TABLE IF NOT EXISTS `ResultsConsumers` (
   `vehicleLayoutName_id` int(10) unsigned NOT NULL,
   `architectureName_id` int(10) unsigned NOT NULL,
   `flightMode_id` int(10) unsigned NOT NULL,
+  `consumer_id` int(10) unsigned NOT NULL,
   `consumption` double DEFAULT NULL COMMENT 'Расход',
   `P_in` double DEFAULT NULL COMMENT 'Pin',
   `N_in_hydro` double DEFAULT NULL COMMENT 'Nin_гс',
@@ -231,7 +232,9 @@ CREATE TABLE IF NOT EXISTS `ResultsConsumers` (
   KEY `FK_ResultsConsumers_VehiclesLayoutsNames` (`vehicleLayoutName_id`),
   KEY `FK_ResultsConsumers_ArchitecturesNames` (`architectureName_id`),
   KEY `FK_ResultsConsumers_FlightModes` (`flightMode_id`),
+  KEY `FK_ResultsConsumers_Consumers` (`consumer_id`),
   CONSTRAINT `FK_ResultsConsumers_ArchitecturesNames` FOREIGN KEY (`architectureName_id`) REFERENCES `ArchitecturesNames` (`id`),
+  CONSTRAINT `FK_ResultsConsumers_Consumers` FOREIGN KEY (`consumer_id`) REFERENCES `Consumers` (`id`),
   CONSTRAINT `FK_ResultsConsumers_FlightModes` FOREIGN KEY (`flightMode_id`) REFERENCES `FlightModes` (`id`),
   CONSTRAINT `FK_ResultsConsumers_VehiclesLayoutsNames` FOREIGN KEY (`vehicleLayoutName_id`) REFERENCES `VehiclesLayoutsNames` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -247,6 +250,7 @@ CREATE TABLE IF NOT EXISTS `ResultsEnergySources` (
   `vehicleLayoutName_id` int(10) unsigned NOT NULL,
   `architectureName_id` int(10) unsigned NOT NULL,
   `flightMode_id` int(10) unsigned NOT NULL,
+  `energySource_id` int(10) unsigned NOT NULL,
   `Qpump` double DEFAULT NULL COMMENT 'Q нас',
   `Qdisposable` double DEFAULT NULL COMMENT 'Q распол',
   `P_pump_out` double DEFAULT NULL COMMENT 'P нас вых',
@@ -262,7 +266,9 @@ CREATE TABLE IF NOT EXISTS `ResultsEnergySources` (
   KEY `FK_ResultsEnergySources_VehiclesLayoutsNames` (`vehicleLayoutName_id`),
   KEY `FK_ResultsEnergySources_ArchitecturesNames` (`architectureName_id`),
   KEY `FK_ResultsEnergySources_FlightModes` (`flightMode_id`),
+  KEY `FK_ResultsEnergySources_EnergySources` (`energySource_id`),
   CONSTRAINT `FK_ResultsEnergySources_ArchitecturesNames` FOREIGN KEY (`architectureName_id`) REFERENCES `ArchitecturesNames` (`id`),
+  CONSTRAINT `FK_ResultsEnergySources_EnergySources` FOREIGN KEY (`energySource_id`) REFERENCES `EnergySources` (`id`),
   CONSTRAINT `FK_ResultsEnergySources_FlightModes` FOREIGN KEY (`flightMode_id`) REFERENCES `FlightModes` (`id`),
   CONSTRAINT `FK_ResultsEnergySources_VehiclesLayoutsNames` FOREIGN KEY (`vehicleLayoutName_id`) REFERENCES `VehiclesLayoutsNames` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
