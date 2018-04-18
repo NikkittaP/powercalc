@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `Architecture_to_VehicleLayout` (
   CONSTRAINT `FK_Architecture_to_VehicleLayout_VehicleLayout` FOREIGN KEY (`vehicleLayout_id`) REFERENCES `VehicleLayout` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.Architecture_to_VehicleLayout: ~7 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.Architecture_to_VehicleLayout: ~6 rows (приблизительно)
 /*!40000 ALTER TABLE `Architecture_to_VehicleLayout` DISABLE KEYS */;
 INSERT INTO `Architecture_to_VehicleLayout` (`id`, `vehicleLayout_id`, `architectureName_id`, `energySource_id`) VALUES
 	(1, 1, 2, 4),
@@ -137,25 +137,6 @@ INSERT INTO `EnergySources` (`id`, `name`, `energySourceType_id`, `qMax`, `pumpP
 	(5, 'ЛГС3', 3, 10, 211, 195),
 	(6, 'ЭС', 4, NULL, NULL, NULL);
 /*!40000 ALTER TABLE `EnergySources` ENABLE KEYS */;
-
--- Дамп структуры для таблица PowerDistributionData.EnergySources_
-DROP TABLE IF EXISTS `EnergySources_`;
-CREATE TABLE IF NOT EXISTS `EnergySources_` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL COMMENT 'Название источника энергии ["ГС1", "ЛГС3", "ЭС1"]',
-  `energySourceType_id` int(10) unsigned NOT NULL COMMENT 'Является ли электросистемой',
-  `qMax` float unsigned DEFAULT NULL COMMENT 'Qmax для расчёта Q располагаемого',
-  `pumpPressureNominal` float unsigned DEFAULT NULL COMMENT 'Pнас ном',
-  `pumpPressureWorkQmax` float unsigned DEFAULT NULL COMMENT 'Pнас раб при Qmax',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id_UNIQUE` (`id`),
-  UNIQUE KEY `name_UNIQUE` (`name`),
-  CONSTRAINT `fk_EnergySources_Architecture_to_VehicleLayout1` FOREIGN KEY (`id`) REFERENCES `Architecture_to_VehicleLayout` (`energySource_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Дамп данных таблицы PowerDistributionData.EnergySources_: ~0 rows (приблизительно)
-/*!40000 ALTER TABLE `EnergySources_` DISABLE KEYS */;
-/*!40000 ALTER TABLE `EnergySources_` ENABLE KEYS */;
 
 -- Дамп структуры для таблица PowerDistributionData.EnergySourceTypes
 DROP TABLE IF EXISTS `EnergySourceTypes`;
