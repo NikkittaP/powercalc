@@ -231,16 +231,27 @@ class PowerDataController extends Controller
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
 
-        
-        $architectureNames =  ArrayHelper::map(ArchitecturesNames::find()->where(['isBasic'=>1])->all(), 'id', 'name');
+        $basicArchitectureID = ArchitecturesNames::find()->where(['isBasic'=>1, 'vehicleLayoutName_id'=>$vehicleLayoutName_id])->one()->id;
 
-        $resultsConsumersModel = ResultsConsumers::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id, 'architectureName_id'=>array_keys($architectureNames)]);
-        $resultsEnergySourcesModel = ResultsEnergySources::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+        $selectedArchitectures = [$basicArchitectureID];
+        $post = \Yii::$app->request->post();
+        if ($post['selected_architectures']!=null) {
+            foreach ($post['selected_architectures'] as $key => $value) {
+                $selectedArchitectures[] = $value;
+            }
+        }
+
+        $architectureNamesModels =  ArchitecturesNames::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+        $resultsConsumersModels = ResultsConsumers::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+        $resultsEnergySourcesModels = ResultsEnergySources::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id]);
 
         return $this->render('results', [
-            'vehicleLayoutNameModel'=>$vehicleLayoutNameModel,
-            'resultsConsumers'=>$resultsConsumersModel,
-            'resultsEnergySources'=>$resultsEnergySourcesModel,
+            'vehicleLayoutNameModel' => $vehicleLayoutNameModel,
+            'basicArchitectureID' => $basicArchitectureID,
+            'selectedArchitectures' => $selectedArchitectures,
+            'architectureNames' => $architectureNamesModels,
+            'resultsConsumers' => $resultsConsumersModels,
+            'resultsEnergySources' => $resultsEnergySourcesModels,
         ]);
     }
 

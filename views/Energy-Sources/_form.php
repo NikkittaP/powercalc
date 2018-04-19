@@ -20,10 +20,10 @@ use yii\widgets\ActiveForm;
     <?php
         $items = ArrayHelper::map(EnergySourceTypes::find()->all(), 'id', 'name');
         echo $form->field($model, 'energySourceType_id')->radioList($items,
-            array(
+            [
                 'labelOptions'=>array('style'=>'display:inline'),
                 'separator'=>'<br />',
-            ));
+            ]);
     ?>
 </div>
 
