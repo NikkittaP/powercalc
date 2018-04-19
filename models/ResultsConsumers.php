@@ -56,10 +56,10 @@ class ResultsConsumers extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'vehicleLayoutName_id' => 'Vehicle Layout Name ID',
-            'architectureName_id' => 'Architecture Name ID',
-            'flightMode_id' => 'Flight Mode ID',
-            'consumer_id' => 'Consumer ID',
+            'vehicleLayoutName_id' => 'Компоновка',
+            'architectureName_id' => 'Архитектура',
+            'flightMode_id' => 'Режим полета',
+            'consumer_id' => 'Потребитель',
             'consumption' => 'Расход',
             'P_in' => 'Pin',
             'N_in_hydro' => 'Nin_гс',

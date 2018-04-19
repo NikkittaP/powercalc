@@ -299,7 +299,7 @@ class PowerDataAlgorithm extends Component
         {
             $consumer = $this->consumers[$consumerID];
             $energySourceAlt = $this->energySources[$consumer['energySourcePerArchitecture'][$architectureID]];
-            $N_out = $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['N_out'];
+            $N_out = $this->results['consumers'][$consumerID][$this->architectureBasicID][$flightModeID]['N_out'];
 
             if ($energySourceAlt['type'] == 4)  // Электросистема
                 $N_in_electric = $N_out / $consumer['efficiencyElectric'];

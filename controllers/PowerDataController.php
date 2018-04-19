@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Json;
 use yii\helpers\VarDumper;
 use yii\web\Controller;
@@ -229,8 +230,12 @@ class PowerDataController extends Controller
     public function actionResults($vehicleLayoutName_id)
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
-        $resultsConsumersModel = ResultsConsumers::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id])->all();
-        $resultsEnergySourcesModel = ResultsEnergySources::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id])->all();
+
+        
+        $architectureNames =  ArrayHelper::map(ArchitecturesNames::find()->where(['isBasic'=>1])->all(), 'id', 'name');
+
+        $resultsConsumersModel = ResultsConsumers::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id, 'architectureName_id'=>array_keys($architectureNames)]);
+        $resultsEnergySourcesModel = ResultsEnergySources::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id]);
 
         return $this->render('results', [
             'vehicleLayoutNameModel'=>$vehicleLayoutNameModel,
