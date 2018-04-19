@@ -231,26 +231,29 @@ class PowerDataController extends Controller
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
 
-        $basicArchitectureID = ArchitecturesNames::find()->where(['isBasic'=>1, 'vehicleLayoutName_id'=>$vehicleLayoutName_id])->one()->id;
+        $basicArchitectureModel = ArrayHelper::map(ArchitecturesNames::find()->where(['isBasic'=>1, 'vehicleLayoutName_id'=>$vehicleLayoutName_id])->all(), 'id', 'name');
 
-        $selectedArchitectures = [$basicArchitectureID];
+        $selectedArchitectures = [key($basicArchitectureModel)];
         $post = \Yii::$app->request->post();
         if ($post['selected_architectures']!=null) {
             foreach ($post['selected_architectures'] as $key => $value) {
-                $selectedArchitectures[] = $value;
+                $selectedArchitectures[] = (int)$value;
             }
         }
+        $selectedArchitectures = array_unique($selectedArchitectures);
 
-        $architectureNamesModels =  ArchitecturesNames::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id]);
-        $resultsConsumersModels = ResultsConsumers::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+        $alternativeArchitectureModels =  ArrayHelper::map(ArchitecturesNames::find()->where(['isBasic'=>0, 'vehicleLayoutName_id'=>$vehicleLayoutName_id])->all(), 'id', 'name');
+        $resultsConsumersBasicModels = ResultsConsumers::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id, 'architectureName_id'=>key($basicArchitectureModel)])->all();
+        $resultsConsumersAlternativeModels = ResultsConsumers::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id])->andWhere(['<>','architectureName_id',key($basicArchitectureModel)])->all();
         $resultsEnergySourcesModels = ResultsEnergySources::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id]);
 
         return $this->render('results', [
             'vehicleLayoutNameModel' => $vehicleLayoutNameModel,
-            'basicArchitectureID' => $basicArchitectureID,
+            'basicArchitecture' => $basicArchitectureModel,
             'selectedArchitectures' => $selectedArchitectures,
-            'architectureNames' => $architectureNamesModels,
-            'resultsConsumers' => $resultsConsumersModels,
+            'alternativeArchitectures' => $alternativeArchitectureModels,
+            'resultsConsumersBasic' => $resultsConsumersBasicModels,
+            'resultsConsumersAlternative' => $resultsConsumersAlternativeModels,
             'resultsEnergySources' => $resultsEnergySourcesModels,
         ]);
     }

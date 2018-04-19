@@ -8,6 +8,7 @@ use kartik\grid\GridView;
 use kartik\widgets\ActiveForm;
 
 use \app\models\ArchitecturesNames;
+use app\models\ResultsConsumers;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\VehiclesSearch */
@@ -21,12 +22,12 @@ $this->params['breadcrumbs'][] = $this->title;
     <h3>Выберите архитектуры для отображения результатов по ним:</h3>
     <?php
     echo Html::beginForm(['power-data/results', 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id],'post');
-    $items = ArrayHelper::map($architectureNames->all(), 'id', 'name');
+    $items = ArrayHelper::map(ArchitecturesNames::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutNameModel->id])->all(), 'id', 'name');
     echo Html::checkboxList('selected_architectures', $selectedArchitectures, $items,  [
-        'item' => function ($index, $label, $name, $checked, $value) use($basicArchitectureID) {
+        'item' => function ($index, $label, $name, $checked, $value) use($basicArchitecture) {
             return Html::checkbox($name, $checked, [
                 'value' => $value,
-                'disabled' => $value == $basicArchitectureID,
+                'disabled' => $value == key($basicArchitecture),
                 'label' => $label
             ]);
         },
@@ -37,6 +38,53 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::submitButton('Показать', ['class' => 'btn btn-primary']) ?>
     </div>
     <?= Html::endForm() ?>
+
+<?php
+foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitectureName) {
+?>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                Сравнение базовой архитектуры "<b><?= current($basicArchitecture);?></b>" с альтернативной "<b><?= $currentArchitectureName;?></b>"
+            </h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-12">
+                    <table class="table table-bordered table-condensed table-hover medium kv-table">
+                        <tbody>
+                        <tr class="success">
+                            <?php
+                            $resultsConsumerModel = new ResultsConsumers();
+                            ?>
+                            <th class="text-center"><?= $resultsConsumerModel->getAttributeLabel('flightMode_id');?></th>
+                            <th class="text-center"><?= $resultsConsumerModel->getAttributeLabel('consumer_id');?></th>
+                            <th class="text-center"><?= $resultsConsumerModel->getAttributeLabel('consumption');?></th>
+                            <th class="text-center"><?= $resultsConsumerModel->getAttributeLabel('P_in');?></th>
+                            <th class="text-center"><?= $resultsConsumerModel->getAttributeLabel('N_in_hydro');?></th>
+                            <th class="text-center"><?= $resultsConsumerModel->getAttributeLabel('N_out');?></th>
+                            <th class="text-center"><?= $resultsConsumerModel->getAttributeLabel('N_in_electric');?></th>
+                        </tr>
+                        <?php
+                            
+                        ?>
+                            <tr>
+                                <td><?= $resultsConsumersBasic->flightMode->name;?></td>
+                                <td><?= $resultsConsumersBasic->consumer->name;?></td>
+                                <td><?= $resultsConsumersBasic->consumption;?></td>
+                            </tr>
+                        <?php
+                        ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?php
+}
+?>
 
     <?php
     
