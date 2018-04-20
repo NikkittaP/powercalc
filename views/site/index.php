@@ -106,7 +106,7 @@ $this->title = 'PowerCalc';
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h3 class="panel-title">
-                            <?= Html::a('Источники энергии', ['energy-sources/index']) ?>
+                            <?= Html::a('Энергосистемы', ['energy-sources/index']) ?>
                         </h3>
                     </div>
 
@@ -205,7 +205,7 @@ $this->title = 'PowerCalc';
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h3 class="panel-title">
-                            <?= Html::a('Типы источников энергии', ['energy-source-types/index']) ?>
+                            <?= Html::a('Типы энергосистем', ['energy-source-types/index']) ?>
                         </h3>
                     </div>
 

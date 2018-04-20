@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\EnergySources */
 
-$this->title = 'Обновить источник энергии: ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Источники энергии', 'url' => ['index']];
+$this->title = 'Обновить энергосистему: ' . $model->name;
+$this->params['breadcrumbs'][] = ['label' => 'Энергосистемы', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Обновить';
 ?>

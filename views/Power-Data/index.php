@@ -92,7 +92,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $m->energySource_id;
                 },
                 'asPopover' => false,
-                'header' => 'Источник энергии',
+                'header' => 'Энергосистема',
                 'inputType' => \kartik\editable\Editable::INPUT_SELECT2,
                 'displayValueConfig'=>$energySources,
                 'options' => [
@@ -100,7 +100,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     'class'=>'form-control input-sm',
                     'size' => 'sm',
                     'options' => [
-                        'placeholder' => 'Источник энергии',
+                        'placeholder' => 'Энергосистема',
                     ],
                 ],
             ],

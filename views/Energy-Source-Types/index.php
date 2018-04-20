@@ -7,7 +7,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\EnergySourceTypesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Типы источников энергии';
+$this->title = 'Типы энергосистем';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="energy-source-types-index">
@@ -17,7 +17,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?//= Html::a('Создать тип источника энергии', ['create'], ['class' => 'btn btn-success']) ?>
+        <?//= Html::a('Создать тип энергосистем', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([

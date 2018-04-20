@@ -230,6 +230,7 @@ class PowerDataController extends Controller
     public function actionResults($vehicleLayoutName_id)
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
+        $flightModeModel = FlightModes::find()->all();
 
         $basicArchitectureModel = ArrayHelper::map(ArchitecturesNames::find()->where(['isBasic'=>1, 'vehicleLayoutName_id'=>$vehicleLayoutName_id])->all(), 'id', 'name');
 
@@ -242,19 +243,22 @@ class PowerDataController extends Controller
         }
         $selectedArchitectures = array_unique($selectedArchitectures);
 
-        $alternativeArchitectureModels =  ArrayHelper::map(ArchitecturesNames::find()->where(['isBasic'=>0, 'vehicleLayoutName_id'=>$vehicleLayoutName_id])->all(), 'id', 'name');
-        $resultsConsumersBasicModels = ResultsConsumers::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id, 'architectureName_id'=>key($basicArchitectureModel)])->all();
+        $alternativeArchitecture =  ArrayHelper::map(ArchitecturesNames::find()->where(['isBasic'=>0, 'vehicleLayoutName_id'=>$vehicleLayoutName_id])->all(), 'id', 'name');
+        $resultsConsumersBasicModels = ResultsConsumers::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id, 'architectureName_id'=>key($basicArchitectureModel)])->orderBy('flightMode_id')->all();
         $resultsConsumersAlternativeModels = ResultsConsumers::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id])->andWhere(['<>','architectureName_id',key($basicArchitectureModel)])->all();
-        $resultsEnergySourcesModels = ResultsEnergySources::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+        $resultsEnergySourcesBasicModels = ResultsEnergySources::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id, 'architectureName_id'=>key($basicArchitectureModel)])->orderBy('flightMode_id')->all();
+        $resultsEnergySourcesAlternativeModels = ResultsEnergySources::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id])->andWhere(['<>','architectureName_id',key($basicArchitectureModel)])->all();
 
         return $this->render('results', [
             'vehicleLayoutNameModel' => $vehicleLayoutNameModel,
+            'flightModeModel' => $flightModeModel,
             'basicArchitecture' => $basicArchitectureModel,
             'selectedArchitectures' => $selectedArchitectures,
-            'alternativeArchitectures' => $alternativeArchitectureModels,
+            'alternativeArchitectures' => $alternativeArchitecture,
             'resultsConsumersBasic' => $resultsConsumersBasicModels,
             'resultsConsumersAlternative' => $resultsConsumersAlternativeModels,
-            'resultsEnergySources' => $resultsEnergySourcesModels,
+            'resultsEnergySourcesBasic' => $resultsEnergySourcesBasicModels,
+            'resultsEnergySourcesAlternative' => $resultsEnergySourcesAlternativeModels,
         ]);
     }
 

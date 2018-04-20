@@ -64,7 +64,7 @@ class ResultsEnergySources extends \yii\db\ActiveRecord
             'vehicleLayoutName_id' => 'Vehicle Layout Name ID',
             'architectureName_id' => 'Architecture Name ID',
             'flightMode_id' => 'Flight Mode ID',
-            'energySource_id' => 'Energy Source ID',
+            'energySource_id' => 'Энергосистема',
             'Qpump' => 'Q нас',
             'Qdisposable' => 'Q распол',
             'P_pump_out' => 'P нас вых',

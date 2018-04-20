@@ -21,7 +21,7 @@ class PowerDataAlgorithm extends Component
             'qMax' => $qMax,                                // Q потр
 
             'energySourcePerArchitecture' => [
-                $architectureID => $energySourceID,         // Источник энергии для каждой из архитектур потребителя
+                $architectureID => $energySourceID,         // Энергосистема для каждой из архитектур потребителя
             ],
 
             'usageFactorPerFlightMode' => [
@@ -113,7 +113,7 @@ class PowerDataAlgorithm extends Component
 Инициализации. Передача данных в массивы из БД внешним запросом.
 ***********************************************************/
 
-    /* Добавить источник энергии */
+    /* Добавить энергосистему */
     public function addEnergySource($id, $data)
     {
        $this->energySources[$id] = $data;
@@ -450,7 +450,7 @@ class PowerDataAlgorithm extends Component
 /***********************************************************
 Вспомогательные функции
 ***********************************************************/
-    /* Выбирает только те источники энергии, что присутствуют в текущей архитектуре */
+    /* Выбирает только те энергосистемы, что присутствуют в текущей архитектуре */
     public function isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID)
     {
         $isEnergySourceCorrespondToArchitecture = false;

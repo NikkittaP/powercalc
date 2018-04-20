@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model app\models\EnergySources */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Источники энергии', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Энергосистемы', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="energy-sources-view">
