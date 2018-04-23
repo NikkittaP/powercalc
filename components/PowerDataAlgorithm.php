@@ -174,7 +174,7 @@ class PowerDataAlgorithm extends Component
 
             foreach ($this->results['consumers'] as $consumerID => $results) {
                 if ($this->consumers[$consumerID]['energySourcePerArchitecture'][$architectureID]==$energySourceID)
-                    $Qpump += $results[$architectureID][$flightModeID]['consumption'];
+                    $Qpump += $results[$this->architectureBasicID][$flightModeID]['consumption'];
             }
 
             $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qpump'] = $Qpump;
@@ -287,7 +287,7 @@ class PowerDataAlgorithm extends Component
 
             foreach ($this->results['consumers'] as $consumerID => $results) {
                 if ($this->consumers[$consumerID]['energySourcePerArchitecture'][$architectureID]==$energySourceID)
-                    $N_consumers_in_hydro += $results[$architectureID][$flightModeID]['N_in_hydro'];
+                    $N_consumers_in_hydro += $results[$this->architectureBasicID][$flightModeID]['N_in_hydro'];
             }
 
             $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_consumers_in_hydro'] = $N_consumers_in_hydro;
@@ -315,7 +315,7 @@ class PowerDataAlgorithm extends Component
 
             foreach ($this->results['consumers'] as $consumerID => $results) {
                 if ($this->consumers[$consumerID]['energySourcePerArchitecture'][$architectureID] == $energySourceID)
-                    $N_consumers_out += $results[$architectureID][$flightModeID]['N_out'];
+                    $N_consumers_out += $results[$this->architectureBasicID][$flightModeID]['N_out'];
             }
 
             $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_consumers_out'] = $N_consumers_out;
