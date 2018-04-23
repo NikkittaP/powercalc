@@ -77,6 +77,7 @@ foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitec
                                                 <th class="text-center"><?= $resultsConsumerModel->getAttributeLabel('N_in_electric');?></th>
                                             </tr>
                                             <?php
+                                            $total['N_in_electric'] = 0;
                                             foreach ($resultsConsumersBasic as $currentResultsConsumersBasic) {
                                                 if ($currentResultsConsumersBasic->flightMode_id == $currentFlightMode->id)
                                                 {
@@ -87,6 +88,8 @@ foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitec
                                                             && $current->flightMode_id == $currentFlightMode->id)
                                                             $currentResultsConsumersAlternative = $current;
                                                     }
+
+                                                    $total['N_in_electric']+=$currentResultsConsumersAlternative->N_in_electric;
                                             ?>
                                                     <tr>
                                                         <td><?= $currentResultsConsumersBasic->consumer->name;?></td>
@@ -100,6 +103,14 @@ foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitec
                                                 }
                                             }
                                             ?>
+                                                <tr style="border-top: 3px solid gray;">
+                                                    <td><b>ВСЕГО</b></td>
+                                                    <td>&ndash;</td>
+                                                    <td>&ndash;</td>
+                                                    <td>&ndash;</td>
+                                                    <td>&ndash;</td>
+                                                    <td><?= $total['N_in_electric']?></td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -160,16 +171,16 @@ foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitec
                                                     ?>
                                                             <tr>
                                                                 <td><?= $currentResultsEnergySourcesBasic->energySource->name;?></td>
-                                                                <td><?= $currentResultsEnergySourcesBasic->Qpump;?></td>
-                                                                <td><?= $currentResultsEnergySourcesBasic->Qdisposable;?></td>
-                                                                <td><?= $currentResultsEnergySourcesBasic->P_pump_out;?></td>
-                                                                <td><?= $currentResultsEnergySourcesBasic->Q_curr_to_Q_max;?></td>
-                                                                <td><?= $currentResultsEnergySourcesBasic->N_pump_out;?></td>
-                                                                <td><?= $currentResultsEnergySourcesBasic->N_pump_in;?></td>
-                                                                <td><?= $currentResultsEnergySourcesBasic->N_consumers_in_hydro;?></td>
-                                                                <td><?= $currentResultsEnergySourcesBasic->N_consumers_out;?></td>
-                                                                <td><?= $currentResultsEnergySourcesBasic->N_electric_total;?></td>
-                                                                <td><?= $currentResultsEnergySourcesBasic->N_takeoff;?></td>
+                                                                <td><?= ($currentResultsEnergySourcesBasic->Qpump === null) ? '&ndash;' : $currentResultsEnergySourcesBasic->Qpump;?></td>
+                                                                <td><?= ($currentResultsEnergySourcesBasic->Qdisposable === null) ? '&ndash;' : $currentResultsEnergySourcesBasic->Qdisposable;?></td>
+                                                                <td><?= ($currentResultsEnergySourcesBasic->P_pump_out === null) ? '&ndash;' : $currentResultsEnergySourcesBasic->P_pump_out;?></td>
+                                                                <td><?= ($currentResultsEnergySourcesBasic->Q_curr_to_Q_max === null) ? '&ndash;' : $currentResultsEnergySourcesBasic->Q_curr_to_Q_max;?></td>
+                                                                <td><?= ($currentResultsEnergySourcesBasic->N_pump_out === null) ? '&ndash;' : $currentResultsEnergySourcesBasic->N_pump_out;?></td>
+                                                                <td><?= ($currentResultsEnergySourcesBasic->N_pump_in === null) ? '&ndash;' : $currentResultsEnergySourcesBasic->N_pump_in;?></td>
+                                                                <td><?= ($currentResultsEnergySourcesBasic->N_consumers_in_hydro === null) ? '&ndash;' : $currentResultsEnergySourcesBasic->N_consumers_in_hydro;?></td>
+                                                                <td><?= ($currentResultsEnergySourcesBasic->N_consumers_out === null) ? '&ndash;' : $currentResultsEnergySourcesBasic->N_consumers_out;?></td>
+                                                                <td><?= ($currentResultsEnergySourcesBasic->N_electric_total === null) ? '&ndash;' : $currentResultsEnergySourcesBasic->N_electric_total;?></td>
+                                                                <td><?= ($currentResultsEnergySourcesBasic->N_takeoff === null) ? '&ndash;' : $currentResultsEnergySourcesBasic->N_takeoff;?></td>
                                                             </tr>
                                                     <?php
                                                         }
@@ -232,15 +243,10 @@ foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitec
                                                     $total['N_consumers_out'] = 0;
                                                     $total['N_electric_total'] = 0;
                                                     $total['N_takeoff'] = 0;
-                                                    foreach ($resultsEnergySourcesBasic as $currentResultsEnergySourcesBasic) {
-                                                        if ($currentResultsEnergySourcesBasic->flightMode_id == $currentFlightMode->id)
+                                                    foreach ($resultsEnergySourcesAlternative as $currentResultsEnergySourceAlternative) {
+                                                        if ($currentResultsEnergySourceAlternative->flightMode_id == $currentFlightMode->id)
                                                         {
-                                                            $currentResultsEnergySourceAlternative = null;
-                                                            foreach ($resultsEnergySourcesAlternative as $current) {
-                                                                if ($current->architectureName_id == $currentArchitectureID
-                                                                    && $current->flightMode_id == $currentFlightMode->id)
-                                                                    $currentResultsEnergySourceAlternative = $current;
-                                                            }
+                                                            
                                                             $total['Qpump']+=$currentResultsEnergySourceAlternative->Qpump;
                                                             $total['Qdisposable']+=$currentResultsEnergySourceAlternative->Qdisposable;
                                                             $total['P_pump_out']+=$currentResultsEnergySourceAlternative->P_pump_out;
@@ -254,14 +260,14 @@ foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitec
                                                     ?>
                                                             <tr>
                                                                 <td><?= $currentResultsEnergySourceAlternative->energySource->name;?></td>
-                                                                <td><?= $currentResultsEnergySourceAlternative->Qpump;?></td>
-                                                                <td><?= $currentResultsEnergySourceAlternative->Qdisposable;?></td>
-                                                                <td><?= $currentResultsEnergySourceAlternative->P_pump_out;?></td>
-                                                                <td><?= $currentResultsEnergySourceAlternative->Q_curr_to_Q_max;?></td>
-                                                                <td><?= $currentResultsEnergySourceAlternative->N_pump_out;?></td>
-                                                                <td><?= $currentResultsEnergySourceAlternative->N_pump_in;?></td>
-                                                                <td><?= $currentResultsEnergySourceAlternative->N_consumers_in_hydro;?></td>
-                                                                <td><?= $currentResultsEnergySourceAlternative->N_consumers_out;?></td>
+                                                                <td><?= ($currentResultsEnergySourceAlternative->Qpump === null) ? '&ndash;' : $currentResultsEnergySourceAlternative->Qpump;?></td>
+                                                                <td><?= ($currentResultsEnergySourceAlternative->Qdisposable === null) ? '&ndash;' : $currentResultsEnergySourceAlternative->Qdisposable;?></td>
+                                                                <td><?= ($currentResultsEnergySourceAlternative->P_pump_out === null) ? '&ndash;' : $currentResultsEnergySourceAlternative->P_pump_out;?></td>
+                                                                <td><?= ($currentResultsEnergySourceAlternative->Q_curr_to_Q_max === null) ? '&ndash;' : $currentResultsEnergySourceAlternative->Q_curr_to_Q_max;?></td>
+                                                                <td><?= ($currentResultsEnergySourceAlternative->N_pump_out === null) ? '&ndash;' : $currentResultsEnergySourceAlternative->N_pump_out;?></td>
+                                                                <td><?= ($currentResultsEnergySourceAlternative->N_pump_in === null) ? '&ndash;' : $currentResultsEnergySourceAlternative->N_pump_in;?></td>
+                                                                <td><?= ($currentResultsEnergySourceAlternative->N_consumers_in_hydro === null) ? '&ndash;' : $currentResultsEnergySourceAlternative->N_consumers_in_hydro;?></td>
+                                                                <td><?= ($currentResultsEnergySourceAlternative->N_consumers_out === null) ? '&ndash;' : $currentResultsEnergySourceAlternative->N_consumers_out;?></td>
                                                                 <td><?= $currentResultsEnergySourceAlternative->N_electric_total;?></td>
                                                                 <td><?= $currentResultsEnergySourceAlternative->N_takeoff;?></td>
                                                             </tr>

@@ -431,12 +431,12 @@ class PowerDataAlgorithm extends Component
 
                 /* [7] -------------------------------------------------------- */
                 foreach ($this->energySources as $energySourceID => $energySourceData)
-                    if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID))
+                    if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID, false))
                         $this->calcArchitectureN_electric_total($energySourceID, $architectureID, $flightModeID);
 
                 /* [8] -------------------------------------------------------- */
                 foreach ($this->energySources as $energySourceID => $energySourceData)
-                    if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID))
+                    if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID, false))
                         $this->calcArchitectureN_takeoff($energySourceID, $architectureID, $flightModeID);
             }
         }
@@ -451,14 +451,19 @@ class PowerDataAlgorithm extends Component
 Вспомогательные функции
 ***********************************************************/
     /* Выбирает только те энергосистемы, что присутствуют в текущей архитектуре */
-    public function isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID)
+    public function isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID, $excludeElectric = true)
     {
         $isEnergySourceCorrespondToArchitecture = false;
 
         foreach ($this->consumers as $consumerID => $consumerData)
             foreach ($consumerData['energySourcePerArchitecture'] as $_architectureID => $_energySourceID) {
-                if ($_architectureID == $architectureID && $_energySourceID == $energySourceID && $this->energySources[$_energySourceID]['type'] != 4)  // НЕ электросистема
-                    $isEnergySourceCorrespondToArchitecture = true;
+                if ($_architectureID == $architectureID && $_energySourceID == $energySourceID)
+                    if ($this->energySources[$_energySourceID]['type'] != 4 )  // НЕ электросистема
+                        $isEnergySourceCorrespondToArchitecture = true;
+                    else {
+                        if (!$excludeElectric)
+                            $isEnergySourceCorrespondToArchitecture = true;
+                    }
             }
         
         return $isEnergySourceCorrespondToArchitecture;
