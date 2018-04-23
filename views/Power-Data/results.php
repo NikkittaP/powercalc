@@ -7,7 +7,7 @@ use yii\data\ActiveDataProvider;
 use kartik\grid\GridView;
 use kartik\widgets\ActiveForm;
 
-use \app\models\ArchitecturesNames;
+use app\models\ArchitecturesNames;
 use app\models\ResultsConsumers;
 use app\models\ResultsEnergySources;
 
@@ -40,7 +40,19 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
     <?= Html::endForm() ?>
 
-<br />
+<br /><br />
+<div class="row">
+    <div class="col-sm-12">
+        <?= $this->render('_results_chart', [
+                'flightModeModel' => $flightModeModel,
+                'aircraftPartsModel' => $aircraftPartsModel,
+                'N_out_by_parts' => $N_out_by_parts,
+                ]);
+        ?>
+    </div>
+</div>
+<br /><br />
+
 <div class="row">
     <div class="col-sm-6">
         <?= $this->render('_results_by_aircraft_parts', [
@@ -51,7 +63,8 @@ $this->params['breadcrumbs'][] = $this->title;
         ?>
     </div>
 </div>
-<br />
+
+<br /><br />
 
 <?php
 foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitectureName) {
