@@ -40,6 +40,42 @@ $this->params['breadcrumbs'][] = $this->title;
     </div>
     <?= Html::endForm() ?>
 
+<br />
+    <table class="table table-bordered table-condensed table-hover medium kv-table">
+        <tbody>
+        <tr class="active">
+            <th rowspan="2"></th>
+            <th colspan="<?=count($flightModeModel);?>" class="text-center">Nвых</th>
+        </tr>
+        <tr class="active">
+            <?php
+            foreach ($flightModeModel as $currentFlightMode) {
+            ?>
+            <th class="text-center"><?= $currentFlightMode->name;?></th>
+            <?php
+            }
+            ?>
+        </tr>
+        <?php
+        foreach ($aircraftPartsModel as $currentAircraftPart) {
+        ?>
+        <tr>
+            <td><b><?= $currentAircraftPart->name;?></b></td>
+            <?php
+            foreach ($flightModeModel as $currentFlightMode) {
+            ?>
+            <td></td>
+            <?php
+            }
+            ?>
+        </tr>
+        <?php
+        }
+        ?>
+        </tbody>
+    </table>
+<br />
+
 <?php
 foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitectureName) {
 ?>

@@ -10,6 +10,7 @@ use yii\helpers\VarDumper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 
+use \app\models\AircraftParts;
 use \app\models\ArchitecturesNames;
 use \app\models\ArchitectureToVehicleLayout;
 use \app\models\EnergySources;
@@ -231,6 +232,7 @@ class PowerDataController extends Controller
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
         $flightModeModel = FlightModes::find()->all();
+        $aircraftPartsModel = AircraftParts::find()->orderBy('name')->all();
 
         $basicArchitectureModel = ArrayHelper::map(
             ArchitecturesNames::find()
@@ -288,6 +290,7 @@ class PowerDataController extends Controller
         return $this->render('results', [
             'vehicleLayoutNameModel' => $vehicleLayoutNameModel,
             'flightModeModel' => $flightModeModel,
+            'aircraftPartsModel' => $aircraftPartsModel,
             'basicArchitecture' => $basicArchitectureModel,
             'selectedArchitectures' => $selectedArchitectures,
             'alternativeArchitectures' => $alternativeArchitecture,
