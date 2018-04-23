@@ -287,6 +287,14 @@ class PowerDataController extends Controller
                 ->andWhere(['<>','architectureName_id',key($basicArchitectureModel)])
                 ->all();
 
+        $N_out_by_parts = [];
+        foreach ($resultsConsumersBasicModels as $results) {
+            if (!isset($N_out[$results->flightMode_id][$results->consumer->aircraftPart_id]))
+                $N_out_by_parts[$results->flightMode_id][$results->consumer->aircraftPart_id] = 0.0;
+
+            $N_out_by_parts[$results->flightMode_id][$results->consumer->aircraftPart_id] += $results->N_out;
+        }
+
         return $this->render('results', [
             'vehicleLayoutNameModel' => $vehicleLayoutNameModel,
             'flightModeModel' => $flightModeModel,
@@ -298,6 +306,7 @@ class PowerDataController extends Controller
             'resultsConsumersAlternative' => $resultsConsumersAlternativeModels,
             'resultsEnergySourcesBasic' => $resultsEnergySourcesBasicModels,
             'resultsEnergySourcesAlternative' => $resultsEnergySourcesAlternativeModels,
+            'N_out_by_parts' => $N_out_by_parts,
         ]);
     }
 
