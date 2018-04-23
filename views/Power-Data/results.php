@@ -73,6 +73,7 @@ foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitec
                             'isBasic' => true,
                             'resultsEnergySources' => $resultsEnergySourcesBasic,
                             'currentFlightMode' => $currentFlightMode,
+                            'currentArchitectureID' => $currentArchitectureID,
                             ]);
                     ?>
 
@@ -81,6 +82,7 @@ foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitec
                             'isBasic' => false,
                             'resultsEnergySources' => $resultsEnergySourcesAlternative,
                             'currentFlightMode' => $currentFlightMode,
+                            'currentArchitectureID' => $currentArchitectureID,
                             ]);
                     ?>
                 </div>
