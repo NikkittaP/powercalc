@@ -4,6 +4,43 @@ use miloschuman\highcharts\Highcharts;
 use yii\web\JsExpression;
 ?>
 
+<?php
+
+$flightModes = [];
+$seriesColumnData = [];
+$seriesLineData = [];
+$series = [];
+
+foreach ($flightModeModel as $currentFlightMode) {
+    $flightModes[] = $currentFlightMode->name;
+
+    $seriesLineData[] = $chart_data['basic'][$currentFlightMode->id]['Qdisposable'];
+}
+
+foreach ($selectedArchitectures as $currentArchitectureID) {
+    foreach ($flightModeModel as $currentFlightMode) {
+        $seriesColumnData[$currentArchitectureID][] = $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qpump'];
+    }
+    $series[] = [
+        'type' => 'column',
+        'name' => $chart_data[$currentArchitectureID][$currentFlightMode->id]['architectureName'],
+        'data' => $seriesColumnData[$currentArchitectureID],
+    ];
+}
+
+$series[] = [
+    'type' => 'spline',
+    'name' => 'Располагаемый расход',
+    'data' => $seriesLineData,
+    'marker' => [
+        'lineWidth' => 2,
+        'lineColor' => new JsExpression('Highcharts.getOptions().colors[3]'),
+        'fillColor' => 'white',
+    ],
+];
+
+?>
+
 <?= Highcharts::widget([
     'scripts' => [
         'modules/exporting',
@@ -19,13 +56,13 @@ use yii\web\JsExpression;
             ],
         ],
         'title' => [
-            'text' => 'Сравнение архитектур по потреблению',
+            'text' => $title,
         ],
         'xAxis' => [
             'title' => [
                 'text' => 'Режимы полёта',
             ],
-            'categories' => ['Взлёт', 'Крейсер', 'Посадка', 'Руление']
+            'categories' => $flightModes,
         ],
         'yAxis' => [
             'title' => [
@@ -37,33 +74,7 @@ use yii\web\JsExpression;
                 'borderRadius' => 5,
             ],
         ],
-        'series' => [
-            [
-                'type' => 'column',
-                'name' => 'База',
-                'data' => [10, 50, 37, 50],
-            ],
-            [
-                'type' => 'column',
-                'name' => 'БЭС1',
-                'data' => [12, 56, 0, 44],
-            ],
-            [
-                'type' => 'column',
-                'name' => 'Архит. 6 2H2E',
-                'data' => [0, 4, 2, 70],
-            ],
-            [
-                'type' => 'spline',
-                'name' => 'Располагаемый расход',
-                'data' => [90, 90, 80, 40],
-                'marker' => [
-                    'lineWidth' => 2,
-                    'lineColor' => new JsExpression('Highcharts.getOptions().colors[3]'),
-                    'fillColor' => 'white',
-                ],
-            ],
-        ]
+        'series' => $series,
     ]
     ]);
 ?>

@@ -1,5 +1,6 @@
 <?php
 
+use yii\bootstrap\Tabs;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\VarDumper;
@@ -43,11 +44,27 @@ $this->params['breadcrumbs'][] = $this->title;
 <br /><br />
 <div class="row">
     <div class="col-sm-12">
-        <?= $this->render('_results_chart', [
-                'flightModeModel' => $flightModeModel,
-                'aircraftPartsModel' => $aircraftPartsModel,
-                'N_out_by_parts' => $N_out_by_parts,
-                ]);
+        <?php
+        $items = [];
+        foreach ($energySourcesModel as $currentEnergySource) {
+            if (in_array($currentEnergySource->id, $usedEnergySourcesInSelectedArchitectures))
+            {
+                $items[] = [
+                    'label'     =>  $currentEnergySource->name,
+                    'content'   =>  $this->render('_results_chart', [
+                        'title' => 'Сравнение потребления архитектур для энергосистемы <b>'.$currentEnergySource->name.'</b>',
+                        'chart_data' => $chart_data,
+                        'flightModeModel' => $flightModeModel,
+                        'selectedArchitectures' => $selectedArchitectures,
+                        'energySourceID' => $currentEnergySource->id,
+                        ]),
+                ];
+            }
+        }
+
+        echo Tabs::widget([
+                'items' => $items,
+            ]);
         ?>
     </div>
 </div>

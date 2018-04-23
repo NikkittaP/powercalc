@@ -233,6 +233,7 @@ class PowerDataController extends Controller
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
         $flightModeModel = FlightModes::find()->all();
         $aircraftPartsModel = AircraftParts::find()->orderBy('name')->all();
+        $energySourcesModel = EnergySources::find()->orderBy('name')->all();
 
         $basicArchitectureModel = ArrayHelper::map(
             ArchitecturesNames::find()
@@ -295,18 +296,46 @@ class PowerDataController extends Controller
             $N_out_by_parts[$results->flightMode_id][$results->consumer->aircraftPart_id] += $results->N_out;
         }
 
+        $chart_data = [];
+        $usedEnergySourcesInSelectedArchitectures = [];
+        $data = ResultsEnergySources::find()
+            ->where([
+                'vehicleLayoutName_id'=>$vehicleLayoutName_id,
+                'architectureName_id'=>array_values($selectedArchitectures)
+                ])
+            ->orderBy('flightMode_id')
+            ->all();
+        foreach ($data as $results) {
+            if (!in_array($results->energySource_id, $usedEnergySourcesInSelectedArchitectures))
+                $usedEnergySourcesInSelectedArchitectures[] = $results->energySource_id;
+
+            if (!isset($chart_data[$results->architectureName_id][$results->flightMode_id]['Qpump']))
+                $chart_data[$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump'] = 0.0;
+            if ($results->architectureName->isBasic && !isset($chart_data['basic'][$results->flightMode_id]['Qdisposable']))
+                $chart_data['basic'][$results->flightMode_id]['Qdisposable'] = 0.0;
+
+            $chart_data[$results->architectureName_id][$results->flightMode_id]['architectureName'] = $results->architectureName->name;
+            $chart_data[$results->architectureName_id][$results->flightMode_id]['flightModeName'] = $results->flightMode->name;
+            $chart_data[$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump'] += $results->Qpump;
+            if ($results->architectureName->isBasic)
+                $chart_data['basic'][$results->flightMode_id]['Qdisposable'] += $results->Qdisposable;
+        }
+
         return $this->render('results', [
             'vehicleLayoutNameModel' => $vehicleLayoutNameModel,
             'flightModeModel' => $flightModeModel,
             'aircraftPartsModel' => $aircraftPartsModel,
+            'energySourcesModel' => $energySourcesModel,
             'basicArchitecture' => $basicArchitectureModel,
             'selectedArchitectures' => $selectedArchitectures,
+            'usedEnergySourcesInSelectedArchitectures' => $usedEnergySourcesInSelectedArchitectures,
             'alternativeArchitectures' => $alternativeArchitecture,
             'resultsConsumersBasic' => $resultsConsumersBasicModels,
             'resultsConsumersAlternative' => $resultsConsumersAlternativeModels,
             'resultsEnergySourcesBasic' => $resultsEnergySourcesBasicModels,
             'resultsEnergySourcesAlternative' => $resultsEnergySourcesAlternativeModels,
             'N_out_by_parts' => $N_out_by_parts,
+            'chart_data' => $chart_data,
         ]);
     }
 
