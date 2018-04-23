@@ -58,7 +58,7 @@ $this->params['breadcrumbs'][] = $this->title;
     ];
 
     /* Столбцы архитектур */
-    $architecturesNames = app\models\ArchitecturesNames::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutNameModel->id])->orderBy('name')->all();
+    $architecturesNames = app\models\ArchitecturesNames::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutNameModel->id])->orderBy(['isBasic' => SORT_DESC, 'name' => SORT_ASC])->all();
     $energySources = ArrayHelper::map(app\models\EnergySources::find()->orderBy('name')->asArray()->all(), 'id', 'name');
     $i=0;
     foreach ($architecturesNames as $architecturesName)
