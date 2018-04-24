@@ -7,10 +7,10 @@ use Yii;
 /**
  * This is the model class for table "Architecture_to_VehicleLayout".
  *
- * @property string $id
- * @property string $vehicleLayout_id
- * @property string $architectureName_id
- * @property string $energySource_id
+ * @property int $id
+ * @property int $vehicleLayout_id
+ * @property int $architectureName_id
+ * @property int $energySource_id
  *
  * @property ArchitecturesNames $architectureName
  * @property EnergySources $energySource
@@ -32,7 +32,7 @@ class ArchitectureToVehicleLayout extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['vehicleLayout_id', 'architectureName_id', 'energySource_id'], 'required'],
+            [['vehicleLayout_id', 'architectureName_id'], 'required'],
             [['vehicleLayout_id', 'architectureName_id', 'energySource_id'], 'integer'],
             [['architectureName_id'], 'exist', 'skipOnError' => true, 'targetClass' => ArchitecturesNames::className(), 'targetAttribute' => ['architectureName_id' => 'id']],
             [['energySource_id'], 'exist', 'skipOnError' => true, 'targetClass' => EnergySources::className(), 'targetAttribute' => ['energySource_id' => 'id']],
