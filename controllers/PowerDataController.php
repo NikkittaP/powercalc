@@ -25,6 +25,8 @@ use \app\models\VehiclesLayoutsNames;
 use app\components\PowerDataAlgorithm;
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use app\models\Consumers;
+use app\models\EnergySourcesSearch;
 
 /**
  * VehiclesController implements the CRUD actions for Vehicles model.
@@ -61,6 +63,7 @@ class PowerDataController extends Controller
         $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
 
         $importData = [];
+        $importData['energySources'] = [];
         $architectureStartLetter = 'H';
         $architectureEndLetter;
         $flightModeStartLetter = 'A';
@@ -95,7 +98,7 @@ class PowerDataController extends Controller
 
                     if ($architectureStarts)
                     {
-                        $importData['architectures'][] = $data;
+                        $importData['architectures'][]['name'] = preg_replace( "/\r|\n/", " ", $data);
                         $architectureEndLetter = $letter;
                     }
 
@@ -104,7 +107,7 @@ class PowerDataController extends Controller
                         if ($flightModeStartLetter === 'A')
                             $flightModeStartLetter = $letter;
 
-                        $importData['flightModes'][] = $data;
+                        $importData['flightModes'][]['name'] = $data;
                         $flightModeEndLetter = $letter;
                     }
                 }
@@ -139,7 +142,21 @@ class PowerDataController extends Controller
                         
                         default:
                             if ($architectureStarts)
+                            {
                                 $consumer['energySourcesToArchitectures'][] = ($data === '-') ? null : $data;
+
+                                if ($data !== '-')
+                                {
+                                    $_exists = false;
+                                    foreach ($importData['energySources'] as $ES) {
+                                        if ($ES['name'] === $data)
+                                        $_exists = true;
+                                    }
+
+                                    if (!$_exists)
+                                        $importData['energySources'][]['name'] = $data;
+                                }
+                            }
                             if ($flightModesStarts)
                                 $consumer['usageFactorToFlightModes'][] = $data;
 
@@ -156,10 +173,109 @@ class PowerDataController extends Controller
             }
         }
         
+        foreach ($importData['architectures'] as $key => $value) {
+            $architectureNameModel = ArchitecturesNames::findOne(['name' => $value['name']]);
+            if ($architectureNameModel === null)
+            {
+                $architectureNameModel = new ArchitecturesNames();
+                $architectureNameModel->vehicleLayoutName_id = $vehicleLayoutName_id;
+                $architectureNameModel->name = $value['name'];
+                $architectureNameModel->isBasic = false;
+                $architectureNameModel->save();
+            }
+            
+            $importData['architectures'][$key]['db_id'] = $architectureNameModel->id;
+        }
+
+        foreach ($importData['flightModes'] as $key => $value) {
+            $flightModesModel = FlightModes::findOne(['name' => $value['name']]);
+            if ($flightModesModel === null)
+            {
+                $flightModesModel = new FlightModes();
+                $flightModesModel->name = $value['name'];
+                $flightModesModel->reductionFactor = 0.6;
+                $flightModesModel->save();
+            }
+            
+            $importData['flightModes'][$key]['db_id'] = $flightModesModel->id;
+        }
+
+        foreach ($importData['energySources'] as $key => $value) {
+            $energySourcesModel = EnergySources::findOne(['name' => $value['name']]);
+            if ($energySourcesModel === null)
+            {
+                $energySourcesModel = new EnergySources();
+                $energySourcesModel->name = $value['name'];
+
+                if (stripos($value['name'], 'ЛГС') !== FALSE)
+                    $energySourcesModel->energySourceType_id = 3;
+                else if (stripos($value['name'], 'ЭС') !== FALSE)
+                    $energySourcesModel->energySourceType_id = 4;
+                else
+                    $energySourcesModel->energySourceType_id = 1;
+
+                $energySourcesModel->save();
+            }
+            
+            $importData['energySources'][$key]['db_id'] = $energySourcesModel->id;
+        }
+
+        foreach ($importData['consumers'] as $consumer) {
+            $aircraftPartsModel = AircraftParts::findOne(['name' => $consumer['aircraftPart']]);
+            if ($aircraftPartsModel === null)
+            {
+                $aircraftPartsModel = new AircraftParts();
+                $aircraftPartsModel->name = $consumer['aircraftPart'];
+                $aircraftPartsModel->save();
+            }
+
+            $consumerModel = Consumers::findOne(['name' => $consumer['name']]);
+            if ($consumerModel === null)
+            {
+                $consumerModel = new Consumers();
+                $consumerModel->name = $consumer['name'];
+                $consumerModel->aircraftPart_id = $aircraftPartsModel->id;
+                $consumerModel->efficiencyHydro = $consumer['efficiencyHydro'];
+                $consumerModel->efficiencyElectric = $consumer['efficiencyElectric'];
+                $consumerModel->q0 = $consumer['q0'];
+                $consumerModel->qMax = $consumer['qMax'];
+                $consumerModel->save();
+            }
+
+            $vehicleLayoutModel = VehicleLayout::findOne(['vehicleLayoutName_id' => $vehicleLayoutNameModel, 'consumer_id' => $consumerModel->id]);
+            if ($vehicleLayoutModel === null)
+            {
+                $vehicleLayoutModel = new VehicleLayout();
+                $vehicleLayoutModel->vehicleLayoutName_id = $vehicleLayoutName_id;
+                $vehicleLayoutModel->consumer_id = $consumerModel->id;
+                $vehicleLayoutModel->save();
+
+                foreach ($consumer['energySourcesToArchitectures'] as $key => $value) {
+                    $architectureNameID = $importData['architectures'][$key]['db_id'];
+                    $energySourceID = $importData['energySources'][$key]['db_id'];
+
+                    $architectureToVehicleLayoutModel = new ArchitectureToVehicleLayout();
+                    $architectureToVehicleLayoutModel->vehicleLayout_id = $vehicleLayoutModel->id;
+                    $architectureToVehicleLayoutModel->architectureName_id = $architectureNameID;
+                    $architectureToVehicleLayoutModel->energySource_id = $energySourceID;
+                    $architectureToVehicleLayoutModel->save();
+                }
+                foreach ($consumer['usageFactorToFlightModes'] as $key => $value) {
+                    $flightModeID = $importData['flightModes'][$key]['db_id'];
+
+                    $flightModesToVehicleLayoutModel = new FlightModesToVehicleLayout();
+                    $flightModesToVehicleLayoutModel->vehicleLayout_id = $vehicleLayoutModel->id;
+                    $flightModesToVehicleLayoutModel->flightMode_id = $flightModeID;
+                    $flightModesToVehicleLayoutModel->usageFactor = $value;
+                    $flightModesToVehicleLayoutModel->save();
+                }
+            }
+        }
+
         //VarDumper::dump( $importData, $depth = 10, $highlight = true);
 
         return $this->render('import', [
-            'vehicleLayoutNameModel'=>$vehicleLayoutNameModel
+            'vehicleLayoutNameModel' => $vehicleLayoutNameModel
         ]);
     }
 
