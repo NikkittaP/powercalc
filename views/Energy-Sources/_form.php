@@ -16,7 +16,6 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
-<div class="compactRadioGroup">
     <?php
         $items = ArrayHelper::map(EnergySourceTypes::find()->all(), 'id', 'name');
         echo $form->field($model, 'energySourceType_id')->radioList($items,
@@ -25,7 +24,6 @@ use yii\widgets\ActiveForm;
                 'separator'=>'<br />',
             ]);
     ?>
-</div>
 
     <?= $form->field($model, 'qMax')->textInput() ?>
 

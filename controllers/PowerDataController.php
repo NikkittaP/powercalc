@@ -279,6 +279,15 @@ class PowerDataController extends Controller
         ]);
     }
 
+    public function actionSettings($vehicleLayoutName_id)
+    {
+        $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
+
+        return $this->render('settings', [
+            'vehicleLayoutNameModel'=>$vehicleLayoutNameModel,
+        ]);
+    }
+
     public function actionIndex($vehicleLayoutName_id)
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
