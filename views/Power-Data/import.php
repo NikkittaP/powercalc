@@ -12,12 +12,7 @@ use kartik\widgets\ActiveForm;
 $this->title = 'Импорт данных для компоновки "'.$vehicleLayoutNameModel->vehicle->name.': '.$vehicleLayoutNameModel->name.'"';
 $this->params['breadcrumbs'][] = $this->title;
 
-echo Html::a('Данные', ['power-data/index', 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id], ['style' => 'font-size:18px;']);
-echo '&nbsp;&nbsp;&nbsp;';
-echo Html::a('Результаты', ['power-data/results', 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id], ['style' => 'font-size:18px;']);
-echo '&nbsp;&nbsp;&nbsp;';
-echo '<span style="font-size:18px;">Импорт</span>';
-echo '<br /><br />';
+echo $this->render('_header_links', ['currentPage' => 'import', 'vehicleLayoutNameID' => $vehicleLayoutNameModel->id]);
 ?>
 
 <div class="power-data-import">
