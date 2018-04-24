@@ -24,6 +24,8 @@ use \app\models\VehiclesLayoutsNames;
 
 use app\components\PowerDataAlgorithm;
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+
 /**
  * VehiclesController implements the CRUD actions for Vehicles model.
  */
@@ -53,6 +55,108 @@ class PowerDataController extends Controller
     public function actionImport($vehicleLayoutName_id)
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
+
+        $inputFileName = Yii::getAlias('@app').'/import/import.xlsx';
+        $spreadsheet = IOFactory::load($inputFileName);
+        $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+
+        $importData = [];
+        $architectureStartLetter = 'H';
+        $architectureEndLetter;
+        $flightModeStartLetter = 'A';
+        $flightModeEndLetter;
+        foreach ($sheetData as $rowNum => $rowData) {
+            $architectureStarts = false;
+            $flightModesStarts = false;
+
+            if ($rowNum == 1)
+            {
+                /*
+                A - пусто
+                B - КПД гидро
+                C - КПД электро
+                D - Qпотр
+                E - Q0
+                F - Часть аппарата
+                G - пусто. Разделитель
+                ... - архитектуры
+                ... - пусто. Разделитель
+                ... - режимы полёта
+                */
+                foreach ($rowData as $letter => $data) {
+                    if ($letter === $architectureStartLetter)
+                        $architectureStarts = true;
+                    
+                    if ($architectureStarts && $data === null)
+                    {
+                        $architectureStarts = false;
+                        $flightModesStarts = true;
+                    }
+
+                    if ($architectureStarts)
+                    {
+                        $importData['architectures'][] = $data;
+                        $architectureEndLetter = $letter;
+                    }
+
+                    if ($flightModesStarts && $data !== null)
+                    {
+                        if ($flightModeStartLetter === 'A')
+                            $flightModeStartLetter = $letter;
+
+                        $importData['flightModes'][] = $data;
+                        $flightModeEndLetter = $letter;
+                    }
+                }
+            } else {
+                $consumer = [];
+
+                foreach ($rowData as $letter => $data) {
+                    if ($letter === $architectureStartLetter)
+                        $architectureStarts = true;
+                    if ($letter === $flightModeStartLetter)
+                        $flightModesStarts = true;
+                    
+                    switch ($letter) {
+                        case 'A':
+                            $consumer['name'] = $data;
+                            break;
+                        case 'B':
+                            $consumer['efficiencyHydro'] = $data;
+                            break;
+                        case 'C':
+                            $consumer['efficiencyElectric'] = $data;
+                            break;
+                        case 'D':
+                            $consumer['qMax'] = $data;
+                            break;
+                        case 'E':
+                            $consumer['q0'] = $data;
+                            break;
+                        case 'F':
+                            $consumer['aircraftPart'] = $data;
+                            break;
+                        
+                        default:
+                            if ($architectureStarts)
+                                $consumer['energySourcesToArchitectures'][] = ($data === '-') ? null : $data;
+                            if ($flightModesStarts)
+                                $consumer['usageFactorToFlightModes'][] = $data;
+
+                            break;
+                    }
+                        
+                    if ($letter === $architectureEndLetter)
+                        $architectureStarts = false;
+                    if ($letter === $flightModeEndLetter)
+                        $flightModesStarts = false;
+                }
+
+                $importData['consumers'][] = $consumer;
+            }
+        }
+        
+        //VarDumper::dump( $importData, $depth = 10, $highlight = true);
 
         return $this->render('import', [
             'vehicleLayoutNameModel'=>$vehicleLayoutNameModel

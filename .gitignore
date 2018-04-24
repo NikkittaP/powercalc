@@ -39,4 +39,3 @@ protected/runtime/*
 protected/data/*.db
 themes/classic/views/
 import/~$import.xlsx
-import/import.xlsx
