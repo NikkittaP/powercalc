@@ -11,7 +11,15 @@ use kartik\widgets\ActiveForm;
 
 $this->title = 'Заполнение данных для компоновки "'.$vehicleLayoutNameModel->vehicle->name.': '.$vehicleLayoutNameModel->name.'"';
 $this->params['breadcrumbs'][] = $this->title;
+
+echo '<span style="font-size:18px;">Данные</span>';
+echo '&nbsp;&nbsp;&nbsp;';
+echo Html::a('Результаты', ['power-data/results', 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id], ['style' => 'font-size:18px;']);
+echo '&nbsp;&nbsp;&nbsp;';
+echo Html::a('Импорт', ['power-data/import', 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id], ['style' => 'font-size:18px;']);
+echo '<br /><br />';
 ?>
+
 <div class="power-data-index">
     <?php
     $consumers = ArrayHelper::map(app\models\Consumers::find()->orderBy('name')->asArray()->all(), 'id', 'name');

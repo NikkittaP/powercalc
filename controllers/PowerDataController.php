@@ -50,6 +50,15 @@ class PowerDataController extends Controller
         }
     }
 
+    public function actionImport($vehicleLayoutName_id)
+    {
+        $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
+
+        return $this->render('import', [
+            'vehicleLayoutNameModel'=>$vehicleLayoutNameModel
+        ]);
+    }
+
     public function actionIndex($vehicleLayoutName_id)
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);

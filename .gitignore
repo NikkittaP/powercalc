@@ -38,3 +38,5 @@ protected/runtime/*
 !protected/runtime/.gitignore
 protected/data/*.db
 themes/classic/views/
+import/~$import.xlsx
+import/import.xlsx

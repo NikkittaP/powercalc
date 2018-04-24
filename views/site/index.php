@@ -28,7 +28,7 @@ $this->title = 'PowerCalc';
 
     <div class="body-content">
         <div class="row">
-            <div class="col-lg-4">
+            <div class="col-lg-2">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h3 class="panel-title">
@@ -52,7 +52,7 @@ $this->title = 'PowerCalc';
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4">
+            <div class="col-lg-6">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h3 class="panel-title">
@@ -71,6 +71,10 @@ $this->title = 'PowerCalc';
                                 echo Html::a($vehiclesLayoutsName->name.' ('.$vehiclesLayoutsName->vehicle->name.')', ['vehicles-layouts-names/view', 'id' => $vehiclesLayoutsName->id]);
                                 echo '</td><td>';
                                 echo Html::a('Данные', ['power-data/index', 'vehicleLayoutName_id' => $vehiclesLayoutsName->id]);
+                                echo '</td><td>';
+                                echo Html::a('Результаты', ['power-data/results', 'vehicleLayoutName_id' => $vehiclesLayoutsName->id]);
+                                echo '</td><td>';
+                                echo Html::a('Импорт', ['power-data/import', 'vehicleLayoutName_id' => $vehiclesLayoutsName->id]);
                                 echo ' </td></tr>';
                             }
                             ?>

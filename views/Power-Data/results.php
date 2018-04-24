@@ -18,6 +18,13 @@ use app\models\ResultsEnergySources;
 
 $this->title = 'Результаты расчёта для компоновки "'.$vehicleLayoutNameModel->vehicle->name.': '.$vehicleLayoutNameModel->name.'"';
 $this->params['breadcrumbs'][] = $this->title;
+
+echo Html::a('Данные', ['power-data/index', 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id], ['style' => 'font-size:18px;']);
+echo '&nbsp;&nbsp;&nbsp;';
+echo '<span style="font-size:18px;">Результаты</span>';
+echo '&nbsp;&nbsp;&nbsp;';
+echo Html::a('Импорт', ['power-data/import', 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id], ['style' => 'font-size:18px;']);
+echo '<br /><br />';
 ?>
 <div class="power-data-results">
 
