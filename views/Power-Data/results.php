@@ -94,44 +94,26 @@ foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitec
         </div>
         <div class="panel-body">
             <?php
+            $items = [];
             foreach ($flightModeModel as $currentFlightMode) {
-            ?>
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
-                        Режим полёта "<b><?= $currentFlightMode->name;?></b>"
-                    </h3>
-                </div>
-                <div class="panel-body">
-                    <?= $this->render('_results_consumers', [
-                            'resultsConsumersBasic' => $resultsConsumersBasic,
-                            'resultsConsumersAlternative' => $resultsConsumersAlternative,
-                            'currentFlightMode' => $currentFlightMode,
-                            'currentArchitectureID' => $currentArchitectureID,
-                            ]);
-                    ?>
-
-                    <?= $this->render('_results_energySources', [
-                            'title' => 'Базовая архитектура "<b>'.current($basicArchitecture).'</b>"',
-                            'isBasic' => true,
-                            'resultsEnergySources' => $resultsEnergySourcesBasic,
-                            'currentFlightMode' => $currentFlightMode,
-                            'currentArchitectureID' => $currentArchitectureID,
-                            ]);
-                    ?>
-
-                    <?= $this->render('_results_energySources', [
-                            'title' => 'Альтернативная архитектура "<b>'.$currentArchitectureName.'</b>"',
-                            'isBasic' => false,
-                            'resultsEnergySources' => $resultsEnergySourcesAlternative,
-                            'currentFlightMode' => $currentFlightMode,
-                            'currentArchitectureID' => $currentArchitectureID,
-                            ]);
-                    ?>
-                </div>
-            </div>
-            <?php
+                $items[] = [
+                    'label'     =>  $currentFlightMode->name,
+                    'content'   =>  $this->render('_results_per_flightmode', [
+                        'resultsConsumersBasic' => $resultsConsumersBasic,
+                        'resultsConsumersAlternative' => $resultsConsumersAlternative,
+                        'currentFlightMode' => $currentFlightMode,
+                        'currentArchitectureID' => $currentArchitectureID,
+                        'basicArchitecture' => $basicArchitecture,
+                        'currentArchitectureName' => $currentArchitectureName,
+                        'resultsEnergySourcesBasic' => $resultsEnergySourcesBasic,
+                        'resultsEnergySourcesAlternative' => $resultsEnergySourcesAlternative,
+                        ]),
+                ];
             }
+            
+            echo Tabs::widget([
+                'items' => $items,
+            ]);
             ?>
         </div>
     </div>
