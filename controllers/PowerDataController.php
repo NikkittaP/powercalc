@@ -252,19 +252,22 @@ class PowerDataController extends Controller
 
                 foreach ($consumer['energySourcesToArchitectures'] as $key => $value) {
                     $architectureNameID = $importData['architectures'][$key]['db_id'];
-                    foreach ($importData['energySources'] as $ES) {
-                        if ($ES['name'] == $value)
-                        {
-                            $energySourceID = $ES['db_id'];
-                            break;
+                    if ($value !== null)
+                    {
+                        foreach ($importData['energySources'] as $ES) {
+                            if ($ES['name'] == $value)
+                            {
+                                $energySourceID = $ES['db_id'];
+                                break;
+                            }
                         }
-                    }
 
-                    $architectureToVehicleLayoutModel = new ArchitectureToVehicleLayout();
-                    $architectureToVehicleLayoutModel->vehicleLayout_id = $vehicleLayoutModel->id;
-                    $architectureToVehicleLayoutModel->architectureName_id = $architectureNameID;
-                    $architectureToVehicleLayoutModel->energySource_id = $energySourceID;
-                    $architectureToVehicleLayoutModel->save();
+                        $architectureToVehicleLayoutModel = new ArchitectureToVehicleLayout();
+                        $architectureToVehicleLayoutModel->vehicleLayout_id = $vehicleLayoutModel->id;
+                        $architectureToVehicleLayoutModel->architectureName_id = $architectureNameID;
+                        $architectureToVehicleLayoutModel->energySource_id = $energySourceID;
+                        $architectureToVehicleLayoutModel->save();
+                    }
                 }
                 foreach ($consumer['usageFactorToFlightModes'] as $key => $value) {
                     $flightModeID = $importData['flightModes'][$key]['db_id'];
