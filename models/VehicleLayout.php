@@ -9,9 +9,9 @@ use yii\helpers\VarDumper;
 /**
  * This is the model class for table "VehicleLayout".
  *
- * @property string $id
- * @property string $vehicleLayoutName_id
- * @property string $consumer_id
+* @property int $id
+* @property int $vehicleLayoutName_id
+* @property int $consumer_id
  *
  * @property ArchitectureToVehicleLayout[] $architectureToVehicleLayouts
  * @property FlightModesToVehicleLayout[] $flightModesToVehicleLayouts

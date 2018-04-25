@@ -282,9 +282,13 @@ class PowerDataController extends Controller
     public function actionSettings($vehicleLayoutName_id)
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
+        $usingArchitectures = $this->getUsingArchitectures($vehicleLayoutName_id);
+        $usingFlightModes = $this->getUsingFlightModes($vehicleLayoutName_id);
 
         return $this->render('settings', [
             'vehicleLayoutNameModel' => $vehicleLayoutNameModel,
+            'usingArchitectures' => $usingArchitectures,
+            'usingFlightModes' => $usingFlightModes,
         ]);
     }
 
@@ -575,6 +579,18 @@ class PowerDataController extends Controller
             'N_out_by_parts' => $N_out_by_parts,
             'chart_data' => $chart_data,
         ]);
+    }
+
+    protected function getUsingArchitectures($vehicleLayoutName_id)
+    {
+        $string = VehiclesLayoutsNames::findOne($vehicleLayoutName_id)->usingArchitectures;
+        return explode(' ', $string);
+    }
+
+    protected function getUsingFlightModes($vehicleLayoutName_id)
+    {
+        $string = VehiclesLayoutsNames::findOne($vehicleLayoutName_id)->usingFlightModes;
+        return explode(' ', $string);
     }
 
     protected function clearPreviousResults($vehicleLayoutName_id)

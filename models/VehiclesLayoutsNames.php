@@ -10,6 +10,8 @@ use Yii;
  * @property string $id
  * @property string $vehicle_id
  * @property string $name Название модели (компоновки) ["Базовая модель", "Детальная модель"]
+ * @property string $usingArchitectures id используемых архитектур через пробел
+ * @property string $usingFlightModes id используемых режимов полета через пробел
  *
  * @property VehicleLayout[] $vehicleLayouts
  * @property Vehicles $vehicle
@@ -32,6 +34,7 @@ class VehiclesLayoutsNames extends \yii\db\ActiveRecord
         return [
             [['vehicle_id'], 'required'],
             [['vehicle_id'], 'integer'],
+            [['usingArchitectures', 'usingFlightModes'], 'string', 'max' => 255],
             [['name'], 'string', 'max' => 255],
             [['vehicle_id'], 'exist', 'skipOnError' => true, 'targetClass' => Vehicles::className(), 'targetAttribute' => ['vehicle_id' => 'id']],
         ];
@@ -46,6 +49,8 @@ class VehiclesLayoutsNames extends \yii\db\ActiveRecord
             'id' => 'ID',
             'vehicle_id' => 'Аппарат',
             'name' => 'Название',
+            'usingArchitectures' => 'Используемые архитектуры',
+            'usingFlightModes' => 'Используемые режимы полёта',
         ];
     }
 
