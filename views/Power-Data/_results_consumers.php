@@ -12,6 +12,7 @@ use app\models\ResultsConsumers;
                 <?php
                 $resultsConsumerModel = new ResultsConsumers();
                 ?>
+                <th class="text-center">ID</th>
                 <th class="text-center"><?= $resultsConsumerModel->getAttributeLabel('consumer_id');?></th>
                 <th class="text-center"><?= $resultsConsumerModel->getAttributeLabel('consumption');?></th>
                 <th class="text-center"><?= $resultsConsumerModel->getAttributeLabel('P_in');?></th>
@@ -35,6 +36,7 @@ use app\models\ResultsConsumers;
                     $total['N_in_electric']+=$currentResultsConsumersAlternative->N_in_electric;
             ?>
                     <tr>
+                        <td><?= $currentResultsConsumersBasic->consumer->id;?></td>
                         <td><?= $currentResultsConsumersBasic->consumer->name;?></td>
                         <td><?= $currentResultsConsumersBasic->consumption;?></td>
                         <td><?= $currentResultsConsumersBasic->P_in;?></td>
@@ -47,7 +49,7 @@ use app\models\ResultsConsumers;
             }
             ?>
                 <tr style="border-top: 3px solid gray;">
-                    <td><b>ВСЕГО</b></td>
+                    <td colspan="2"><b>ВСЕГО</b></td>
                     <td>&ndash;</td>
                     <td>&ndash;</td>
                     <td>&ndash;</td>

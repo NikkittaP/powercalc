@@ -29,8 +29,8 @@ foreach ($selectedArchitectures as $currentArchitectureID) {
 }
 
 $series[] = [
-    //'type' => 'spline',
-    'type' => 'areaspline',
+    'type' => 'spline',
+    //'type' => 'areaspline',
     'fillOpacity' => 0.1,
     'name' => 'Располагаемый расход',
     'data' => $seriesLineData,
