@@ -61,7 +61,7 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
     ];
 
     /* Столбцы архитектур */
-    $architecturesNames = app\models\ArchitecturesNames::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutNameModel->id])->orderBy(['isBasic' => SORT_DESC, 'name' => SORT_ASC])->all();
+    $architecturesNames = app\models\ArchitecturesNames::find()->where(['id' => $usingArchitectures, 'vehicleLayoutName_id'=>$vehicleLayoutNameModel->id])->orderBy(['isBasic' => SORT_DESC, 'name' => SORT_ASC])->all();
     $energySources = ArrayHelper::map(app\models\EnergySources::find()->orderBy('name')->asArray()->all(), 'id', 'name');
     $i=0;
     foreach ($architecturesNames as $architecturesName)
@@ -117,7 +117,7 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
     }
 
     /* Столбцы режимов полёта */
-    $flightModes = app\models\FlightModes::find()->orderBy('name')->all();
+    $flightModes = app\models\FlightModes::find()->where(['id' => $usingFlightModes])->orderBy('name')->all();
     $i=0;
     foreach ($flightModes as $flightMode)
     {

@@ -174,7 +174,7 @@ class PowerDataController extends Controller
         }
         
         foreach ($importData['architectures'] as $key => $value) {
-            $architectureNameModel = ArchitecturesNames::findOne(['name' => $value['name']]);
+            $architectureNameModel = ArchitecturesNames::find()->where(['name' => $value['name']])->one();
             if ($architectureNameModel === null)
             {
                 $architectureNameModel = new ArchitecturesNames();
@@ -188,7 +188,7 @@ class PowerDataController extends Controller
         }
 
         foreach ($importData['flightModes'] as $key => $value) {
-            $flightModesModel = FlightModes::findOne(['name' => $value['name']]);
+            $flightModesModel = FlightModes::find()->where(['name' => $value['name']])->one();
             if ($flightModesModel === null)
             {
                 $flightModesModel = new FlightModes();
@@ -201,7 +201,7 @@ class PowerDataController extends Controller
         }
 
         foreach ($importData['energySources'] as $key => $value) {
-            $energySourcesModel = EnergySources::findOne(['name' => $value['name']]);
+            $energySourcesModel = EnergySources::find()->where(['name' => $value['name']])->one();
             if ($energySourcesModel === null)
             {
                 $energySourcesModel = new EnergySources();
@@ -221,7 +221,7 @@ class PowerDataController extends Controller
         }
 
         foreach ($importData['consumers'] as $consumer) {
-            $aircraftPartsModel = AircraftParts::findOne(['name' => $consumer['aircraftPart']]);
+            $aircraftPartsModel = AircraftParts::find()->where(['name' => $consumer['aircraftPart']])->one();
             if ($aircraftPartsModel === null)
             {
                 $aircraftPartsModel = new AircraftParts();
@@ -229,7 +229,7 @@ class PowerDataController extends Controller
                 $aircraftPartsModel->save();
             }
 
-            $consumerModel = Consumers::findOne(['name' => $consumer['name']]);
+            $consumerModel = Consumers::find()->where(['name' => $consumer['name']])->one();
             if ($consumerModel === null)
             {
                 $consumerModel = new Consumers();
@@ -242,7 +242,7 @@ class PowerDataController extends Controller
                 $consumerModel->save();
             }
 
-            $vehicleLayoutModel = VehicleLayout::findOne(['vehicleLayoutName_id' => $vehicleLayoutNameModel, 'consumer_id' => $consumerModel->id]);
+            $vehicleLayoutModel = VehicleLayout::find()->where(['vehicleLayoutName_id' => $vehicleLayoutNameModel, 'consumer_id' => $consumerModel->id])->one();
             if ($vehicleLayoutModel === null)
             {
                 $vehicleLayoutModel = new VehicleLayout();
@@ -252,7 +252,13 @@ class PowerDataController extends Controller
 
                 foreach ($consumer['energySourcesToArchitectures'] as $key => $value) {
                     $architectureNameID = $importData['architectures'][$key]['db_id'];
-                    $energySourceID = $importData['energySources'][$key]['db_id'];
+                    foreach ($importData['energySources'] as $ES) {
+                        if ($ES['name'] == $value)
+                        {
+                            $energySourceID = $ES['db_id'];
+                            break;
+                        }
+                    }
 
                     $architectureToVehicleLayoutModel = new ArchitectureToVehicleLayout();
                     $architectureToVehicleLayoutModel->vehicleLayout_id = $vehicleLayoutModel->id;
@@ -287,6 +293,7 @@ class PowerDataController extends Controller
         if ($post['settings_basicArchitecture'] !== null) {
             $newBasicID = $post['settings_basicArchitecture'];
             $newUsingArchitectures = implode(' ', $post['settings_usingArchitectures']);
+            $newUsingArchitectures.= ' '.$newBasicID;
             $newUsingFlightModes = implode(' ', $post['settings_usingFlightModes']);
 
             $architecturesNamesBasic = ArchitecturesNames::find()->where(['vehicleLayoutName_id' => $vehicleLayoutNameModel->id, 'isBasic' => 1])->one();
@@ -319,6 +326,8 @@ class PowerDataController extends Controller
     public function actionIndex($vehicleLayoutName_id)
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
+        $usingArchitectures = $this->getUsingArchitectures($vehicleLayoutName_id);
+        $usingFlightModes = $this->getUsingFlightModes($vehicleLayoutName_id);
         $vehicleLayoutModel = new VehicleLayout();
         $vehicleLayoutModel->attributes();
         $searchModel = new VehicleLayoutSearch();
@@ -398,7 +407,9 @@ class PowerDataController extends Controller
             'vehicleLayoutNameModel'=>$vehicleLayoutNameModel,
             'vehicleLayoutModel'=>$vehicleLayoutModel,
             'searchModel'=>$searchModel,
-            'dataProvider'=>$dataProvider
+            'dataProvider'=>$dataProvider,
+            'usingArchitectures' => $usingArchitectures,
+            'usingFlightModes' => $usingFlightModes,
         ]);
     }
 
