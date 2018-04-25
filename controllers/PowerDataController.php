@@ -336,6 +336,18 @@ class PowerDataController extends Controller
         $searchModel = new VehicleLayoutSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $vehicleLayoutName_id);
 
+        $architectureToVehicleLayoutModels = ArchitectureToVehicleLayout::find()->all();
+        $architectureToVehicleLayouts = [];
+        foreach ($architectureToVehicleLayoutModels as $architectureToVehicleLayoutModel) {
+            $architectureToVehicleLayouts[$architectureToVehicleLayoutModel->vehicleLayout_id][$architectureToVehicleLayoutModel->architectureName_id] = $architectureToVehicleLayoutModel->energySource_id;
+        }
+
+        $flightModesToVehicleLayoutModels = FlightModesToVehicleLayout::find()->all();
+        $flightModesToVehicleLayouts = [];
+        foreach ($flightModesToVehicleLayoutModels as $flightModesToVehicleLayoutModel) {
+            $flightModesToVehicleLayouts[$flightModesToVehicleLayoutModel->vehicleLayout_id][$flightModesToVehicleLayoutModel->flightMode_id] = $flightModesToVehicleLayoutModel->usageFactor;
+        }
+
         if (Yii::$app->request->post('hasEditable')) {
             $rowId = Yii::$app->request->post('editableKey');
             $VehicleLayoutModel = VehicleLayout::findOne($rowId);
@@ -413,6 +425,8 @@ class PowerDataController extends Controller
             'dataProvider'=>$dataProvider,
             'usingArchitectures' => $usingArchitectures,
             'usingFlightModes' => $usingFlightModes,
+            'architectureToVehicleLayouts' => $architectureToVehicleLayouts,
+            'flightModesToVehicleLayouts' => $flightModesToVehicleLayouts,
         ]);
     }
 
@@ -527,10 +541,14 @@ class PowerDataController extends Controller
 
         $selectedArchitectures = [key($basicArchitectureModel)];
         $post = \Yii::$app->request->post();
-        if ($post['selected_architectures']!=null) {
-            foreach ($post['selected_architectures'] as $key => $value) {
-                $selectedArchitectures[] = (int)$value;
+        if (isset($post['isPost'])) {
+            if (isset($post['selected_architectures'])) {
+                foreach ($post['selected_architectures'] as $key => $value) {
+                    $selectedArchitectures[] = (int)$value;
+                }
             }
+        } else {
+            $selectedArchitectures = $usingArchitectures;
         }
         $selectedArchitectures = array_unique($selectedArchitectures);
 

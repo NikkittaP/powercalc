@@ -26,6 +26,7 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
             'hAlign' => 'center',
             'vAlign' => 'center',
         ],
+        /*
         [
             'class' => 'kartik\grid\ExpandRowColumn',
             'value' => function ($model, $key, $index, $column) {
@@ -38,11 +39,12 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
             'expandOneOnly' => true,
             'width' => '50px',
         ],
+        */
         [
             'class' => 'kartik\grid\EditableColumn',
             'attribute' => 'consumer_id',
-            'content'=>function ($model, $key, $index, $column) {
-                return app\models\Consumers::findOne($model->consumer_id)->name;
+            'content'=>function ($model, $key, $index, $column) use($consumers) {
+                return $consumers[$model->consumer_id];
             },
             'readonly' => false,
             'editableOptions' => [
@@ -79,20 +81,18 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
         $gridColumns[] = [
             'class' => 'kartik\grid\EditableColumn',
             'attribute'=>'architectureToVehicleLayouts_'.$architecturesName->id,
-            'value'=>function ($model, $key, $index, $column) use($architecturesName) {
-                $m = app\models\ArchitectureToVehicleLayout::find()->where(['vehicleLayout_id'=>$model->id, 'architectureName_id'=>$architecturesName->id])->one();
-                if ($m==null)
+            'value'=>function ($model, $key, $index, $column) use($architecturesName, $architectureToVehicleLayouts, $energySources) {
+                if (!isset($architectureToVehicleLayouts[$model->id][$architecturesName->id]))
                     return '';
-                return app\models\EnergySources::findOne($m->energySource_id)->name;
+                return $energySources[$architectureToVehicleLayouts[$model->id][$architecturesName->id]];
             },
             'readonly' => false,
             'editableOptions' => [
                 'name' => 'architectureToVehicleLayouts_'.$architecturesName->id,
-                'value'=>function ($model, $key, $index, $column) use($architecturesName) {
-                    $m = app\models\ArchitectureToVehicleLayout::find()->where(['vehicleLayout_id'=>$model->id, 'architectureName_id'=>$architecturesName->id])->one();
-                    if ($m==null)
+                'value'=>function ($model, $key, $index, $column) use($architecturesName, $architectureToVehicleLayouts, $energySources) {
+                    if (!isset($architectureToVehicleLayouts[$model->id][$architecturesName->id]))
                         return '';
-                    return $m->energySource_id;
+                    return $energySources[$architectureToVehicleLayouts[$model->id][$architecturesName->id]];
                 },
                 'asPopover' => false,
                 'header' => 'Энергосистема',
@@ -128,11 +128,10 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
         $gridColumns[] = [
             'class' => 'kartik\grid\EditableColumn',
             'attribute'=>'flightModesToVehicleLayout_'.$flightMode->id,
-            'value'=>function ($model, $key, $index, $column) use($flightMode) {
-                $m = app\models\FlightModesToVehicleLayout::find()->where(['vehicleLayout_id'=>$model->id, 'flightMode_id'=>$flightMode->id])->one();
-                if ($m==null)
+            'value'=>function ($model, $key, $index, $column) use($flightMode, $flightModesToVehicleLayouts) {
+                if (!isset($flightModesToVehicleLayouts[$model->id][$flightMode->id]))
                     return '';
-                return $m->usageFactor;
+                return $flightModesToVehicleLayouts[$model->id][$flightMode->id];
             },
             'readonly' => false,
             'format' => ['decimal', 2],
@@ -165,7 +164,6 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
 
     echo GridView::widget([
         'dataProvider'=> $dataProvider,
-        //'filterModel' => $searchModel,
         'columns' => $gridColumns,
         'toolbar' =>  [
             [
