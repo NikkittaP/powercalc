@@ -13,7 +13,7 @@ $this->params['breadcrumbs'][] = $this->title;
 <div class="energy-source-types-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
-    <h3 style="color:red;">Данные типы жёстко заданы в коде расчёта с использованием ID. Поэтому запрещено любое изменение этих данных.</h3><br />
+    <h3 style="color:#a94442;">Данные типы жёстко заданы в коде расчёта с использованием ID. Поэтому запрещено любое изменение этих данных.</h3><br />
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>

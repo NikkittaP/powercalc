@@ -57,234 +57,240 @@ class PowerDataController extends Controller
     public function actionImport($vehicleLayoutName_id)
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
-
-        $inputFileName = Yii::getAlias('@app').'/import/import.xlsx';
-        $spreadsheet = IOFactory::load($inputFileName);
-        $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
-
-        $importData = [];
-        $importData['energySources'] = [];
-        $architectureStartLetter = 'H';
-        $architectureEndLetter;
-        $flightModeStartLetter = 'A';
-        $flightModeEndLetter;
-        foreach ($sheetData as $rowNum => $rowData) {
-            $architectureStarts = false;
-            $flightModesStarts = false;
-
-            if ($rowNum == 1)
-            {
-                /*
-                A - пусто
-                B - КПД гидро
-                C - КПД электро
-                D - Qпотр
-                E - Q0
-                F - Часть аппарата
-                G - пусто. Разделитель
-                ... - архитектуры
-                ... - пусто. Разделитель
-                ... - режимы полёта
-                */
-                foreach ($rowData as $letter => $data) {
-                    if ($letter === $architectureStartLetter)
-                        $architectureStarts = true;
-                    
-                    if ($architectureStarts && $data === null)
-                    {
-                        $architectureStarts = false;
-                        $flightModesStarts = true;
-                    }
-
-                    if ($architectureStarts)
-                    {
-                        $importData['architectures'][]['name'] = preg_replace( "/\r|\n/", " ", $data);
-                        $architectureEndLetter = $letter;
-                    }
-
-                    if ($flightModesStarts && $data !== null)
-                    {
-                        if ($flightModeStartLetter === 'A')
-                            $flightModeStartLetter = $letter;
-
-                        $importData['flightModes'][]['name'] = $data;
-                        $flightModeEndLetter = $letter;
-                    }
-                }
-            } else {
-                $consumer = [];
-
-                foreach ($rowData as $letter => $data) {
-                    if ($letter === $architectureStartLetter)
-                        $architectureStarts = true;
-                    if ($letter === $flightModeStartLetter)
-                        $flightModesStarts = true;
-                    
-                    switch ($letter) {
-                        case 'A':
-                            $consumer['name'] = $data;
-                            break;
-                        case 'B':
-                            $consumer['efficiencyHydro'] = $data;
-                            break;
-                        case 'C':
-                            $consumer['efficiencyElectric'] = $data;
-                            break;
-                        case 'D':
-                            $consumer['qMax'] = $data;
-                            break;
-                        case 'E':
-                            $consumer['q0'] = $data;
-                            break;
-                        case 'F':
-                            $consumer['aircraftPart'] = $data;
-                            break;
-                        
-                        default:
-                            if ($architectureStarts)
-                            {
-                                $consumer['energySourcesToArchitectures'][] = ($data === '-') ? null : $data;
-
-                                if ($data !== '-')
-                                {
-                                    $_exists = false;
-                                    foreach ($importData['energySources'] as $ES) {
-                                        if ($ES['name'] === $data)
-                                        $_exists = true;
-                                    }
-
-                                    if (!$_exists)
-                                        $importData['energySources'][]['name'] = $data;
-                                }
-                            }
-                            if ($flightModesStarts)
-                                $consumer['usageFactorToFlightModes'][] = $data;
-
-                            break;
-                    }
-                        
-                    if ($letter === $architectureEndLetter)
-                        $architectureStarts = false;
-                    if ($letter === $flightModeEndLetter)
-                        $flightModesStarts = false;
-                }
-
-                $importData['consumers'][] = $consumer;
-            }
-        }
+        $listOfFiles = $this->getListOfFiles();
         
-        foreach ($importData['architectures'] as $key => $value) {
-            $architectureNameModel = ArchitecturesNames::find()->where(['name' => $value['name']])->one();
-            if ($architectureNameModel === null)
-            {
-                $architectureNameModel = new ArchitecturesNames();
-                $architectureNameModel->vehicleLayoutName_id = $vehicleLayoutName_id;
-                $architectureNameModel->name = $value['name'];
-                $architectureNameModel->isBasic = false;
-                $architectureNameModel->save();
-            }
-            
-            $importData['architectures'][$key]['db_id'] = $architectureNameModel->id;
-        }
+        $post = \Yii::$app->request->post();
+        if ($post['selected_file'] !== null)
+        {
+            $inputFileName = Yii::getAlias('@app').'/import/'.$listOfFiles[$post['selected_file']];
+            $spreadsheet = IOFactory::load($inputFileName);
+            $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
 
-        foreach ($importData['flightModes'] as $key => $value) {
-            $flightModesModel = FlightModes::find()->where(['name' => $value['name']])->one();
-            if ($flightModesModel === null)
-            {
-                $flightModesModel = new FlightModes();
-                $flightModesModel->name = $value['name'];
-                $flightModesModel->reductionFactor = 0.6;
-                $flightModesModel->save();
-            }
-            
-            $importData['flightModes'][$key]['db_id'] = $flightModesModel->id;
-        }
+            $importData = [];
+            $importData['energySources'] = [];
+            $architectureStartLetter = 'H';
+            $architectureEndLetter;
+            $flightModeStartLetter = 'A';
+            $flightModeEndLetter;
+            foreach ($sheetData as $rowNum => $rowData) {
+                $architectureStarts = false;
+                $flightModesStarts = false;
 
-        foreach ($importData['energySources'] as $key => $value) {
-            $energySourcesModel = EnergySources::find()->where(['name' => $value['name']])->one();
-            if ($energySourcesModel === null)
-            {
-                $energySourcesModel = new EnergySources();
-                $energySourcesModel->name = $value['name'];
-
-                if (stripos($value['name'], 'ЛГС') !== FALSE)
-                    $energySourcesModel->energySourceType_id = 3;
-                else if (stripos($value['name'], 'ЭС') !== FALSE)
-                    $energySourcesModel->energySourceType_id = 4;
-                else
-                    $energySourcesModel->energySourceType_id = 1;
-
-                $energySourcesModel->save();
-            }
-            
-            $importData['energySources'][$key]['db_id'] = $energySourcesModel->id;
-        }
-
-        foreach ($importData['consumers'] as $consumer) {
-            $aircraftPartsModel = AircraftParts::find()->where(['name' => $consumer['aircraftPart']])->one();
-            if ($aircraftPartsModel === null)
-            {
-                $aircraftPartsModel = new AircraftParts();
-                $aircraftPartsModel->name = $consumer['aircraftPart'];
-                $aircraftPartsModel->save();
-            }
-
-            $consumerModel = Consumers::find()->where(['name' => $consumer['name']])->one();
-            if ($consumerModel === null)
-            {
-                $consumerModel = new Consumers();
-                $consumerModel->name = $consumer['name'];
-                $consumerModel->aircraftPart_id = $aircraftPartsModel->id;
-                $consumerModel->efficiencyHydro = $consumer['efficiencyHydro'];
-                $consumerModel->efficiencyElectric = $consumer['efficiencyElectric'];
-                $consumerModel->q0 = $consumer['q0'];
-                $consumerModel->qMax = $consumer['qMax'];
-                $consumerModel->save();
-            }
-
-            $vehicleLayoutModel = VehicleLayout::find()->where(['vehicleLayoutName_id' => $vehicleLayoutNameModel, 'consumer_id' => $consumerModel->id])->one();
-            if ($vehicleLayoutModel === null)
-            {
-                $vehicleLayoutModel = new VehicleLayout();
-                $vehicleLayoutModel->vehicleLayoutName_id = $vehicleLayoutName_id;
-                $vehicleLayoutModel->consumer_id = $consumerModel->id;
-                $vehicleLayoutModel->save();
-
-                foreach ($consumer['energySourcesToArchitectures'] as $key => $value) {
-                    $architectureNameID = $importData['architectures'][$key]['db_id'];
-                    if ($value !== null)
-                    {
-                        foreach ($importData['energySources'] as $ES) {
-                            if ($ES['name'] == $value)
-                            {
-                                $energySourceID = $ES['db_id'];
-                                break;
-                            }
+                if ($rowNum == 1)
+                {
+                    /*
+                    A - пусто
+                    B - КПД гидро
+                    C - КПД электро
+                    D - Qпотр
+                    E - Q0
+                    F - Часть аппарата
+                    G - пусто. Разделитель
+                    ... - архитектуры
+                    ... - пусто. Разделитель
+                    ... - режимы полёта
+                    */
+                    foreach ($rowData as $letter => $data) {
+                        if ($letter === $architectureStartLetter)
+                            $architectureStarts = true;
+                        
+                        if ($architectureStarts && $data === null)
+                        {
+                            $architectureStarts = false;
+                            $flightModesStarts = true;
                         }
 
-                        $architectureToVehicleLayoutModel = new ArchitectureToVehicleLayout();
-                        $architectureToVehicleLayoutModel->vehicleLayout_id = $vehicleLayoutModel->id;
-                        $architectureToVehicleLayoutModel->architectureName_id = $architectureNameID;
-                        $architectureToVehicleLayoutModel->energySource_id = $energySourceID;
-                        $architectureToVehicleLayoutModel->save();
-                    }
-                }
-                foreach ($consumer['usageFactorToFlightModes'] as $key => $value) {
-                    $flightModeID = $importData['flightModes'][$key]['db_id'];
+                        if ($architectureStarts)
+                        {
+                            $importData['architectures'][]['name'] = preg_replace( "/\r|\n/", " ", $data);
+                            $architectureEndLetter = $letter;
+                        }
 
-                    $flightModesToVehicleLayoutModel = new FlightModesToVehicleLayout();
-                    $flightModesToVehicleLayoutModel->vehicleLayout_id = $vehicleLayoutModel->id;
-                    $flightModesToVehicleLayoutModel->flightMode_id = $flightModeID;
-                    $flightModesToVehicleLayoutModel->usageFactor = $value;
-                    $flightModesToVehicleLayoutModel->save();
+                        if ($flightModesStarts && $data !== null)
+                        {
+                            if ($flightModeStartLetter === 'A')
+                                $flightModeStartLetter = $letter;
+
+                            $importData['flightModes'][]['name'] = $data;
+                            $flightModeEndLetter = $letter;
+                        }
+                    }
+                } else {
+                    $consumer = [];
+
+                    foreach ($rowData as $letter => $data) {
+                        if ($letter === $architectureStartLetter)
+                            $architectureStarts = true;
+                        if ($letter === $flightModeStartLetter)
+                            $flightModesStarts = true;
+                        
+                        switch ($letter) {
+                            case 'A':
+                                $consumer['name'] = $data;
+                                break;
+                            case 'B':
+                                $consumer['efficiencyHydro'] = $data;
+                                break;
+                            case 'C':
+                                $consumer['efficiencyElectric'] = $data;
+                                break;
+                            case 'D':
+                                $consumer['qMax'] = $data;
+                                break;
+                            case 'E':
+                                $consumer['q0'] = $data;
+                                break;
+                            case 'F':
+                                $consumer['aircraftPart'] = $data;
+                                break;
+                            
+                            default:
+                                if ($architectureStarts)
+                                {
+                                    $consumer['energySourcesToArchitectures'][] = ($data === '-') ? null : $data;
+
+                                    if ($data !== '-')
+                                    {
+                                        $_exists = false;
+                                        foreach ($importData['energySources'] as $ES) {
+                                            if ($ES['name'] === $data)
+                                            $_exists = true;
+                                        }
+
+                                        if (!$_exists)
+                                            $importData['energySources'][]['name'] = $data;
+                                    }
+                                }
+                                if ($flightModesStarts)
+                                    $consumer['usageFactorToFlightModes'][] = $data;
+
+                                break;
+                        }
+                            
+                        if ($letter === $architectureEndLetter)
+                            $architectureStarts = false;
+                        if ($letter === $flightModeEndLetter)
+                            $flightModesStarts = false;
+                    }
+
+                    $importData['consumers'][] = $consumer;
                 }
             }
+            
+            foreach ($importData['architectures'] as $key => $value) {
+                $architectureNameModel = ArchitecturesNames::find()->where(['name' => $value['name']])->one();
+                if ($architectureNameModel === null)
+                {
+                    $architectureNameModel = new ArchitecturesNames();
+                    $architectureNameModel->vehicleLayoutName_id = $vehicleLayoutName_id;
+                    $architectureNameModel->name = $value['name'];
+                    $architectureNameModel->isBasic = false;
+                    $architectureNameModel->save();
+                }
+                
+                $importData['architectures'][$key]['db_id'] = $architectureNameModel->id;
+            }
+
+            foreach ($importData['flightModes'] as $key => $value) {
+                $flightModesModel = FlightModes::find()->where(['name' => $value['name']])->one();
+                if ($flightModesModel === null)
+                {
+                    $flightModesModel = new FlightModes();
+                    $flightModesModel->name = $value['name'];
+                    $flightModesModel->reductionFactor = 0.6;
+                    $flightModesModel->save();
+                }
+                
+                $importData['flightModes'][$key]['db_id'] = $flightModesModel->id;
+            }
+
+            foreach ($importData['energySources'] as $key => $value) {
+                $energySourcesModel = EnergySources::find()->where(['name' => $value['name']])->one();
+                if ($energySourcesModel === null)
+                {
+                    $energySourcesModel = new EnergySources();
+                    $energySourcesModel->name = $value['name'];
+
+                    if (stripos($value['name'], 'ЛГС') !== FALSE)
+                        $energySourcesModel->energySourceType_id = 3;
+                    else if (stripos($value['name'], 'ЭС') !== FALSE)
+                        $energySourcesModel->energySourceType_id = 4;
+                    else
+                        $energySourcesModel->energySourceType_id = 1;
+
+                    $energySourcesModel->save();
+                }
+                
+                $importData['energySources'][$key]['db_id'] = $energySourcesModel->id;
+            }
+
+            foreach ($importData['consumers'] as $consumer) {
+                $aircraftPartsModel = AircraftParts::find()->where(['name' => $consumer['aircraftPart']])->one();
+                if ($aircraftPartsModel === null)
+                {
+                    $aircraftPartsModel = new AircraftParts();
+                    $aircraftPartsModel->name = $consumer['aircraftPart'];
+                    $aircraftPartsModel->save();
+                }
+
+                $consumerModel = Consumers::find()->where(['name' => $consumer['name']])->one();
+                if ($consumerModel === null)
+                {
+                    $consumerModel = new Consumers();
+                    $consumerModel->name = $consumer['name'];
+                    $consumerModel->aircraftPart_id = $aircraftPartsModel->id;
+                    $consumerModel->efficiencyHydro = $consumer['efficiencyHydro'];
+                    $consumerModel->efficiencyElectric = $consumer['efficiencyElectric'];
+                    $consumerModel->q0 = $consumer['q0'];
+                    $consumerModel->qMax = $consumer['qMax'];
+                    $consumerModel->save();
+                }
+
+                $vehicleLayoutModel = VehicleLayout::find()->where(['vehicleLayoutName_id' => $vehicleLayoutNameModel, 'consumer_id' => $consumerModel->id])->one();
+                if ($vehicleLayoutModel === null)
+                {
+                    $vehicleLayoutModel = new VehicleLayout();
+                    $vehicleLayoutModel->vehicleLayoutName_id = $vehicleLayoutName_id;
+                    $vehicleLayoutModel->consumer_id = $consumerModel->id;
+                    $vehicleLayoutModel->save();
+
+                    foreach ($consumer['energySourcesToArchitectures'] as $key => $value) {
+                        $architectureNameID = $importData['architectures'][$key]['db_id'];
+                        if ($value !== null)
+                        {
+                            foreach ($importData['energySources'] as $ES) {
+                                if ($ES['name'] == $value)
+                                {
+                                    $energySourceID = $ES['db_id'];
+                                    break;
+                                }
+                            }
+
+                            $architectureToVehicleLayoutModel = new ArchitectureToVehicleLayout();
+                            $architectureToVehicleLayoutModel->vehicleLayout_id = $vehicleLayoutModel->id;
+                            $architectureToVehicleLayoutModel->architectureName_id = $architectureNameID;
+                            $architectureToVehicleLayoutModel->energySource_id = $energySourceID;
+                            $architectureToVehicleLayoutModel->save();
+                        }
+                    }
+                    foreach ($consumer['usageFactorToFlightModes'] as $key => $value) {
+                        $flightModeID = $importData['flightModes'][$key]['db_id'];
+
+                        $flightModesToVehicleLayoutModel = new FlightModesToVehicleLayout();
+                        $flightModesToVehicleLayoutModel->vehicleLayout_id = $vehicleLayoutModel->id;
+                        $flightModesToVehicleLayoutModel->flightMode_id = $flightModeID;
+                        $flightModesToVehicleLayoutModel->usageFactor = $value;
+                        $flightModesToVehicleLayoutModel->save();
+                    }
+                }
+            }
+
+            //VarDumper::dump( $importData, $depth = 10, $highlight = true);
         }
 
-        //VarDumper::dump( $importData, $depth = 10, $highlight = true);
-
         return $this->render('import', [
-            'vehicleLayoutNameModel' => $vehicleLayoutNameModel
+            'vehicleLayoutNameModel' => $vehicleLayoutNameModel,
+            'listOfFiles' => $listOfFiles,
         ]);
     }
 
@@ -654,6 +660,24 @@ class PowerDataController extends Controller
     {
         $string = VehiclesLayoutsNames::findOne($vehicleLayoutName_id)->usingFlightModes;
         return explode(' ', $string);
+    }
+
+    protected function getListOfFiles()
+    {
+        $list = [];
+        if ($handle = opendir(Yii::getAlias('@app').'/import')) {
+            while (false !== ($entry = readdir($handle))) {
+                if ($entry != "." && $entry != "..") {
+                    if (strpos($entry, '~$') === false) {
+                        $list[] = $entry;
+                    }
+                }
+            }
+        
+            closedir($handle);
+        }
+
+        return $list;
     }
 
     protected function clearPreviousResults($vehicleLayoutName_id)
