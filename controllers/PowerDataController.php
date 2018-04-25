@@ -429,10 +429,12 @@ class PowerDataController extends Controller
     public function actionCalculate()
     {
         $vehicleLayoutName_id = Yii::$app->request->post('vehicleLayoutName_id');
+        $usingArchitectures = $this->getUsingArchitectures($vehicleLayoutName_id);
+        $usingFlightModes = $this->getUsingFlightModes($vehicleLayoutName_id);
 
         $algorithm = new PowerDataAlgorithm();
        
-        $architectureModels = ArchitecturesNames::find()->where(['vehicleLayoutName_id' => $vehicleLayoutName_id])->all();
+        $architectureModels = ArchitecturesNames::find()->where(['id' => $usingArchitectures, 'vehicleLayoutName_id' => $vehicleLayoutName_id])->orderBy(['isBasic' => SORT_DESC])->all();
         foreach($architectureModels as $architectureModel)
         {
             $algorithm->addArchitecture($architectureModel->id, [
@@ -440,7 +442,7 @@ class PowerDataController extends Controller
             ]);
         }
         
-        $flightModeModels = FlightModes::find()->all();
+        $flightModeModels = FlightModes::find()->where(['id' => $usingFlightModes])->all();
         foreach($flightModeModels as $flightModeModel)
         {
             $algorithm->addFlightMode($flightModeModel->id, [
@@ -508,7 +510,9 @@ class PowerDataController extends Controller
     public function actionResults($vehicleLayoutName_id)
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
-        $flightModeModel = FlightModes::find()->all();
+        $usingArchitectures = $this->getUsingArchitectures($vehicleLayoutName_id);
+        $usingFlightModes = $this->getUsingFlightModes($vehicleLayoutName_id);
+        $flightModeModel = FlightModes::find()->where(['id' => $usingFlightModes])->all();
         $aircraftPartsModel = AircraftParts::find()->orderBy('name')->all();
         $energySourcesModel = EnergySources::find()->orderBy('name')->all();
 
@@ -578,7 +582,8 @@ class PowerDataController extends Controller
         $data = ResultsEnergySources::find()
             ->where([
                 'vehicleLayoutName_id'=>$vehicleLayoutName_id,
-                'architectureName_id'=>array_values($selectedArchitectures)
+                'architectureName_id'=>array_values($selectedArchitectures),
+                'flightMode_id' => $usingFlightModes,
                 ])
             ->orderBy('flightMode_id')
             ->all();
@@ -600,6 +605,8 @@ class PowerDataController extends Controller
 
         return $this->render('results', [
             'vehicleLayoutNameModel' => $vehicleLayoutNameModel,
+            'usingArchitectures' => $usingArchitectures,
+            'usingFlightModes' => $usingFlightModes,
             'flightModeModel' => $flightModeModel,
             'aircraftPartsModel' => $aircraftPartsModel,
             'energySourcesModel' => $energySourcesModel,

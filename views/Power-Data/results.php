@@ -26,7 +26,7 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
     <h3>Выберите архитектуры для отображения результатов по ним:</h3>
     <?php
     echo Html::beginForm(['power-data/results', 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id],'post');
-    $items = ArrayHelper::map(ArchitecturesNames::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutNameModel->id])->all(), 'id', 'name');
+    $items = ArrayHelper::map(ArchitecturesNames::find()->where(['id' => $usingArchitectures, 'vehicleLayoutName_id'=>$vehicleLayoutNameModel->id])->all(), 'id', 'name');
     echo Html::checkboxList('selected_architectures', $selectedArchitectures, $items,  [
         'item' => function ($index, $label, $name, $checked, $value) use($basicArchitecture) {
             return Html::checkbox($name, $checked, [
