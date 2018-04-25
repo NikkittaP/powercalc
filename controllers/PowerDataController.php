@@ -284,7 +284,7 @@ class PowerDataController extends Controller
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
 
         return $this->render('settings', [
-            'vehicleLayoutNameModel'=>$vehicleLayoutNameModel,
+            'vehicleLayoutNameModel' => $vehicleLayoutNameModel,
         ]);
     }
 
@@ -579,8 +579,8 @@ class PowerDataController extends Controller
 
     protected function clearPreviousResults($vehicleLayoutName_id)
     {
-        ResultsConsumers::deleteAll(['vehicleLayoutName_id'=>$vehicleLayoutName_id]);
-        ResultsEnergySources::deleteAll(['vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+        ResultsConsumers::deleteAll(['vehicleLayoutName_id' => $vehicleLayoutName_id]);
+        ResultsEnergySources::deleteAll(['vehicleLayoutName_id' => $vehicleLayoutName_id]);
     }
 
     protected function saveResults($vehicleLayoutName_id, $results)

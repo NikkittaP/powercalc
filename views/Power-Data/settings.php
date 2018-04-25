@@ -12,6 +12,7 @@ echo $this->render('_header_links', ['currentPage' => 'settings', 'vehicleLayout
 ?>
 
 <div class="power-data-settings">
+    <h3>Базовая архитектура:</h3>
     <?php
         $items = ArrayHelper::map(ArchitecturesNames::find(['vehicleLayoutName_id' => $vehicleLayoutNameModel->id])->all(), 'id', 'name');
         $selected = ArchitecturesNames::find()->where(['vehicleLayoutName_id' => $vehicleLayoutNameModel->id, 'isBasic' => 1])->one()->id;
