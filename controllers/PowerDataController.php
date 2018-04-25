@@ -282,6 +282,30 @@ class PowerDataController extends Controller
     public function actionSettings($vehicleLayoutName_id)
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
+
+        $post = \Yii::$app->request->post();
+        if ($post['settings_basicArchitecture'] !== null) {
+            $newBasicID = $post['settings_basicArchitecture'];
+            $newUsingArchitectures = implode(' ', $post['settings_usingArchitectures']);
+            $newUsingFlightModes = implode(' ', $post['settings_usingFlightModes']);
+
+            $architecturesNamesBasic = ArchitecturesNames::find()->where(['vehicleLayoutName_id' => $vehicleLayoutNameModel->id, 'isBasic' => 1])->one();
+            if ($architecturesNamesBasic->id != $newBasicID)
+            {
+                $architecturesNamesBasic->isBasic = false;
+                $architecturesNamesBasic->save();
+
+                $architecturesNamesBasic = ArchitecturesNames::find()->where(['id' => $newBasicID, 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id])->one();
+                $architecturesNamesBasic->isBasic = true;
+                $architecturesNamesBasic->save();
+            }
+
+            $vehiclesLayoutsNamesModel = VehiclesLayoutsNames::findOne($vehicleLayoutName_id);
+            $vehiclesLayoutsNamesModel->usingArchitectures = $newUsingArchitectures;
+            $vehiclesLayoutsNamesModel->usingFlightModes = $newUsingFlightModes;
+            $vehiclesLayoutsNamesModel->save();
+        }
+
         $usingArchitectures = $this->getUsingArchitectures($vehicleLayoutName_id);
         $usingFlightModes = $this->getUsingFlightModes($vehicleLayoutName_id);
 
