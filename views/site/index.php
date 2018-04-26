@@ -20,14 +20,47 @@ $this->title = 'PowerCalc';
         <h1><?=Yii::$app->name?></h1>
 
         <p class="lead">Инструмент для анализа энергетических систем</p>
-
-        <!--
-        <p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>
-        -->
     </div>
 
     <div class="body-content">
         <div class="row">
+            <div class="col-lg-3"></div>
+            <div class="col-lg-6">
+                <div class="panel panel-primary" style = "border-color: black;">
+                    <div class="panel-heading" style = "background-color: black;">
+                        <h3 class="panel-title">
+                            <?= Html::a('Компоновки', ['vehicles-layouts-names/index']) ?>
+                        </h3>
+                    </div>
+
+                    <div class="panel-body" style="padding:0px;">
+                        <table class="table table-striped">
+
+                            <?php
+                            $vehiclesLayoutsNames = VehiclesLayoutsNames::find()->all();
+                            foreach ($vehiclesLayoutsNames as $vehiclesLayoutsName)
+                            {
+                                echo '<tr><td>';
+                                echo Html::a($vehiclesLayoutsName->name.' ('.$vehiclesLayoutsName->vehicle->name.')', ['vehicles-layouts-names/view', 'id' => $vehiclesLayoutsName->id]);
+                                echo '</td><td>';
+                                echo Html::a('Импорт', ['power-data/import', 'vehicleLayoutName_id' => $vehiclesLayoutsName->id]);
+                                echo ' </td><td>';
+                                echo Html::a('Настройки', ['power-data/settings', 'vehicleLayoutName_id' => $vehiclesLayoutsName->id]);
+                                echo ' </td><td>';
+                                echo Html::a('Данные', ['power-data/index', 'vehicleLayoutName_id' => $vehiclesLayoutsName->id]);
+                                echo '</td><td>';
+                                echo Html::a('Результаты', ['power-data/results', 'vehicleLayoutName_id' => $vehiclesLayoutsName->id]);
+                                echo '</td></tr>';
+                            }
+                            ?>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr style="border-color: black;background-color: black;" />
+        <div class="row">
+            <div class="col-lg-2"></div>
             <div class="col-lg-2">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
@@ -48,135 +81,6 @@ $this->title = 'PowerCalc';
                             echo ' </td></tr>';
                         }
                         ?>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <?= Html::a('Компоновки', ['vehicles-layouts-names/index']) ?>
-                        </h3>
-                    </div>
-
-                    <div class="panel-body" style="padding:0px;">
-                        <table class="table table-striped">
-
-                            <?php
-                            $vehiclesLayoutsNames = VehiclesLayoutsNames::find()->all();
-                            foreach ($vehiclesLayoutsNames as $vehiclesLayoutsName)
-                            {
-                                echo '<tr><td>';
-                                echo Html::a($vehiclesLayoutsName->name.' ('.$vehiclesLayoutsName->vehicle->name.')', ['vehicles-layouts-names/view', 'id' => $vehiclesLayoutsName->id]);
-                                echo '</td><td>';
-                                echo Html::a('Данные', ['power-data/index', 'vehicleLayoutName_id' => $vehiclesLayoutsName->id]);
-                                echo '</td><td>';
-                                echo Html::a('Результаты', ['power-data/results', 'vehicleLayoutName_id' => $vehiclesLayoutsName->id]);
-                                echo '</td><td>';
-                                echo Html::a('Импорт', ['power-data/import', 'vehicleLayoutName_id' => $vehiclesLayoutsName->id]);
-                                echo ' </td></tr>';
-                            }
-                            ?>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-2">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <?= Html::a('Части аппарата', ['aircraft-parts/index']) ?>
-                        </h3>
-                    </div>
-
-                    <div class="panel-body" style="padding:0px;">
-                        <table class="table table-striped">
-
-                            <?php
-                            $aircraftParts = AircraftParts::find()->all();
-                            foreach ($aircraftParts as $aircraftPart)
-                            {
-                                echo '<tr><td>';
-                                echo Html::a($aircraftPart->name, ['aircraft-parts/view', 'id' => $aircraftPart->id]);
-                                echo ' </td></tr>';
-                            }
-                            ?>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-2">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <?= Html::a('Энергосистемы', ['energy-sources/index']) ?>
-                        </h3>
-                    </div>
-
-                    <div class="panel-body" style="padding:0px;">
-                        <table class="table table-striped">
-
-                            <?php
-                            $energySources = EnergySources::find()->all();
-                            foreach ($energySources as $energySource)
-                            {
-                                echo '<tr><td>';
-                                echo Html::a($energySource->name, ['energy-sources/view', 'id' => $energySource->id]);
-                                echo ' </td></tr>';
-                            }
-                            ?>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-lg-4">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <?= Html::a('Потребители', ['consumers/index']) ?>
-                        </h3>
-                    </div>
-
-                    <div class="panel-body" style="padding:0px;">
-                        <table class="table table-striped">
-
-                            <?php
-                            $consumers = Consumers::find()->all();
-                            foreach ($consumers as $consumer)
-                            {
-                                echo '<tr><td>';
-                                echo Html::a($consumer->name, ['consumers/view', 'id' => $consumer->id]);
-                                echo ' </td></tr>';
-                            }
-                            ?>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-2">
-                <div class="panel panel-primary">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <?= Html::a('Режимы полёта', ['flight-modes/index']) ?>
-                        </h3>
-                    </div>
-
-                    <div class="panel-body" style="padding:0px;">
-                        <table class="table table-striped">
-
-                            <?php
-                            $flightModes = FlightModes::find()->all();
-                            foreach ($flightModes as $flightMode)
-                            {
-                                echo '<tr><td>';
-                                echo Html::a($flightMode->name, ['flight-modes/view', 'id' => $flightMode->id]);
-                                echo ' </td></tr>';
-                            }
-                            ?>
                         </table>
                     </div>
                 </div>
@@ -209,6 +113,34 @@ $this->title = 'PowerCalc';
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h3 class="panel-title">
+                            <?= Html::a('Режимы полёта', ['flight-modes/index']) ?>
+                        </h3>
+                    </div>
+
+                    <div class="panel-body" style="padding:0px;">
+                        <table class="table table-striped">
+
+                            <?php
+                            $flightModes = FlightModes::find()->all();
+                            foreach ($flightModes as $flightMode)
+                            {
+                                echo '<tr><td>';
+                                echo Html::a($flightMode->name, ['flight-modes/view', 'id' => $flightMode->id]);
+                                echo ' </td></tr>';
+                            }
+                            ?>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr style="border-color: black;background-color: black;" />
+        <div class="row">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-2">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
                             <?= Html::a('Типы энергосистем', ['energy-source-types/index']) ?>
                         </h3>
                     </div>
@@ -229,7 +161,82 @@ $this->title = 'PowerCalc';
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="col-lg-2">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <?= Html::a('Энергосистемы', ['energy-sources/index']) ?>
+                        </h3>
+                    </div>
 
+                    <div class="panel-body" style="padding:0px;">
+                        <table class="table table-striped">
+
+                            <?php
+                            $energySources = EnergySources::find()->all();
+                            foreach ($energySources as $energySource)
+                            {
+                                echo '<tr><td>';
+                                echo Html::a($energySource->name, ['energy-sources/view', 'id' => $energySource->id]);
+                                echo ' </td></tr>';
+                            }
+                            ?>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr style="border-color: black;background-color: black;" />
+        <div class="row">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-2">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <?= Html::a('Части аппарата', ['aircraft-parts/index']) ?>
+                        </h3>
+                    </div>
+
+                    <div class="panel-body" style="padding:0px;">
+                        <table class="table table-striped">
+
+                            <?php
+                            $aircraftParts = AircraftParts::find()->all();
+                            foreach ($aircraftParts as $aircraftPart)
+                            {
+                                echo '<tr><td>';
+                                echo Html::a($aircraftPart->name, ['aircraft-parts/view', 'id' => $aircraftPart->id]);
+                                echo ' </td></tr>';
+                            }
+                            ?>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <?= Html::a('Потребители', ['consumers/index']) ?>
+                        </h3>
+                    </div>
+
+                    <div class="panel-body" style="padding:0px;">
+                        <table class="table table-striped">
+
+                            <?php
+                            $consumers = Consumers::find()->all();
+                            foreach ($consumers as $consumer)
+                            {
+                                echo '<tr><td>';
+                                echo Html::a($consumer->name, ['consumers/view', 'id' => $consumer->id]);
+                                echo ' </td></tr>';
+                            }
+                            ?>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
