@@ -17,7 +17,15 @@ $this->title = 'Описание инструмента';
     </div>
 
      <div class="body-content">
-        <div>
+        <ul>
+            <li><?= Html::a('Описание Базы Данных', '#db');?></li>
+        </ul>
+
+        <div id="web">
+            <h3>Описание Базы Данных</h3>
+        </div>
+        <div id="db" style="padding-top:60px;">
+        <hr style="border-color: black;background-color: black;" />
             <h3>Описание Базы Данных</h3>
             <h4>Схема БД:</h4>
             <div class="text-center">

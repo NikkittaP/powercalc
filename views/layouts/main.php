@@ -36,8 +36,9 @@ AppAsset::register($this);
         ],
     ]);
     echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-right'],
+        'options' => ['class' => 'navbar-nav navbar-right redlink'],
         'items' => [
+            ['label' => 'Очистка БД', 'url' => ['/site/truncate'], 'linkOptions' => ['class' => 'redlink']],
             ['label' => 'Описание', 'url' => ['/site/about']],
             ['label' => 'Главная', 'url' => ['/site/index']],
         ],

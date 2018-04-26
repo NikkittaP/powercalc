@@ -8,6 +8,15 @@ body {
     margin: 0 auto;
 }
 
+.navbar-inverse .navbar-nav>li>a.redlink {
+    color: #a94442;
+}
+
+.navbar-inverse .navbar-nav>li>a.redlink:hover,
+.navbar-inverse .navbar-nav>.active>a.redlink {
+    color: #FF0000;
+}
+
 .wrap {
     min-height: 100%;
     height: auto;
