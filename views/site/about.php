@@ -55,6 +55,104 @@ $this->title = 'Описание инструмента';
                             <li><b>q0</b> &ndash; Q0.</li>
                             <li><b>qMax</b> &ndash; Q потр.</li>
                         </ul>
+                    <li><b>EnergySourceTypes</b> &ndash; типы энергосистем. Данный список является жёстко заданным и не подлежит изменению со стороны пользователя.</li>
+                        <ul>
+                            <li><b>id</b> &ndash; уникальный идентификатор.</li>
+                            <li><b>name</b> &ndash; название типа энергосистемы ["Гидросистема", "Гидроэлектросистема", "Зональная гидроэлектросистема", "Электросистема"].</li>
+                        </ul>
+                    <li><b>EnergySources</b> &ndash; энергосистемы.</li>
+                        <ul>
+                            <li><b>id</b> &ndash; уникальный идентификатор.</li>
+                            <li><b>name</b> &ndash; название энергосистемы ["ГС1", "ЛГС3", "ЭС1"].</li>
+                            <li><b>energySourceType_id</b> &ndash; связь с типом энергосистемы.</li>
+                            <li><b>qMax</b> &ndash; Qmax для расчёта Q располагаемого.</li>
+                            <li><b>pumpPressureNominal</b> &ndash; Pнас ном.</li>
+                            <li><b>pumpPressureWorkQmax</b> &ndash; Pнас раб при Qmax.</li>
+                        </ul>
+                    <li><b>FlightModes</b> &ndash; режимы полёта.</li>
+                        <ul>
+                            <li><b>id</b> &ndash; уникальный идентификатор.</li>
+                            <li><b>name</b> &ndash; название режима полета ["Руление", "Взлёт"].</li>
+                            <li><b>reductionFactor</b> &ndash; коэффициент понижения оборотов.</li>
+                        </ul>
+                    <li><b>Vehicles</b> &ndash; аппараты.</li>
+                        <ul>
+                            <li><b>id</b> &ndash; уникальный идентификатор.</li>
+                            <li><b>name</b> &ndash; название аппарата ["Sukhoi Superjet 100", "Дрон 1", "МС-21"].</li>
+                        </ul>
+                    <li><b>VehiclesLayoutsNames</b> &ndash; компоновки для конкретного аппарата.</li>
+                        <ul>
+                            <li><b>id</b> &ndash; уникальный идентификатор.</li>
+                            <li><b>vehicle_id</b> &ndash; связь с конкретным аппаратом.</li>
+                            <li><b>name</b> &ndash; название модели (компоновки) ["Базовая модель", "Детальная модель"].</li>
+                            Следующие столбцы принадлежат уже к "промежуточным" данным:
+                            <li><b>usingArchitectures</b> &ndash; id используемых архитектур через пробел.</li>
+                            <li><b>usingFlightModes</b> &ndash; id используемых режимов полета через пробел.</li>
+                        </ul>
+                    <li><b>ArchitecturesNames</b> &ndash; архитектуры для конкретной компоновки.</li>
+                        <ul>
+                            <li><b>id</b> &ndash; уникальный идентификатор.</li>
+                            <li><b>vehicleLayoutName_id</b> &ndash; связь с конкретной компоновкой.</li>
+                            <li><b>name</b> &ndash; название архитектуры для модели (компоновки) ["База", "БЭС1"].</li>
+                            <li><b>isBasic</b> &ndash; является ли базовой архитектурой.</li>
+                        </ul>
+                </ul>
+                <h4>"Промежуточные" таблицы</h4>
+                <ul>
+                    <li><b>VehicleLayout</b> &ndash; корневая таблица связей. Конкретно она связывает потребителя с компоновкой.</li>
+                        <ul>
+                            <li><b>id</b> &ndash; уникальный идентификатор.</li>
+                            <li><b>vehicleLayoutName_id</b> &ndash; связь с конкретной компоновкой.</li>
+                            <li><b>consumer_id</b> &ndash; связь с конкретным потребителем.</li>
+                        </ul>
+                    <li><b>Architecture_to_VehicleLayout</b> &ndash; связь компоновки, потребителя, архитектуры и выбранной энергосистемы.</li>
+                        <ul>
+                            <li><b>id</b> &ndash; уникальный идентификатор.</li>
+                            <li><b>vehicleLayout_id</b> &ndash; связь с корневой таблицей связей.</li>
+                            <li><b>architectureName_id</b> &ndash; связь с конкретной архитектурой.</li>
+                            <li><b>energySource_id</b> &ndash; связь с конкретной энергосистемой.</li>
+                        </ul>
+                    <li><b>FlightModes_to_VehicleLayout</b> &ndash; связь компоновки, потребителя и режима полёта.</li>
+                        <ul>
+                            <li><b>id</b> &ndash; уникальный идентификатор.</li>
+                            <li><b>vehicleLayout_id</b> &ndash; связь с корневой таблицей связей.</li>
+                            <li><b>flightMode_id</b> &ndash; связь с конкретным режимом полёта.</li>
+                            <li><b>usageFactor</b> &ndash; на сколько задействован потребитель на данном режиме полёта [0..1].</li>
+                        </ul>
+                </ul>
+                <h4>"Расчётные" таблицы</h4>
+                <ul>
+                    <li><b>ResultsConsumers</b> &ndash; таблица с результатами расчёта по потребителям.</li>
+                        <ul>
+                            <li><b>id</b> &ndash; уникальный идентификатор.</li>
+                            <li><b>vehicleLayoutName_id</b> &ndash; связь с конкретной компоновкой.</li>
+                            <li><b>architectureName_id</b> &ndash; связь с конкретной архитектурой.</li>
+                            <li><b>flightMode_id</b> &ndash; связь с конкретным режимом полёта.</li>
+                            <li><b>consumer_id</b> &ndash; связь с конкретным потребителем.</li>
+                            <li><b>consumption</b> &ndash; расход.</li>
+                            <li><b>P_in</b> &ndash; Pin.</li>
+                            <li><b>N_in_hydro</b> &ndash; Nin_гс.</li>
+                            <li><b>N_out</b> &ndash; Nвых.</li>
+                            <li><b>N_in_electric</b> &ndash; Nin_эс.</li>
+                        </ul>
+                    <li><b>ResultsEnergySources</b> &ndash; таблица с результатами расчёта по энергосистемам.</li>
+                        <ul>
+                            <li><b>id</b> &ndash; уникальный идентификатор.</li>
+                            <li><b>vehicleLayoutName_id</b> &ndash; связь с конкретной компоновкой.</li>
+                            <li><b>architectureName_id</b> &ndash; связь с конкретной архитектурой.</li>
+                            <li><b>flightMode_id</b> &ndash; связь с конкретным режимом полёта.</li>
+                            <li><b>consumer_id</b> &ndash; связь с конкретным потребителем.</li>
+                            <li><b>Qpump</b> &ndash; Q нас.</li>
+                            <li><b>Qdisposable</b> &ndash; Q распол.</li>
+                            <li><b>P_pump_out</b> &ndash; P нас вых.</li>
+                            <li><b>Q_curr_to_Q_max</b> &ndash; Qтек/Qmax.</li>
+                            <li><b>N_pump_out</b> &ndash; N нас вых.</li>
+                            <li><b>N_pump_in</b> &ndash; N нас вх.</li>
+                            <li><b>N_consumers_in_hydro</b> &ndash; Nпотр_вх_гс.</li>
+                            <li><b>N_consumers_out</b> &ndash; Nпотр_вых.</li>
+                            <li><b>N_electric_total</b> &ndash; Nэс_всего.</li>
+                            <li><b>N_takeoff</b> &ndash; Nотбора.</li>
+                        </ul>
                 </ul>
             </p>
         </div>
