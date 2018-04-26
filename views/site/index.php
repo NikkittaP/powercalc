@@ -12,7 +12,7 @@ use \app\models\Vehicles;
 use \app\models\VehiclesLayoutsNames;
 use yii\helpers\Html;
 
-$this->title = 'PowerCalc';
+$this->title = 'PowerCalc - Инструмент для анализа энергетических систем';
 ?>
 <div class="site-index">
 

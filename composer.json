@@ -23,7 +23,8 @@
         "miloschuman/yii2-highcharts-widget": "^6.0",
         "kartik-v/yii2-grid": "@dev",
         "kartik-v/yii2-editable": "*",
-        "phpoffice/phpspreadsheet": "^1.2"
+        "phpoffice/phpspreadsheet": "^1.2",
+        "newerton/yii2-fancybox-3": "@dev"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",
