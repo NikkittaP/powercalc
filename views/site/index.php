@@ -101,7 +101,7 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
                             foreach ($architecturesNames as $architectureName)
                             {
                                 echo '<tr><td>';
-                                echo Html::a($architectureName->name, ['architectures-names/view', 'id' => $architectureName->id]);
+                                echo Html::a($architectureName->name. ' ('.$architectureName->vehicleLayoutName->name.' ('.$architectureName->vehicleLayoutName->vehicle->name.'))', ['architectures-names/view', 'id' => $architectureName->id]);
                                 echo ' </td></tr>';
                             }
                             ?>
