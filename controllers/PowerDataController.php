@@ -178,7 +178,7 @@ class PowerDataController extends Controller
             }
             
             foreach ($importData['architectures'] as $key => $value) {
-                $architectureNameModel = ArchitecturesNames::find()->where(['name' => $value['name']])->one();
+                $architectureNameModel = ArchitecturesNames::find()->where(['vehicleLayoutName_id' => $vehicleLayoutName_id, 'name' => $value['name']])->one();
                 if ($architectureNameModel === null)
                 {
                     $architectureNameModel = new ArchitecturesNames();
