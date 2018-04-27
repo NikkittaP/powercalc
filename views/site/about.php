@@ -26,7 +26,8 @@ $this->title = 'Описание инструмента';
                     <li><?= Html::a('Импорт', '#web_import');?></li>
                     <li><?= Html::a('Настройки', '#web_settings');?></li>
                     <li><?= Html::a('Данные', '#web_data');?></li>
-                    <li></li>
+                    <li><?= Html::a('Расчёт и результаты', '#web_results');?></li>
+                    <li><?= Html::a('Очистка БД', '#web_clear');?></li>
                 </ul>
             </li>
             <li><?= Html::a('Описание Базы Данных', '#db');?></li>
@@ -68,8 +69,8 @@ $this->title = 'Описание инструмента';
         </div>
         <div id="web" style="padding-top:60px;">
             <hr style="border-color: black;background-color: black;" />
-            <h3>Описание интерфейса пользователя</h3>
-            <div id="web_pages">
+            <h3><b>Описание интерфейса пользователя</b></h3>
+            <div id="web_pages" style="padding-top:60px;">
                 <h4><b>Разделы</b></h4>
                 <p>
                     Главная страница содержит отдельные блоки для каждого из типов объектов. Заголовок является ссылкой на страницу данного типа объекта. Содержимое блока - списки всех созданных объектов.
@@ -99,22 +100,24 @@ $this->title = 'Описание инструмента';
                     </div>
                 </p>
             </div>
-            <div id="web_import">
+            <div id="web_import" style="padding-top:60px;">
                 <hr style="width:80%;border-color: black;background-color: black;" />
                 <h4><b>Импорт</b></h4>
                 <p>
                     Ввод большого количества данных через разделы может быть довольно затруднителен, поэтому было решено реализовать функцию импорта большого набора данных из таблицы EXCEL файла заданного формата.
                     <br />
                     В первую очередь необходимо подготовить EXCEL файл следующего формата
+                    <br /><br />
                     <div class="text-center">
                         <?= Html::a(Html::img('@web/documentation/import_scheme.png', ['width' => 900]), '@web/documentation/import_scheme.png', ['data-fancybox' => true]);?>
                     </div>
+                    <br /><br />
                     Ячейки закрашенные серым цветом обозначают пустые ячейки и они должны <b>обязательно</b> присутствовать в импортируемом файле. Эти пустые ячейки являются разделителем для определения начала и конца архитектур и режимов полёта.
                     <br />
                     Пример заполнения данных представлен в строке 4 (ПОТРЕБИТЕЛЬ_03).
                     <br /><br />
                     Заполненный файл размещается в папке <?= Yii::getAlias('@app').'\import\\';?>. После этого действия он появится в списке выбора файла для импорта данных:
-                    <br />
+                    <br /><br />
                     <div class="text-center">
                         <?= Html::a(Html::img('@web/documentation/usage_05.png', ['width' => 900]), '@web/documentation/usage_05.png', ['data-fancybox' => true]);?>
                     </div>
@@ -131,7 +134,7 @@ $this->title = 'Описание инструмента';
                     </ul>
                 </p>
             </div>
-            <div id="web_settings">
+            <div id="web_settings" style="padding-top:60px;">
                 <hr style="width:80%;border-color: black;background-color: black;" />
                 <h4><b>Настройки</b></h4>
                 <p>
@@ -144,7 +147,7 @@ $this->title = 'Описание инструмента';
                     </div>
                 </p>
             </div>
-            <div id="web_data">
+            <div id="web_data" style="padding-top:60px;">
                 <hr style="width:80%;border-color: black;background-color: black;" />
                 <h4><b>Данные</b></h4>
                 <p>
@@ -161,14 +164,40 @@ $this->title = 'Описание инструмента';
                     <div class="text-center">
                         <?= Html::a(Html::img('@web/documentation/usage_08.png', ['width' => 300]), '@web/documentation/usage_08.png', ['data-fancybox' => true]);?>
                     </div>
+                </p>
+            </div>
+            <div id="web_results" style="padding-top:60px;">
+                <hr style="width:80%;border-color: black;background-color: black;" />
+                <h4><b>Расчёт и результаты</b></h4>
+                <p>
+                    Для проведения расчёта надо нажать кнопку в самом низу таблицы на странице с Данными. При проведении расчёта предыдущие результаты расчётов для текуще компоновки будут удалены.
+                    <br />
+                    Алгоритм расчёта расположен в единственном файле: <?= Yii::getAlias('@app').'\components\PowerDataAlgorithm.php\\';?>. Входными и выходными данными этого скрипта являются массивы. Язык программирования - PHP.
                     <br /><br />
+
+                    Все результаты расчёта для текущей компоновки представлены на одной странице. Результатами являются графики по энергосистемам и табличные результаты, содержащие все промежуточные значения.
+                    <br />
+                    В верхней части страницы находится форма фильтрации данных по архитектурам. Она полезна в случаях, когда расчёт производился для большого количества архитектур, а отобразить результаты необходимо только для нескольких.
+                    <br /><br />
+                    <div class="text-center">
+                        <?= Html::a(Html::img('@web/documentation/usage_09.png', ['width' => 900]), '@web/documentation/usage_09.png', ['data-fancybox' => true]);?>
+                    </div>
+                </p>
+            </div>
+            <div id="web_clear" style="padding-top:60px;">
+                <hr style="width:80%;border-color: black;background-color: black;" />
+                <h4><b>Очистка БД</b></h4>
+                <p>
+                    На этапе тестирования и доработки ПО часто бывает необходимо очищать все данные в БД, например перед импортом файла. Для этого была разработана отдельная страница, доступная из верхней строки меню.
+                    <br />
+                    Основная информация, важная для пользователя изложена непосредственно на самой странице перед формой выбора таблиц для очистки.
                 </p>
             </div>
         </div>
         <div id="db" style="padding-top:60px;">
             <hr style="border-color: black;background-color: black;" />
-            <h3>Описание Базы Данных</h3>
-            <h4>Схема БД:</h4>
+            <h3><b>Описание Базы Данных</b></h3>
+            <h4><b>Схема БД</b></h4>
             <div class="text-center">
                 <?= Html::a(Html::img('@web/documentation/db_scheme.png', ['width' => 900]), '@web/documentation/db_scheme.png', ['data-fancybox' => true]);?>
             </div>
