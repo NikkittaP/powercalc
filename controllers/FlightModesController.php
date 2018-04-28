@@ -8,6 +8,7 @@ use app\models\FlightModesSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use app\models\FlightModesToVehicleLayout;
 
 /**
  * FlightModesController implements the CRUD actions for FlightModes model.
@@ -106,6 +107,7 @@ class FlightModesController extends Controller
      */
     public function actionDelete($id)
     {
+        FlightModesToVehicleLayout::deleteAll(['flightMode_id' => $id]);
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
