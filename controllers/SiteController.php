@@ -8,6 +8,7 @@ use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use yii\helpers\VarDumper;
+use app\models\VehiclesLayoutsNames;
 
 class SiteController extends Controller
 {
@@ -53,6 +54,16 @@ class SiteController extends Controller
             $count = 0;
             $sql = "SET foreign_key_checks = 0;";
             foreach ($post['selected_tables'] as $key => $value) {
+                if ($value == 'VehicleLayout')
+                {
+                    $models = VehiclesLayoutsNames::find()->all();
+                    foreach ($models as $model) {
+                        $model->usingArchitectures = null;
+                        $model->usingFlightModes = null;
+                        $model->save();
+                    }
+                }
+
                 $sql.= "TRUNCATE ".$value.";";
                 $count++;
             }

@@ -285,6 +285,7 @@ class PowerDataController extends Controller
                 }
             }
 
+            return $this->redirect(['settings', 'vehicleLayoutName_id'=>$vehicleLayoutName_id]);
             //VarDumper::dump( $importData, $depth = 10, $highlight = true);
         }
 
@@ -306,20 +307,22 @@ class PowerDataController extends Controller
             $newUsingFlightModes = implode(' ', $post['settings_usingFlightModes']);
 
             $architecturesNamesBasic = ArchitecturesNames::find()->where(['vehicleLayoutName_id' => $vehicleLayoutNameModel->id, 'isBasic' => 1])->one();
-            if ($architecturesNamesBasic->id != $newBasicID)
+            if ($architecturesNamesBasic !== null && $architecturesNamesBasic->id != $newBasicID)
             {
                 $architecturesNamesBasic->isBasic = false;
                 $architecturesNamesBasic->save();
-
-                $architecturesNamesBasic = ArchitecturesNames::find()->where(['id' => $newBasicID, 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id])->one();
-                $architecturesNamesBasic->isBasic = true;
-                $architecturesNamesBasic->save();
             }
+
+            $architecturesNamesBasic = ArchitecturesNames::find()->where(['id' => $newBasicID, 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id])->one();
+            $architecturesNamesBasic->isBasic = true;
+            $architecturesNamesBasic->save();
 
             $vehiclesLayoutsNamesModel = VehiclesLayoutsNames::findOne($vehicleLayoutName_id);
             $vehiclesLayoutsNamesModel->usingArchitectures = $newUsingArchitectures;
             $vehiclesLayoutsNamesModel->usingFlightModes = $newUsingFlightModes;
             $vehiclesLayoutsNamesModel->save();
+
+            return $this->redirect(['index', 'vehicleLayoutName_id'=>$vehicleLayoutName_id]);
         }
 
         $usingArchitectures = $this->getUsingArchitectures($vehicleLayoutName_id);
