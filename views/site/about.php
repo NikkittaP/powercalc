@@ -19,6 +19,7 @@ $this->title = 'Описание инструмента';
      <div class="body-content">
         <ul>
             <li><?= Html::a('Введение', '#general');?></li>
+            <li><?= Html::a('Алгоритм расчёта', '#algorithm');?></li>
             <li>
                 <?= Html::a('Описание интерфейса пользователя', '#web');?>
                 <ul>
@@ -65,6 +66,17 @@ $this->title = 'Описание инструмента';
                     <li>[Результаты] вывод всех промежуточных параметров расчёта в табличном виде;</li>
                     <li>[Очистка БД] удаление всех данных из выбранных таблиц базы данных;</li>
                 </ul>
+            </p>
+        </div>
+        <div id="algorithm" style="padding-top:60px;">
+            <hr style="border-color: black;background-color: black;" />
+            <h3><b>Алгоритм расчёта</b></h3>
+            <p>
+                В PHP коде алгоритм расчёта реализован в соответствии с блок-схемой, расположенной ниже
+                <br /><br />
+                <div class="text-center">
+                    <?= Html::a(Html::img('@web/documentation/algorithm.png', ['width' => 900]), '@web/documentation/algorithm.png', ['data-fancybox' => true]);?>
+                </div>
             </p>
         </div>
         <div id="web" style="padding-top:60px;">

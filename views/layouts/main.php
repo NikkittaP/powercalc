@@ -69,7 +69,7 @@ AppAsset::register($this);
         }
         ?>
         <p class="pull-right">
-            Разработанно: <?= Html::a('Никита Петров', 'http://nikkitta.ru') ?>
+            Разработано: <?= Html::a('Никита Петров', 'http://nikkitta.ru') ?>
             <br />
             <?= Yii::powered() ?></p>
     </div>
