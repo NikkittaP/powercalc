@@ -216,6 +216,14 @@ class PowerDataController extends Controller
                 }
             }
 
+            $skippedData = [];
+            $skippedData['architectures'] = [];
+            $skippedData['flightModes'] = [];
+            $skippedData['energySources'] = [];
+            $skippedData['aircraftParts'] = [];
+            $skippedData['consumers'] = [];
+            $skippedData['vehicleLayout'] = [];
+
             foreach ($importData['architectures'] as $key => $value) {
                 $architectureNameModel = ArchitecturesNames::find()->where(['vehicleLayoutName_id' => $vehicleLayoutName_id, 'name' => $value['name']])->one();
                 if ($architectureNameModel === null)
@@ -225,7 +233,8 @@ class PowerDataController extends Controller
                     $architectureNameModel->name = $value['name'];
                     $architectureNameModel->isBasic = false;
                     $architectureNameModel->save();
-                }
+                } else
+                    $skippedData['architectures'][] = $value['name'];
                 
                 $importData['architectures'][$key]['db_id'] = $architectureNameModel->id;
             }
@@ -238,7 +247,8 @@ class PowerDataController extends Controller
                     $flightModesModel->name = $value['name'];
                     $flightModesModel->reductionFactor = $value['reductionFactor'];
                     $flightModesModel->save();
-                }
+                } else
+                    $skippedData['flightModes'][] = $value['name'];
                 
                 $importData['flightModes'][$key]['db_id'] = $flightModesModel->id;
             }
@@ -254,7 +264,8 @@ class PowerDataController extends Controller
                     $energySourcesModel->pumpPressureNominal = $value['pumpPressureNominal'];
                     $energySourcesModel->pumpPressureWorkQmax = $value['pumpPressureWorkQmax'];
                     $energySourcesModel->save();
-                }
+                } else
+                    $skippedData['energySources'][] = $value['name'];
                 
                 $importData['energySources'][$key]['db_id'] = $energySourcesModel->id;
             }
@@ -266,7 +277,9 @@ class PowerDataController extends Controller
                     $aircraftPartsModel = new AircraftParts();
                     $aircraftPartsModel->name = $consumer['aircraftPart'];
                     $aircraftPartsModel->save();
-                }
+                } else
+                    if (!in_array($consumer['aircraftPart'], $skippedData['aircraftParts']))
+                        $skippedData['aircraftParts'][] = $consumer['aircraftPart'];
 
                 $consumerModel = Consumers::find()->where(['name' => $consumer['name']])->one();
                 if ($consumerModel === null)
@@ -279,7 +292,8 @@ class PowerDataController extends Controller
                     $consumerModel->q0 = $consumer['q0'];
                     $consumerModel->qMax = $consumer['qMax'];
                     $consumerModel->save();
-                }
+                } else
+                    $skippedData['consumers'][] = $consumer['name'];
 
                 $vehicleLayoutModel = VehicleLayout::find()->where(['vehicleLayoutName_id' => $vehicleLayoutNameModel, 'consumer_id' => $consumerModel->id])->one();
                 if ($vehicleLayoutModel === null)
@@ -317,11 +331,81 @@ class PowerDataController extends Controller
                         $flightModesToVehicleLayoutModel->usageFactor = $value;
                         $flightModesToVehicleLayoutModel->save();
                     }
+                } else
+                    $skippedData['vehicleLayout'][] = $consumer['name'];
+            }
+
+            if (
+                !isset($skippedData['vehicleLayout'])
+                && !isset($skippedData['consumers'])
+                && !isset($skippedData['aircraftParts'])
+                && !isset($skippedData['energySources'])
+                && !isset($skippedData['flightModes'])
+                && !isset($skippedData['architectures'])
+            )
+            {
+                Yii::$app->session->setFlash('success', 'Все данные успешно импортированы.');
+            } else {
+                $msg = 'Данные частично импортированы. Следующие записи уже существуют в БД:<br /><br />';
+
+                if (count($skippedData['architectures']) != 0)
+                {
+                    $msg.='<b>Архитектуры:</b><br /><ul>';
+                    foreach ($skippedData['architectures'] as $value) {
+                        $msg.='<li>'.$value.'</li>';
+                    }
+                    $msg.='</ul>';
                 }
+
+                if (count($skippedData['flightModes']) != 0)
+                {
+                    $msg.='<b>Режимы полёта:</b><br /><ul>';
+                    foreach ($skippedData['flightModes'] as $value) {
+                        $msg.='<li>'.$value.'</li>';
+                    }
+                    $msg.='</ul>';
+                }
+
+                if (count($skippedData['energySources']) != 0)
+                {
+                    $msg.='<b>Энергосистемы:</b><br /><ul>';
+                    foreach ($skippedData['energySources'] as $value) {
+                        $msg.='<li>'.$value.'</li>';
+                    }
+                    $msg.='</ul>';
+                }
+
+                if (count($skippedData['aircraftParts']) != 0)
+                {
+                    $msg.='<b>Зоны аппарата:</b><br /><ul>';
+                    foreach ($skippedData['aircraftParts'] as $value) {
+                        $msg.='<li>'.$value.'</li>';
+                    }
+                    $msg.='</ul>';
+                }
+
+                if (count($skippedData['consumers']) != 0)
+                {
+                    $msg.='<b>Потребители:</b><br /><ul>';
+                    foreach ($skippedData['consumers'] as $value) {
+                        $msg.='<li>'.$value.'</li>';
+                    }
+                    $msg.='</ul>';
+                }
+
+                if (count($skippedData['vehicleLayout']) != 0)
+                {
+                    $msg.='<b>Корневые связи для потребителей:</b><br /><ul>';
+                    foreach ($skippedData['vehicleLayout'] as $value) {
+                        $msg.='<li>'.$value.'</li>';
+                    }
+                    $msg.='</ul>';
+                }
+
+                Yii::$app->session->setFlash('warning', $msg);
             }
 
             return $this->redirect(['settings', 'vehicleLayoutName_id'=>$vehicleLayoutName_id]);
-            //VarDumper::dump( $importData, $depth = 10, $highlight = true);
         }
 
         return $this->render('import', [
@@ -356,6 +440,8 @@ class PowerDataController extends Controller
             $vehiclesLayoutsNamesModel->usingArchitectures = $newUsingArchitectures;
             $vehiclesLayoutsNamesModel->usingFlightModes = $newUsingFlightModes;
             $vehiclesLayoutsNamesModel->save();
+            
+            Yii::$app->session->setFlash('success', 'Настройки сохранены.');
 
             return $this->redirect(['index', 'vehicleLayoutName_id'=>$vehicleLayoutName_id]);
         }
