@@ -6,8 +6,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\AircraftParts */
 
-$this->title = 'Создать часть аппарата';
-$this->params['breadcrumbs'][] = ['label' => 'Части аппарата', 'url' => ['index']];
+$this->title = 'Создать зону аппарата';
+$this->params['breadcrumbs'][] = ['label' => 'Зоны аппарата', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="aircraft-parts-create">

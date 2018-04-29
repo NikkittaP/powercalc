@@ -7,7 +7,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\VehiclesLayoutsNamesSearchAircraftParts */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Части аппарата';
+$this->title = 'Зоны аппарата';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="aircraft-parts-index">
@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Создать часть аппарата', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Создать зону аппарата', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 
     <?= GridView::widget([

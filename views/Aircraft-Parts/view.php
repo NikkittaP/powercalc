@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /* @var $model app\models\AircraftParts */
 
 $this->title = $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Части аппарата', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Зоны аппарата', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="aircraft-parts-view">

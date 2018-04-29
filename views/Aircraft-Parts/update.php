@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /* @var $this yii\web\View */
 /* @var $model app\models\AircraftParts */
 
-$this->title = 'Обновить часть аппарата: ' . $model->name;
-$this->params['breadcrumbs'][] = ['label' => 'Части аппарата', 'url' => ['index']];
+$this->title = 'Обновить зону аппарата: ' . $model->name;
+$this->params['breadcrumbs'][] = ['label' => 'Зоны аппарата', 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->name, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Обновить';
 ?>

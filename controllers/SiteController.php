@@ -36,7 +36,7 @@ class SiteController extends Controller
     }
     public function actionTruncate()
     {
-        $tables['AircraftParts'] = '[AircraftParts] Части аппарата';
+        $tables['AircraftParts'] = '[AircraftParts] Зоны аппарата';
         $tables['ArchitecturesNames'] = '[ArchitecturesNames] Архитектуры';
         $tables['Consumers'] = '[Consumers] Потребители';
         $tables['EnergySources'] = '[EnergySources] Энергосистемы';

@@ -193,7 +193,7 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h3 class="panel-title">
-                            <?= Html::a('Части аппарата', ['aircraft-parts/index']) ?>
+                            <?= Html::a('Зоны аппарата', ['aircraft-parts/index']) ?>
                         </h3>
                     </div>
 
