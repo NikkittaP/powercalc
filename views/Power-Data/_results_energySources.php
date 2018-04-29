@@ -55,16 +55,16 @@ use app\models\ResultsEnergySources;
             ?>
                         <tr>
                             <td><?= $currentResultsEnergySources->energySource->name;?></td>
-                            <td><?= ($currentResultsEnergySources->Qpump === null) ? '&ndash;' : $currentResultsEnergySources->Qpump;?></td>
-                            <td><?= ($currentResultsEnergySources->Qdisposable === null) ? '&ndash;' : $currentResultsEnergySources->Qdisposable;?></td>
-                            <td><?= ($currentResultsEnergySources->P_pump_out === null) ? '&ndash;' : $currentResultsEnergySources->P_pump_out;?></td>
-                            <td><?= ($currentResultsEnergySources->Q_curr_to_Q_max === null) ? '&ndash;' : $currentResultsEnergySources->Q_curr_to_Q_max;?></td>
-                            <td><?= ($currentResultsEnergySources->N_pump_out === null) ? '&ndash;' : $currentResultsEnergySources->N_pump_out;?></td>
-                            <td><?= ($currentResultsEnergySources->N_pump_in === null) ? '&ndash;' : $currentResultsEnergySources->N_pump_in;?></td>
-                            <td><?= ($currentResultsEnergySources->N_consumers_in_hydro === null) ? '&ndash;' : $currentResultsEnergySources->N_consumers_in_hydro;?></td>
-                            <td><?= ($currentResultsEnergySources->N_consumers_out === null) ? '&ndash;' : $currentResultsEnergySources->N_consumers_out;?></td>
-                            <td><?= ($currentResultsEnergySources->N_electric_total === null) ? '&ndash;' : $currentResultsEnergySources->N_electric_total;?></td>
-                            <td><?= ($currentResultsEnergySources->N_takeoff === null) ? '&ndash;' : $currentResultsEnergySources->N_takeoff;?></td>
+                            <td><?= ($currentResultsEnergySources->Qpump === null) ? '&ndash;' : round($currentResultsEnergySources->Qpump, 1);?></td>
+                            <td><?= ($currentResultsEnergySources->Qdisposable === null) ? '&ndash;' : round($currentResultsEnergySources->Qdisposable, 1);?></td>
+                            <td><?= ($currentResultsEnergySources->P_pump_out === null) ? '&ndash;' : round($currentResultsEnergySources->P_pump_out, 1);?></td>
+                            <td><?= ($currentResultsEnergySources->Q_curr_to_Q_max === null) ? '&ndash;' : round($currentResultsEnergySources->Q_curr_to_Q_max, 1);?></td>
+                            <td><?= ($currentResultsEnergySources->N_pump_out === null) ? '&ndash;' : round($currentResultsEnergySources->N_pump_out, 1);?></td>
+                            <td><?= ($currentResultsEnergySources->N_pump_in === null) ? '&ndash;' : round($currentResultsEnergySources->N_pump_in, 1);?></td>
+                            <td><?= ($currentResultsEnergySources->N_consumers_in_hydro === null) ? '&ndash;' : round($currentResultsEnergySources->N_consumers_in_hydro, 1);?></td>
+                            <td><?= ($currentResultsEnergySources->N_consumers_out === null) ? '&ndash;' : round($currentResultsEnergySources->N_consumers_out, 1);?></td>
+                            <td><?= ($currentResultsEnergySources->N_electric_total === null) ? '&ndash;' : round($currentResultsEnergySources->N_electric_total, 1);?></td>
+                            <td><?= ($currentResultsEnergySources->N_takeoff === null) ? '&ndash;' : round($currentResultsEnergySources->N_takeoff, 1);?></td>
                         </tr>
             <?php
                     }
@@ -73,16 +73,16 @@ use app\models\ResultsEnergySources;
             ?>
             <tr style="border-top: 3px solid gray;">
                 <td><b>ВСЕГО</b></td>
-                <td><?= $total['Qpump']?></td>
-                <td><?= $total['Qdisposable']?></td>
+                <td><?= round($total['Qpump'], 1);?></td>
+                <td><?= round($total['Qdisposable'], 1);?></td>
                 <td>&ndash;</td>
                 <td>&ndash;</td>
-                <td><?= $total['N_pump_out']?></td>
-                <td><?= $total['N_pump_in']?></td>
-                <td><?= $total['N_consumers_in_hydro']?></td>
-                <td><?= $total['N_consumers_out']?></td>
-                <td><?= $total['N_electric_total']?></td>
-                <td><?= $total['N_takeoff']?></td>
+                <td><?= round($total['N_pump_out'], 1);?></td>
+                <td><?= round($total['N_pump_in'], 1);?></td>
+                <td><?= round($total['N_consumers_in_hydro'], 1);?></td>
+                <td><?= round($total['N_consumers_out'], 1);?></td>
+                <td><?= round($total['N_electric_total'], 1);?></td>
+                <td><?= round($total['N_takeoff'], 1);?></td>
             </tr>
             </tbody>
         </table>

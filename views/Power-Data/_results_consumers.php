@@ -38,11 +38,11 @@ use app\models\ResultsConsumers;
                     <tr>
                         <td><?= $currentResultsConsumersBasic->consumer->id;?></td>
                         <td><?= $currentResultsConsumersBasic->consumer->name;?></td>
-                        <td><?= $currentResultsConsumersBasic->consumption;?></td>
-                        <td><?= $currentResultsConsumersBasic->P_in;?></td>
-                        <td><?= $currentResultsConsumersBasic->N_in_hydro;?></td>
-                        <td><?= $currentResultsConsumersBasic->N_out;?></td>
-                        <td><?= ($currentResultsConsumersAlternative->N_in_electric == null) ? '&ndash;' : $currentResultsConsumersAlternative->N_in_electric;?></td>
+                        <td><?= round($currentResultsConsumersBasic->consumption, 1);?></td>
+                        <td><?= round($currentResultsConsumersBasic->P_in, 1);?></td>
+                        <td><?= round($currentResultsConsumersBasic->N_in_hydro, 1);?></td>
+                        <td><?= round($currentResultsConsumersBasic->N_out, 1);?></td>
+                        <td><?= ($currentResultsConsumersAlternative->N_in_electric == null) ? '&ndash;' : round($currentResultsConsumersAlternative->N_in_electric, 1);?></td>
                     </tr>
             <?php
                 }
@@ -54,7 +54,7 @@ use app\models\ResultsConsumers;
                     <td>&ndash;</td>
                     <td>&ndash;</td>
                     <td>&ndash;</td>
-                    <td><?= $total['N_in_electric']?></td>
+                    <td><?= round($total['N_in_electric'], 1);?></td>
                 </tr>
             </tbody>
         </table>
