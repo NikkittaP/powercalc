@@ -201,6 +201,7 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
         ],
         'striped' => true,
         'responsive'=>true,
+        'condensed'=>true,
         'hover'=>true,
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
