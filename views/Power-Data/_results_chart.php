@@ -14,7 +14,7 @@ $series = [];
 foreach ($flightModeModel as $currentFlightMode) {
     $flightModes[] = $currentFlightMode->name;
 
-    $seriesLineData[] = $chart_data['basic'][$currentFlightMode->id]['Qdisposable'];
+    $seriesLineData[] = $chart_data['basic'][$currentFlightMode->id][$energySourceID]['Qdisposable'];
 }
 
 foreach ($selectedArchitectures as $currentArchitectureID) {

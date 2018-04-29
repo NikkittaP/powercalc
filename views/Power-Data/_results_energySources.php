@@ -27,8 +27,6 @@ use app\models\ResultsEnergySources;
             <?php
             $total['Qpump'] = 0;
             $total['Qdisposable'] = 0;
-            $total['P_pump_out'] = 0;
-            $total['Q_curr_to_Q_max'] = 0;
             $total['N_pump_out'] = 0;
             $total['N_pump_in'] = 0;
             $total['N_consumers_in_hydro'] = 0;
@@ -48,8 +46,6 @@ use app\models\ResultsEnergySources;
                     {
                         $total['Qpump'] +=                  $currentResultsEnergySources->Qpump;
                         $total['Qdisposable'] +=            $currentResultsEnergySources->Qdisposable;
-                        $total['P_pump_out'] +=             $currentResultsEnergySources->P_pump_out;
-                        $total['Q_curr_to_Q_max'] +=        $currentResultsEnergySources->Q_curr_to_Q_max;
                         $total['N_pump_out'] +=             $currentResultsEnergySources->N_pump_out;
                         $total['N_pump_in'] +=              $currentResultsEnergySources->N_pump_in;
                         $total['N_consumers_in_hydro'] +=   $currentResultsEnergySources->N_consumers_in_hydro;
@@ -79,8 +75,8 @@ use app\models\ResultsEnergySources;
                 <td><b>ВСЕГО</b></td>
                 <td><?= $total['Qpump']?></td>
                 <td><?= $total['Qdisposable']?></td>
-                <td><?= $total['P_pump_out']?></td>
-                <td><?= $total['Q_curr_to_Q_max']?></td>
+                <td>&ndash;</td>
+                <td>&ndash;</td>
                 <td><?= $total['N_pump_out']?></td>
                 <td><?= $total['N_pump_in']?></td>
                 <td><?= $total['N_consumers_in_hydro']?></td>

@@ -745,13 +745,13 @@ class PowerDataController extends Controller
             if (!isset($chart_data[$results->architectureName_id][$results->flightMode_id]['Qpump']))
                 $chart_data[$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump'] = 0.0;
             if ($results->architectureName->isBasic && !isset($chart_data['basic'][$results->flightMode_id]['Qdisposable']))
-                $chart_data['basic'][$results->flightMode_id]['Qdisposable'] = 0.0;
+                $chart_data['basic'][$results->flightMode_id][$results->energySource_id]['Qdisposable'] = 0.0;
 
             $chart_data[$results->architectureName_id][$results->flightMode_id]['architectureName'] = $results->architectureName->name;
             $chart_data[$results->architectureName_id][$results->flightMode_id]['flightModeName'] = $results->flightMode->name;
             $chart_data[$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump'] += $results->Qpump;
             if ($results->architectureName->isBasic)
-                $chart_data['basic'][$results->flightMode_id]['Qdisposable'] += $results->Qdisposable;
+                $chart_data['basic'][$results->flightMode_id][$results->energySource_id]['Qdisposable'] += $results->Qdisposable;
         }
 
         return $this->render('results', [
