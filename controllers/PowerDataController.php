@@ -72,6 +72,7 @@ class PowerDataController extends Controller
             $architectureEndLetter;
             $flightModeStartLetter = 'A';
             $flightModeEndLetter;
+            $consumerFinished = false;
             foreach ($sheetData as $rowNum => $rowData) {
                 $architectureStarts = false;
                 $flightModesStarts = false;
@@ -111,72 +112,110 @@ class PowerDataController extends Controller
                             if ($flightModeStartLetter === 'A')
                                 $flightModeStartLetter = $letter;
 
-                            $importData['flightModes'][]['name'] = $data;
+                            $importData['flightModes'][]['name'] = preg_replace( "/\r|\n/", " ", $data);
                             $flightModeEndLetter = $letter;
                         }
                     }
                 } else {
-                    $consumer = [];
+                    if ($rowData['A'] === null)
+                    {
+                        $consumerFinished = true;
+                    } else {
+                        if ($consumerFinished)
+                        {
+                            $energySource = [];
 
-                    foreach ($rowData as $letter => $data) {
-                        if ($letter === $architectureStartLetter)
-                            $architectureStarts = true;
-                        if ($letter === $flightModeStartLetter)
-                            $flightModesStarts = true;
-                        
-                        switch ($letter) {
-                            case 'A':
-                                $consumer['name'] = $data;
-                                break;
-                            case 'B':
-                                $consumer['efficiencyHydro'] = $data;
-                                break;
-                            case 'C':
-                                $consumer['efficiencyElectric'] = $data;
-                                break;
-                            case 'D':
-                                $consumer['qMax'] = $data;
-                                break;
-                            case 'E':
-                                $consumer['q0'] = $data;
-                                break;
-                            case 'F':
-                                $consumer['aircraftPart'] = $data;
-                                break;
-                            
-                            default:
-                                if ($architectureStarts)
-                                {
-                                    $consumer['energySourcesToArchitectures'][] = ($data === '-') ? null : $data;
-
-                                    if ($data !== '-')
-                                    {
-                                        $_exists = false;
-                                        foreach ($importData['energySources'] as $ES) {
-                                            if ($ES['name'] === $data)
-                                            $_exists = true;
+                            foreach ($rowData as $letter => $data) {
+                                if ($letter === $flightModeStartLetter)
+                                    $flightModesStarts = true;
+                                
+                                switch ($letter) {
+                                    case 'A':
+                                        $energySource['name'] = $data;
+                                        break;
+                                    case 'B':
+                                        $energySource['energySourceType_id'] = $data;
+                                        break;
+                                    case 'C':
+                                        $energySource['qMax'] = $data;
+                                        break;
+                                    case 'D':
+                                        $energySource['pumpPressureNominal'] = $data;
+                                        break;
+                                    case 'E':
+                                        $energySource['pumpPressureWorkQmax'] = $data;
+                                        break;
+                                
+                                    default:
+                                        if ($flightModesStarts)
+                                        {
+                                            if ($data !== null)
+                                            {
+                                                foreach ($importData['flightModes'] as $key => $FM) {
+                                                    if ($FM['name'] === preg_replace( "/\r|\n/", " ", $sheetData[1][$letter]))
+                                                    {
+                                                        $importData['flightModes'][$key]['reductionFactor'] = $data;
+                                                        break;
+                                                    }
+                                                }
+                                            }
                                         }
 
-                                        if (!$_exists)
-                                            $importData['energySources'][]['name'] = $data;
-                                    }
+                                        break;
                                 }
-                                if ($flightModesStarts)
-                                    $consumer['usageFactorToFlightModes'][] = $data;
+                            }
 
-                                break;
+                            $importData['energySources'][] = $energySource;
+                        } else {
+                            $consumer = [];
+
+                            foreach ($rowData as $letter => $data) {
+                                if ($letter === $architectureStartLetter)
+                                    $architectureStarts = true;
+                                if ($letter === $flightModeStartLetter)
+                                    $flightModesStarts = true;
+                                
+                                switch ($letter) {
+                                    case 'A':
+                                        $consumer['name'] = $data;
+                                        break;
+                                    case 'B':
+                                        $consumer['efficiencyHydro'] = $data;
+                                        break;
+                                    case 'C':
+                                        $consumer['efficiencyElectric'] = $data;
+                                        break;
+                                    case 'D':
+                                        $consumer['qMax'] = $data;
+                                        break;
+                                    case 'E':
+                                        $consumer['q0'] = $data;
+                                        break;
+                                    case 'F':
+                                        $consumer['aircraftPart'] = $data;
+                                        break;
+                                    
+                                    default:
+                                        if ($architectureStarts)
+                                            $consumer['energySourcesToArchitectures'][] = ($data === '-') ? null : $data;
+                                        if ($flightModesStarts)
+                                            $consumer['usageFactorToFlightModes'][] = $data;
+
+                                        break;
+                                }
+                                    
+                                if ($letter === $architectureEndLetter)
+                                    $architectureStarts = false;
+                                if ($letter === $flightModeEndLetter)
+                                    $flightModesStarts = false;
+                            }
+
+                            $importData['consumers'][] = $consumer;
                         }
-                            
-                        if ($letter === $architectureEndLetter)
-                            $architectureStarts = false;
-                        if ($letter === $flightModeEndLetter)
-                            $flightModesStarts = false;
                     }
-
-                    $importData['consumers'][] = $consumer;
                 }
             }
-            
+
             foreach ($importData['architectures'] as $key => $value) {
                 $architectureNameModel = ArchitecturesNames::find()->where(['vehicleLayoutName_id' => $vehicleLayoutName_id, 'name' => $value['name']])->one();
                 if ($architectureNameModel === null)
@@ -197,7 +236,7 @@ class PowerDataController extends Controller
                 {
                     $flightModesModel = new FlightModes();
                     $flightModesModel->name = $value['name'];
-                    $flightModesModel->reductionFactor = 0.6;
+                    $flightModesModel->reductionFactor = $value['reductionFactor'];
                     $flightModesModel->save();
                 }
                 
@@ -210,14 +249,10 @@ class PowerDataController extends Controller
                 {
                     $energySourcesModel = new EnergySources();
                     $energySourcesModel->name = $value['name'];
-
-                    if (stripos($value['name'], 'ЛГС') !== FALSE)
-                        $energySourcesModel->energySourceType_id = 3;
-                    else if (stripos($value['name'], 'ЭС') !== FALSE)
-                        $energySourcesModel->energySourceType_id = 4;
-                    else
-                        $energySourcesModel->energySourceType_id = 1;
-
+                    $energySourcesModel->energySourceType_id = $value['energySourceType_id'];
+                    $energySourcesModel->qMax = $value['qMax'];
+                    $energySourcesModel->pumpPressureNominal = $value['pumpPressureNominal'];
+                    $energySourcesModel->pumpPressureWorkQmax = $value['pumpPressureWorkQmax'];
                     $energySourcesModel->save();
                 }
                 

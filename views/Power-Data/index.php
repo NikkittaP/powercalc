@@ -117,7 +117,7 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
     }
 
     /* Столбцы режимов полёта */
-    $flightModes = app\models\FlightModes::find()->where(['id' => $usingFlightModes])->orderBy('name')->all();
+    $flightModes = app\models\FlightModes::find()->where(['id' => $usingFlightModes])->all();
     $i=0;
     foreach ($flightModes as $flightMode)
     {
