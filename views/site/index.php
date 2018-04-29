@@ -121,13 +121,16 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
                         <table class="table table-striped">
 
                             <?php
-                            $flightModes = FlightModes::find()->all();
-                            foreach ($flightModes as $flightMode)
-                            {
-                                echo '<tr><td>';
-                                echo Html::a($flightMode->name, ['flight-modes/view', 'id' => $flightMode->id]);
-                                echo ' </td></tr>';
-                            }
+                            $flightModes = FlightModes::find()->count();
+                            echo '<tr><td>';
+                            echo '<i>Всего '.$flightModes.' режимов полёта</i>';
+                            echo ' </td></tr>';
+                            //foreach ($flightModes as $flightMode)
+                            //{
+                            //    echo '<tr><td>';
+                            //    echo Html::a($flightMode->name, ['flight-modes/view', 'id' => $flightMode->id]);
+                            //   echo ' </td></tr>';
+                            //}
                             ?>
                         </table>
                     </div>
@@ -225,13 +228,16 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
                         <table class="table table-striped">
 
                             <?php
-                            $consumers = Consumers::find()->all();
-                            foreach ($consumers as $consumer)
-                            {
-                                echo '<tr><td>';
-                                echo Html::a($consumer->name, ['consumers/view', 'id' => $consumer->id]);
-                                echo ' </td></tr>';
-                            }
+                            $consumers = Consumers::find()->count();
+                            echo '<tr><td>';
+                            echo '<i>Всего '.$consumers.' потребителей</i>';
+                            echo ' </td></tr>';
+                            //foreach ($consumers as $consumer)
+                            //{
+                            //    echo '<tr><td>';
+                            //    echo Html::a($consumer->name, ['consumers/view', 'id' => $consumer->id]);
+                            //    echo ' </td></tr>';
+                            //}
                             ?>
                         </table>
                     </div>
