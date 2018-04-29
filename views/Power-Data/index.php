@@ -122,7 +122,7 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
     foreach ($flightModes as $flightMode)
     {
         $border = [];
-        if ($i==0)
+        if ($i == 0)
             $border = ['style' => 'border-left:5px solid green;'];
 
         $gridColumns[] = [
@@ -151,7 +151,31 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
                         ]
                 ],
             ],
-            'contentOptions' => $border,
+            'contentOptions' => function ($model, $key, $index, $column) use($border, $flightMode, $flightModesToVehicleLayouts) {
+                if (isset($flightModesToVehicleLayouts[$model->id][$flightMode->id]))
+                {
+                    $usageFactor = $flightModesToVehicleLayouts[$model->id][$flightMode->id];
+                    $style = '';
+                    $class = '';
+                    if ($usageFactor == 1)
+                    {
+                        $style = 'background-color: #fbf9e3;';
+                        $class = 'darkyellow';
+                    }
+                    else if ($usageFactor > 1)
+                    {
+                        $style = 'background-color: #f2dddd;';
+                        $class = 'darkred';
+                    }
+                    else if ($usageFactor != 0 && $usageFactor < 1)
+                        $class = 'darkred';
+                    
+                    if (count($border) != 0)
+                        $style.='border-left:5px solid green;';
+
+                    return ['style' => $style, 'class' => $class];
+                }
+            },
             'headerOptions' => $border,
             'filterOptions' => $border,
             'width' => '10%',

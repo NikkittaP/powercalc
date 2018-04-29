@@ -71,20 +71,6 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
         ?>
     </div>
 </div>
-<br /><br />
-
-<div class="row">
-    <div class="col-sm-6">
-        <?= $this->render('_results_by_aircraft_parts', [
-                'flightModeModel' => $flightModeModel,
-                'aircraftPartsModel' => $aircraftPartsModel,
-                'N_out_by_parts' => $N_out_by_parts,
-                ]);
-        ?>
-    </div>
-</div>
-
-<br /><br />
 
 <?php
 foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitectureName) {
@@ -124,4 +110,21 @@ foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitec
 <?php
 }
 ?>
+
+
+<br /><br />
+
+<div class="row">
+    <div class="col-sm-6">
+        <?= $this->render('_results_by_aircraft_parts', [
+                'flightModeModel' => $flightModeModel,
+                'aircraftPartsModel' => $aircraftPartsModel,
+                'N_out_by_parts' => $N_out_by_parts,
+                ]);
+        ?>
+    </div>
+</div>
+
+<br /><br />
+
 </div>
