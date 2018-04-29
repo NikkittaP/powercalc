@@ -68,6 +68,7 @@ class PowerDataController extends Controller
 
             $importData = [];
             $importData['energySources'] = [];
+            $importData['aircraftParts'] = [];
             $architectureStartLetter = 'H';
             $architectureEndLetter;
             $flightModeStartLetter = 'A';
@@ -192,7 +193,20 @@ class PowerDataController extends Controller
                                         $consumer['q0'] = $data;
                                         break;
                                     case 'F':
+                                        $_exists = false;
+                                        foreach ($importData['aircraftParts'] as $key => $AP) {
+                                            if ($AP['name'] == $data)
+                                            {
+                                                $_exists = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (!$_exists)
+                                            $importData['aircraftParts'][]['name'] = $data;
+                                        
                                         $consumer['aircraftPart'] = $data;
+
                                         break;
                                     
                                     default:
@@ -270,23 +284,34 @@ class PowerDataController extends Controller
                 $importData['energySources'][$key]['db_id'] = $energySourcesModel->id;
             }
 
-            foreach ($importData['consumers'] as $consumer) {
-                $aircraftPartsModel = AircraftParts::find()->where(['name' => $consumer['aircraftPart']])->one();
+            foreach ($importData['aircraftParts'] as $key => $value) {
+                $aircraftPartsModel = AircraftParts::find()->where(['name' => $value['name']])->one();
                 if ($aircraftPartsModel === null)
                 {
                     $aircraftPartsModel = new AircraftParts();
-                    $aircraftPartsModel->name = $consumer['aircraftPart'];
+                    $aircraftPartsModel->name = $value['name'];
                     $aircraftPartsModel->save();
                 } else
-                    if (!in_array($consumer['aircraftPart'], $skippedData['aircraftParts']))
-                        $skippedData['aircraftParts'][] = $consumer['aircraftPart'];
+                    $skippedData['aircraftParts'][] = $value['name'];
+                
+                $importData['aircraftParts'][$key]['db_id'] = $aircraftPartsModel->id;
+            }
+
+            foreach ($importData['consumers'] as $consumer) {
+                foreach ($importData['aircraftParts'] as $AP) {
+                    if ($AP['name'] == $consumer['aircraftPart'])
+                    {
+                        $aircraftPartsID = $AP['db_id'];
+                        break;
+                    }
+                }
 
                 $consumerModel = Consumers::find()->where(['name' => $consumer['name']])->one();
                 if ($consumerModel === null)
                 {
                     $consumerModel = new Consumers();
                     $consumerModel->name = $consumer['name'];
-                    $consumerModel->aircraftPart_id = $aircraftPartsModel->id;
+                    $consumerModel->aircraftPart_id = $aircraftPartsID;
                     $consumerModel->efficiencyHydro = $consumer['efficiencyHydro'];
                     $consumerModel->efficiencyElectric = $consumer['efficiencyElectric'];
                     $consumerModel->q0 = $consumer['q0'];
@@ -336,12 +361,12 @@ class PowerDataController extends Controller
             }
 
             if (
-                !isset($skippedData['vehicleLayout'])
-                && !isset($skippedData['consumers'])
-                && !isset($skippedData['aircraftParts'])
-                && !isset($skippedData['energySources'])
-                && !isset($skippedData['flightModes'])
-                && !isset($skippedData['architectures'])
+                count($skippedData['vehicleLayout']) == 0
+                && count($skippedData['consumers']) == 0
+                && count($skippedData['aircraftParts']) == 0
+                && count($skippedData['energySources']) == 0
+                && count($skippedData['flightModes']) == 0
+                && count($skippedData['architectures']) == 0
             )
             {
                 Yii::$app->session->setFlash('success', 'Все данные успешно импортированы.');
@@ -419,11 +444,14 @@ class PowerDataController extends Controller
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
 
         $post = \Yii::$app->request->post();
+        //VarDumper::dump( $post, $depth = 10, $highlight = true);
         if ($post['settings_basicArchitecture'] !== null) {
             $newBasicID = $post['settings_basicArchitecture'];
-            $newUsingArchitectures = implode(' ', $post['settings_usingArchitectures']);
-            $newUsingArchitectures.= ' '.$newBasicID;
-            $newUsingFlightModes = implode(' ', $post['settings_usingFlightModes']);
+            $newUsingArchitectures = $newBasicID.' ';
+            if (isset($post['settings_usingArchitectures']))
+                $newUsingArchitectures = implode(' ', $post['settings_usingArchitectures']);
+            if (isset($post['settings_usingFlightModes']))
+                $newUsingFlightModes = implode(' ', $post['settings_usingFlightModes']);
 
             $architecturesNamesBasic = ArchitecturesNames::find()->where(['vehicleLayoutName_id' => $vehicleLayoutNameModel->id, 'isBasic' => 1])->one();
             if ($architecturesNamesBasic !== null && $architecturesNamesBasic->id != $newBasicID)

@@ -38,6 +38,22 @@ echo $this->render('_header_links', ['currentPage' => 'settings', 'vehicleLayout
     window.onload = function(){
         checkBasicArchitecture($("input:radio[name='settings_basicArchitecture']:checked").val(), true);
     }
+
+    function checkAllArchitectures(flag) {
+        var list = $('input[name="settings_usingArchitectures[]"]');
+        list.each(function () {
+            $(this).attr('checked', flag);
+        });
+        
+        checkBasicArchitecture($("input:radio[name='settings_basicArchitecture']:checked").val(), true);
+    }
+
+    function checkAllFlightModes(flag) {
+        var list = $('input[name="settings_usingFlightModes[]"]');
+        list.each(function () {
+            $(this).attr('checked', flag);
+        });
+    }
 JS;
 
 $this->registerJs($script, yii\web\View::POS_HEAD);
@@ -71,6 +87,8 @@ $this->registerJs($script, yii\web\View::POS_HEAD);
                     },
                     'separator'=>'<br />',
                 ]);
+                echo '<br /><br />';
+                echo Html::checkbox('select_all_architectures', false, ['label' => 'Выбрать все', 'onchange' => 'checkAllArchitectures(this.checked)']);
             ?>
         </div>
 
@@ -87,6 +105,8 @@ $this->registerJs($script, yii\web\View::POS_HEAD);
                     },
                     'separator'=>'<br />',
                 ]);
+                echo '<br /><br />';
+                echo Html::checkbox('select_all_flight_modes', false, ['label' => 'Выбрать все', 'onchange' => 'checkAllFlightModes(this.checked)']);
             ?>
         </div>
     </div>

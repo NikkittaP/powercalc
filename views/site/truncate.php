@@ -5,6 +5,19 @@ use yii\helpers\Html;
 $this->title = 'Очистка БД';
 ?>
 <div class="site-truncate">
+<?php
+    $script = <<< JS
+    
+    function checkAll(flag) {
+        var list = $('input[name="selected_tables[]"]');
+        list.each(function () {
+            $(this).attr('checked', flag);
+        });
+    }
+JS;
+
+$this->registerJs($script, yii\web\View::POS_HEAD);
+?>
 
     <h1><?= Html::encode($this->title) ?></h1>
 
@@ -32,6 +45,8 @@ $this->title = 'Очистка БД';
     echo Html::checkboxList('selected_tables', [], $tables,  [
         'separator'=>'<br />',
     ]);
+    echo '<br /><br />';
+    echo Html::checkbox('select_all', false, ['label' => 'Выбрать все', 'onchange' => 'checkAll(this.checked)']);
     ?>
     <br /><br />
     <div class="form-group">
