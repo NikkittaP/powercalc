@@ -449,7 +449,7 @@ class PowerDataController extends Controller
             $newBasicID = $post['settings_basicArchitecture'];
             $newUsingArchitectures = $newBasicID.' ';
             if (isset($post['settings_usingArchitectures']))
-                $newUsingArchitectures = implode(' ', $post['settings_usingArchitectures']);
+                $newUsingArchitectures = $newUsingArchitectures . implode(' ', $post['settings_usingArchitectures']);
             if (isset($post['settings_usingFlightModes']))
                 $newUsingFlightModes = implode(' ', $post['settings_usingFlightModes']);
 
