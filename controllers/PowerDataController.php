@@ -785,8 +785,19 @@ class PowerDataController extends Controller
             $chart_data['DELTA_N'][$results->architectureName_id]['isBasic'] = $results->architectureName->isBasic;
 
             if (!isset($chart_data['DELTA_N'][$results->architectureName_id][$results->flightMode_id]['N_takeoff']))
-                $chart_data['DELTA_N'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['N_takeoff'] = 0.0;
+                $chart_data['DELTA_N'][$results->architectureName_id][$results->flightMode_id]['N_takeoff'] = 0.0;
             $chart_data['DELTA_N'][$results->architectureName_id][$results->flightMode_id]['N_takeoff'] += $results->N_takeoff;
+
+            /***************************************************/
+
+            $chart_data['EFFICIENCY'][$results->architectureName_id]['architectureName'] = $results->architectureName->name;
+
+            if (!isset($chart_data['EFFICIENCY'][$results->architectureName_id][$results->flightMode_id]['N_takeoff']))
+                $chart_data['EFFICIENCY'][$results->architectureName_id][$results->flightMode_id]['N_takeoff'] = 0.0;
+            if (!isset($chart_data['EFFICIENCY'][$results->architectureName_id][$results->flightMode_id]['N_consumers_out']))
+                $chart_data['EFFICIENCY'][$results->architectureName_id][$results->flightMode_id]['N_consumers_out'] = 0.0;
+            $chart_data['EFFICIENCY'][$results->architectureName_id][$results->flightMode_id]['N_takeoff'] += $results->N_takeoff;
+            $chart_data['EFFICIENCY'][$results->architectureName_id][$results->flightMode_id]['N_consumers_out'] += $results->N_consumers_out;
         }
 
         return $this->render('results', [

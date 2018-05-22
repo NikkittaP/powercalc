@@ -90,6 +90,23 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
             'content'   =>  Tabs::widget(['items' => $items]),
         ];
 
+         // КПД = N_потр_вых_сумм/N_отбора 
+         $items = [];
+         $items[] = [
+             'label'     =>  'КПД',
+             'content'   =>  $this->render('_results_chart', [
+                 'chartType' => 'EFFICIENCY',
+                 'title' => 'КПД по архитектурам',
+                 'chart_data' => $chart_data['EFFICIENCY'],
+                 'flightModeModel' => $flightModeModel,
+                 'selectedArchitectures' => $selectedArchitectures,
+                 ]),
+         ];
+         $items_root[] = [
+             'label'     =>  'КПД',
+             'content'   =>  Tabs::widget(['items' => $items]),
+         ];
+
         echo Tabs::widget(['items' => $items_root]);
         ?>
     </div>

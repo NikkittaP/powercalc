@@ -7,15 +7,16 @@ use yii\helpers\VarDumper;
 
 <?php
 
+$yAxisTitle = 'yAxisTitle';
+
 if ($chartType == 'ENERGYSOURCE_Q') {
-    $flightModes = [];
+    $yAxisTitle = 'Потребление';
+
     $seriesColumnData = [];
     $seriesLineData = [];
     $series = [];
 
     foreach ($flightModeModel as $currentFlightMode) {
-        $flightModes[] = $currentFlightMode->name;
-
         $seriesLineData[] = round($chart_data[$currentFlightMode->id][$energySourceID]['Qdisposable'], 1);
     }
 
@@ -42,43 +43,11 @@ if ($chartType == 'ENERGYSOURCE_Q') {
             'fillColor' => 'white',
         ],
     ];
-    echo Highcharts::widget([
-        'scripts' => [
-            'modules/exporting',
-            'themes/avocado',
-        ],
-        'options' => [
-            'credits' => ['enabled' => false],
-            'chart' => [
-                'height' => 900,
-                //'width' => 1000,
-                'style' => [
-                //'fontFamily' => 'Arial',
-                ],
-            ],
-            'title' => [ 'text' => $title ],
-            'xAxis' => [
-                'title' => [ 'text' => 'Режимы полёта' ],
-                'categories' => $flightModes,
-            ],
-            'yAxis' => [
-                'title' => [ 'text' => 'Потребление' ],
-            ],
-            'plotOptions' => [
-                'column' => [
-                    'borderRadius' => 5,
-                ],
-            ],
-            'series' => $series,
-        ]
-    ]);
+    
 } else if ($chartType == 'DELTA_N') {
-    $flightModes = [];
-    $series = [];
+    $yAxisTitle = 'ΔN_отбора';
 
-    foreach ($flightModeModel as $currentFlightMode) {
-        $flightModes[] = $currentFlightMode->name;
-    }
+    $series = [];
 
     $basicArchitectureID = -1;
     foreach ($selectedArchitectures as $currentArchitectureID) {
@@ -99,36 +68,56 @@ if ($chartType == 'ENERGYSOURCE_Q') {
             ];
         }
     }
-
-    echo Highcharts::widget([
-        'scripts' => [
-            'modules/exporting',
-            'themes/avocado',
-        ],
-        'options' => [
-            'credits' => ['enabled' => false],
-            'chart' => [
-                'height' => 900,
-                //'width' => 1000,
-                'style' => [
-                //'fontFamily' => 'Arial',
-                ],
-            ],
-            'title' => [ 'text' => $title ],
-            'xAxis' => [
-                'title' => [ 'text' => 'Режимы полёта' ],
-                'categories' => $flightModes,
-            ],
-            'yAxis' => [
-                'title' => [ 'text' => 'ΔN_отбора' ],
-            ],
-            'plotOptions' => [
-                'column' => [
-                    'borderRadius' => 5,
-                ],
-            ],
-            'series' => $series,
-        ]
-    ]);
+} else if ($chartType == 'EFFICIENCY') {
+    $yAxisTitle = 'КПД, %';
+    
+    $series = [];
+    
+    foreach ($selectedArchitectures as $currentArchitectureID) {
+        foreach ($flightModeModel as $currentFlightMode) {
+            $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id]['N_consumers_out'] / $chart_data[$currentArchitectureID][$currentFlightMode->id]['N_takeoff']) * 100, 1);
+        }
+        $series[] = [
+            'type' => 'column',
+            'name' => $chart_data[$currentArchitectureID]['architectureName'],
+            'data' => $seriesColumnData[$currentArchitectureID],
+        ];
+    }
 }
+
+$flightModes = [];
+foreach ($flightModeModel as $currentFlightMode) {
+    $flightModes[] = $currentFlightMode->name;
+}
+
+echo Highcharts::widget([
+    'scripts' => [
+        'modules/exporting',
+        'themes/avocado',
+    ],
+    'options' => [
+        'credits' => ['enabled' => false],
+        'chart' => [
+            'height' => 900,
+            //'width' => 1000,
+            'style' => [
+            //'fontFamily' => 'Arial',
+            ],
+        ],
+        'title' => [ 'text' => $title ],
+        'xAxis' => [
+            'title' => [ 'text' => 'Режимы полёта' ],
+            'categories' => $flightModes,
+        ],
+        'yAxis' => [
+            'title' => [ 'text' => $yAxisTitle ],
+        ],
+        'plotOptions' => [
+            'column' => [
+                'borderRadius' => 5,
+            ],
+        ],
+        'series' => $series,
+    ]
+]);
 ?>
