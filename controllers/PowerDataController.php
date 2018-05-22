@@ -770,13 +770,23 @@ class PowerDataController extends Controller
             if (!in_array($results->energySource_id, $usedEnergySourcesInSelectedArchitectures))
                 $usedEnergySourcesInSelectedArchitectures[] = $results->energySource_id;
 
-            if (!isset($chart_data[$results->architectureName_id][$results->flightMode_id]['Qpump']))
-                $chart_data[$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump'] = 0.0;
+            $chart_data['ENERGYSOURCE_Q'][$results->architectureName_id]['architectureName'] = $results->architectureName->name;
 
-            $chart_data[$results->architectureName_id][$results->flightMode_id]['architectureName'] = $results->architectureName->name;
-            $chart_data[$results->architectureName_id][$results->flightMode_id]['flightModeName'] = $results->flightMode->name;
-            $chart_data[$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump'] += $results->Qpump;
-            $chart_data[$results->flightMode_id][$results->energySource_id]['Qdisposable'] = $results->Qdisposable;
+            if (!isset($chart_data['ENERGYSOURCE_Q'][$results->architectureName_id][$results->flightMode_id]['Qpump']))
+                $chart_data['ENERGYSOURCE_Q'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump'] = 0.0;
+
+            $chart_data['ENERGYSOURCE_Q'][$results->architectureName_id][$results->flightMode_id]['flightModeName'] = $results->flightMode->name;
+            $chart_data['ENERGYSOURCE_Q'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump'] += $results->Qpump;
+            $chart_data['ENERGYSOURCE_Q'][$results->flightMode_id][$results->energySource_id]['Qdisposable'] = $results->Qdisposable; // А если Энергосистема есть и в базовой и в альтернативной, то какую брать Qраспол!?
+
+            /***************************************************/
+
+            $chart_data['DELTA_N'][$results->architectureName_id]['architectureName'] = $results->architectureName->name;
+            $chart_data['DELTA_N'][$results->architectureName_id]['isBasic'] = $results->architectureName->isBasic;
+
+            if (!isset($chart_data['DELTA_N'][$results->architectureName_id][$results->flightMode_id]['N_takeoff']))
+                $chart_data['DELTA_N'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['N_takeoff'] = 0.0;
+            $chart_data['DELTA_N'][$results->architectureName_id][$results->flightMode_id]['N_takeoff'] += $results->N_takeoff;
         }
 
         return $this->render('results', [

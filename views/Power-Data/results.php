@@ -48,6 +48,9 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
 <div class="row">
     <div class="col-sm-12">
         <?php
+        $items_root = [];
+
+        // Энергосистемы (расход)
         $items = [];
         foreach ($energySourcesModel as $currentEnergySource) {
             if (in_array($currentEnergySource->id, $usedEnergySourcesInSelectedArchitectures))
@@ -55,8 +58,9 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
                 $items[] = [
                     'label'     =>  $currentEnergySource->name,
                     'content'   =>  $this->render('_results_chart', [
+                        'chartType' => 'ENERGYSOURCE_Q',
                         'title' => 'Сравнение потребления архитектур для энергосистемы <b>'.$currentEnergySource->name.'</b>',
-                        'chart_data' => $chart_data,
+                        'chart_data' => $chart_data['ENERGYSOURCE_Q'],
                         'flightModeModel' => $flightModeModel,
                         'selectedArchitectures' => $selectedArchitectures,
                         'energySourceID' => $currentEnergySource->id,
@@ -64,10 +68,29 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
                 ];
             }
         }
+        $items_root[] = [
+            'label'     =>  'Энергосистемы (расход)',
+            'content'   =>  Tabs::widget(['items' => $items]),
+        ];
 
-        echo Tabs::widget([
-                'items' => $items,
-            ]);
+        // ΔN_отбора
+        $items = [];
+        $items[] = [
+            'label'     =>  'ΔN_отбора',
+            'content'   =>  $this->render('_results_chart', [
+                'chartType' => 'DELTA_N',
+                'title' => 'ΔN_отбора по архитектурам',
+                'chart_data' => $chart_data['DELTA_N'],
+                'flightModeModel' => $flightModeModel,
+                'selectedArchitectures' => $selectedArchitectures,
+                ]),
+        ];
+        $items_root[] = [
+            'label'     =>  'ΔN_отбора',
+            'content'   =>  Tabs::widget(['items' => $items]),
+        ];
+
+        echo Tabs::widget(['items' => $items_root]);
         ?>
     </div>
 </div>

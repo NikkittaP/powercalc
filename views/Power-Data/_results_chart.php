@@ -2,81 +2,133 @@
 
 use miloschuman\highcharts\Highcharts;
 use yii\web\JsExpression;
+use yii\helpers\VarDumper;
 ?>
 
 <?php
 
-$flightModes = [];
-$seriesColumnData = [];
-$seriesLineData = [];
-$series = [];
+if ($chartType == 'ENERGYSOURCE_Q') {
+    $flightModes = [];
+    $seriesColumnData = [];
+    $seriesLineData = [];
+    $series = [];
 
-foreach ($flightModeModel as $currentFlightMode) {
-    $flightModes[] = $currentFlightMode->name;
-
-    $seriesLineData[] = round($chart_data[$currentFlightMode->id][$energySourceID]['Qdisposable'], 1);
-}
-
-foreach ($selectedArchitectures as $currentArchitectureID) {
     foreach ($flightModeModel as $currentFlightMode) {
-        $seriesColumnData[$currentArchitectureID][] = round($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qpump'], 1);
+        $flightModes[] = $currentFlightMode->name;
+
+        $seriesLineData[] = round($chart_data[$currentFlightMode->id][$energySourceID]['Qdisposable'], 1);
     }
+
+    foreach ($selectedArchitectures as $currentArchitectureID) {
+        foreach ($flightModeModel as $currentFlightMode) {
+            $seriesColumnData[$currentArchitectureID][] = round($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qpump'], 1);
+        }
+        $series[] = [
+            'type' => 'column',
+            'name' => $chart_data[$currentArchitectureID]['architectureName'],
+            'data' => $seriesColumnData[$currentArchitectureID],
+        ];
+    }
+
     $series[] = [
-        'type' => 'column',
-        'name' => $chart_data[$currentArchitectureID][$currentFlightMode->id]['architectureName'],
-        'data' => $seriesColumnData[$currentArchitectureID],
-    ];
-}
-
-$series[] = [
-    'type' => 'spline',
+        'type' => 'spline',
     //'type' => 'areaspline',
-    'fillOpacity' => 0.1,
-    'name' => 'Располагаемый расход',
-    'data' => $seriesLineData,
-    'marker' => [
-        'lineWidth' => 2,
-        'lineColor' => new JsExpression('Highcharts.getOptions().colors[3]'),
-        'fillColor' => 'white',
-    ],
-];
-
-?>
-
-<?= Highcharts::widget([
-    'scripts' => [
-        'modules/exporting',
-        'themes/avocado',
-    ],
-    'options' => [
-        'credits' => ['enabled' => false],
-        'chart'=>[
-            'height'=>  900,
-            //'width' => 1000,
-            'style' => [
+        'fillOpacity' => 0.1,
+        'name' => 'Располагаемый расход',
+        'data' => $seriesLineData,
+        'marker' => [
+            'lineWidth' => 2,
+            'lineColor' => new JsExpression('Highcharts.getOptions().colors[3]'),
+            'fillColor' => 'white',
+        ],
+    ];
+    echo Highcharts::widget([
+        'scripts' => [
+            'modules/exporting',
+            'themes/avocado',
+        ],
+        'options' => [
+            'credits' => ['enabled' => false],
+            'chart' => [
+                'height' => 900,
+                //'width' => 1000,
+                'style' => [
                 //'fontFamily' => 'Arial',
+                ],
             ],
-        ],
-        'title' => [
-            'text' => $title,
-        ],
-        'xAxis' => [
-            'title' => [
-                'text' => 'Режимы полёта',
+            'title' => [ 'text' => $title ],
+            'xAxis' => [
+                'title' => [ 'text' => 'Режимы полёта' ],
+                'categories' => $flightModes,
             ],
-            'categories' => $flightModes,
-        ],
-        'yAxis' => [
-            'title' => [
-                'text' => 'Потребление',
+            'yAxis' => [
+                'title' => [ 'text' => 'Потребление' ],
             ],
-        ],
-        'plotOptions' => [
-            'column' => [
-                'borderRadius' => 5,
+            'plotOptions' => [
+                'column' => [
+                    'borderRadius' => 5,
+                ],
             ],
-        ],
-        'series' => $series,
-    ]
+            'series' => $series,
+        ]
     ]);
+} else if ($chartType == 'DELTA_N') {
+    $flightModes = [];
+    $series = [];
+
+    foreach ($flightModeModel as $currentFlightMode) {
+        $flightModes[] = $currentFlightMode->name;
+    }
+
+    $basicArchitectureID = -1;
+    foreach ($selectedArchitectures as $currentArchitectureID) {
+        if ($chart_data[$currentArchitectureID]['isBasic'] == true)
+            $basicArchitectureID = $currentArchitectureID;
+    }
+    
+    foreach ($selectedArchitectures as $currentArchitectureID) {
+        if ($currentArchitectureID != $basicArchitectureID)
+        {
+            foreach ($flightModeModel as $currentFlightMode) {
+                $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id]['N_takeoff'] - $chart_data[$basicArchitectureID][$currentFlightMode->id]['N_takeoff']), 1);
+            }
+            $series[] = [
+                'type' => 'column',
+                'name' => $chart_data[$currentArchitectureID]['architectureName'],
+                'data' => $seriesColumnData[$currentArchitectureID],
+            ];
+        }
+    }
+
+    echo Highcharts::widget([
+        'scripts' => [
+            'modules/exporting',
+            'themes/avocado',
+        ],
+        'options' => [
+            'credits' => ['enabled' => false],
+            'chart' => [
+                'height' => 900,
+                //'width' => 1000,
+                'style' => [
+                //'fontFamily' => 'Arial',
+                ],
+            ],
+            'title' => [ 'text' => $title ],
+            'xAxis' => [
+                'title' => [ 'text' => 'Режимы полёта' ],
+                'categories' => $flightModes,
+            ],
+            'yAxis' => [
+                'title' => [ 'text' => 'ΔN_отбора' ],
+            ],
+            'plotOptions' => [
+                'column' => [
+                    'borderRadius' => 5,
+                ],
+            ],
+            'series' => $series,
+        ]
+    ]);
+}
 ?>
