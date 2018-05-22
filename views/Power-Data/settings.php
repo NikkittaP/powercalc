@@ -25,12 +25,11 @@ echo $this->render('_header_links', ['currentPage' => 'settings', 'vehicleLayout
             id = $(element).find('input:checked').val();
         var list = $('input[name="settings_usingArchitectures[]"]');
         list.each(function () {
-            item = $(this);
-            if (item.val() != id) {
-                item.attr('disabled', false);
+            if (this.value != id) {
+                this.disabled = false;
             } else {
-                item.attr('checked', true);
-                item.attr('disabled', true);
+                this.checked = true;
+                this.disabled = true;
             }
         });
     }
@@ -42,7 +41,7 @@ echo $this->render('_header_links', ['currentPage' => 'settings', 'vehicleLayout
     function checkAllArchitectures(flag) {
         var list = $('input[name="settings_usingArchitectures[]"]');
         list.each(function () {
-            $(this).attr('checked', flag);
+            this.checked = flag;
         });
         
         checkBasicArchitecture($("input:radio[name='settings_basicArchitecture']:checked").val(), true);
@@ -51,7 +50,7 @@ echo $this->render('_header_links', ['currentPage' => 'settings', 'vehicleLayout
     function checkAllFlightModes(flag) {
         var list = $('input[name="settings_usingFlightModes[]"]');
         list.each(function () {
-            $(this).attr('checked', flag);
+            this.checked = flag;
         });
     }
 JS;
