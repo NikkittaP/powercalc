@@ -47,6 +47,7 @@ if ($chartType == 'ENERGYSOURCE_Q') {
 } else if ($chartType == 'DELTA_N') {
     $yAxisTitle = 'ΔN_отбора';
 
+    $seriesColumnData = [];
     $series = [];
 
     $basicArchitectureID = -1;
@@ -71,6 +72,7 @@ if ($chartType == 'ENERGYSOURCE_Q') {
 } else if ($chartType == 'EFFICIENCY') {
     $yAxisTitle = 'КПД, %';
     
+    $seriesColumnData = [];
     $series = [];
     
     foreach ($selectedArchitectures as $currentArchitectureID) {
@@ -83,7 +85,28 @@ if ($chartType == 'ENERGYSOURCE_Q') {
             'data' => $seriesColumnData[$currentArchitectureID],
         ];
     }
+} else if ($chartType == 'SIMULTANEITY_INDEX') {
+    $yAxisTitle = 'К_одновременности';
+
+    $seriesColumnData = [];
+    $series = [];
+
+    foreach ($selectedArchitectures as $currentArchitectureID) {
+        foreach ($flightModeModel as $currentFlightMode) {
+            if ($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable'] == 0)
+                $seriesColumnData[$currentArchitectureID][] = 0;
+            else
+                $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qpump'] / $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable']), 1);
+        }
+        $series[] = [
+            'type' => 'column',
+            'name' => $chart_data[$currentArchitectureID]['architectureName'],
+            'data' => $seriesColumnData[$currentArchitectureID],
+        ];
+    }
 }
+
+
 
 $flightModes = [];
 foreach ($flightModeModel as $currentFlightMode) {

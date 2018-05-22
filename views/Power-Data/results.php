@@ -16,7 +16,7 @@ use app\models\ResultsEnergySources;
 /* @var $searchModel app\models\VehiclesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Результаты расчёта для компоновки "'.$vehicleLayoutNameModel->vehicle->name.': '.$vehicleLayoutNameModel->name.'"';
+$this->title = 'Результаты расчёта для компоновки "' . $vehicleLayoutNameModel->vehicle->name . ': ' . $vehicleLayoutNameModel->name . '"';
 $this->params['breadcrumbs'][] = $this->title;
 
 echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutNameID' => $vehicleLayoutNameModel->id]);
@@ -27,16 +27,16 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
     <?php
     echo Html::beginForm(['power-data/results', 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id], 'post');
     echo Html::hiddenInput('isPost', '1');
-    $items = ArrayHelper::map(ArchitecturesNames::find()->where(['id' => $usingArchitectures, 'vehicleLayoutName_id'=>$vehicleLayoutNameModel->id])->all(), 'id', 'name');
-    echo Html::checkboxList('selected_architectures', $selectedArchitectures, $items,  [
-        'item' => function ($index, $label, $name, $checked, $value) use($basicArchitecture) {
+    $items = ArrayHelper::map(ArchitecturesNames::find()->where(['id' => $usingArchitectures, 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id])->all(), 'id', 'name');
+    echo Html::checkboxList('selected_architectures', $selectedArchitectures, $items, [
+        'item' => function ($index, $label, $name, $checked, $value) use ($basicArchitecture) {
             return Html::checkbox($name, $checked, [
                 'value' => $value,
                 'disabled' => $value == key($basicArchitecture),
                 'label' => $label
             ]);
         },
-        'separator'=>'<br />',
+        'separator' => '<br />',
     ]);
     ?>
     <div class="form-group">
@@ -53,59 +53,80 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
         // Энергосистемы (расход)
         $items = [];
         foreach ($energySourcesModel as $currentEnergySource) {
-            if (in_array($currentEnergySource->id, $usedEnergySourcesInSelectedArchitectures))
-            {
+            if (in_array($currentEnergySource->id, $usedEnergySourcesInSelectedArchitectures)) {
                 $items[] = [
-                    'label'     =>  $currentEnergySource->name,
-                    'content'   =>  $this->render('_results_chart', [
+                    'label' => $currentEnergySource->name,
+                    'content' => $this->render('_results_chart', [
                         'chartType' => 'ENERGYSOURCE_Q',
-                        'title' => 'Сравнение потребления архитектур для энергосистемы <b>'.$currentEnergySource->name.'</b>',
+                        'title' => 'Сравнение потребления архитектур для энергосистемы <b>' . $currentEnergySource->name . '</b>',
                         'chart_data' => $chart_data['ENERGYSOURCE_Q'],
                         'flightModeModel' => $flightModeModel,
                         'selectedArchitectures' => $selectedArchitectures,
                         'energySourceID' => $currentEnergySource->id,
-                        ]),
+                    ]),
                 ];
             }
         }
         $items_root[] = [
-            'label'     =>  'Энергосистемы (расход)',
-            'content'   =>  Tabs::widget(['items' => $items]),
+            'label' => 'Энергосистемы (расход)',
+            'content' => Tabs::widget(['items' => $items]),
         ];
 
         // ΔN_отбора
         $items = [];
         $items[] = [
-            'label'     =>  'ΔN_отбора',
-            'content'   =>  $this->render('_results_chart', [
+            'label' => 'ΔN_отбора',
+            'content' => $this->render('_results_chart', [
                 'chartType' => 'DELTA_N',
                 'title' => 'ΔN_отбора по архитектурам',
                 'chart_data' => $chart_data['DELTA_N'],
                 'flightModeModel' => $flightModeModel,
                 'selectedArchitectures' => $selectedArchitectures,
-                ]),
+            ]),
         ];
         $items_root[] = [
-            'label'     =>  'ΔN_отбора',
-            'content'   =>  Tabs::widget(['items' => $items]),
+            'label' => 'ΔN_отбора',
+            'content' => Tabs::widget(['items' => $items]),
         ];
 
-         // КПД = N_потр_вых_сумм/N_отбора 
-         $items = [];
-         $items[] = [
-             'label'     =>  'КПД',
-             'content'   =>  $this->render('_results_chart', [
-                 'chartType' => 'EFFICIENCY',
-                 'title' => 'КПД по архитектурам',
-                 'chart_data' => $chart_data['EFFICIENCY'],
-                 'flightModeModel' => $flightModeModel,
-                 'selectedArchitectures' => $selectedArchitectures,
-                 ]),
-         ];
-         $items_root[] = [
-             'label'     =>  'КПД',
-             'content'   =>  Tabs::widget(['items' => $items]),
-         ];
+        // КПД = N_потр_вых_сумм/N_отбора
+        $items = [];
+        $items[] = [
+            'label' => 'КПД',
+            'content' => $this->render('_results_chart', [
+                'chartType' => 'EFFICIENCY',
+                'title' => 'КПД по архитектурам',
+                'chart_data' => $chart_data['EFFICIENCY'],
+                'flightModeModel' => $flightModeModel,
+                'selectedArchitectures' => $selectedArchitectures,
+            ]),
+        ];
+        $items_root[] = [
+            'label' => 'КПД',
+            'content' => Tabs::widget(['items' => $items]),
+        ];
+
+        // К_одновременности (реализуемый)=Q_насоса/Q_распологаемый
+        $items = [];
+        foreach ($energySourcesModel as $currentEnergySource) {
+            if (in_array($currentEnergySource->id, $usedEnergySourcesInSelectedArchitectures) && $currentEnergySource->energySourceType_id != 4) {
+                $items[] = [
+                    'label' => $currentEnergySource->name,
+                    'content' => $this->render('_results_chart', [
+                        'chartType' => 'SIMULTANEITY_INDEX',
+                        'title' => 'К_одновременности (реализуемый) по гидросистемам',
+                        'chart_data' => $chart_data['SIMULTANEITY_INDEX'],
+                        'flightModeModel' => $flightModeModel,
+                        'selectedArchitectures' => $selectedArchitectures,
+                        'energySourceID' => $currentEnergySource->id,
+                    ]),
+                ];
+            }
+        }
+        $items_root[] = [
+            'label' => 'К_одновременности (реализуемый)',
+            'content' => Tabs::widget(['items' => $items]),
+        ];
 
         echo Tabs::widget(['items' => $items_root]);
         ?>
@@ -114,11 +135,11 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
 
 <?php
 foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitectureName) {
-?>
+    ?>
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">
-                Сравнение базовой архитектуры "<b><?= current($basicArchitecture);?></b>" с альтернативной "<b><?= $currentArchitectureName;?></b>"
+                Сравнение базовой архитектуры "<b><?= current($basicArchitecture); ?></b>" с альтернативной "<b><?= $currentArchitectureName; ?></b>"
             </h3>
         </div>
         <div class="panel-body">
@@ -126,8 +147,8 @@ foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitec
             $items = [];
             foreach ($flightModeModel as $currentFlightMode) {
                 $items[] = [
-                    'label'     =>  $currentFlightMode->name,
-                    'content'   =>  $this->render('_results_per_flightmode', [
+                    'label' => $currentFlightMode->name,
+                    'content' => $this->render('_results_per_flightmode', [
                         'resultsConsumersBasic' => $resultsConsumersBasic,
                         'resultsConsumersAlternative' => $resultsConsumersAlternative,
                         'currentFlightMode' => $currentFlightMode,
@@ -136,10 +157,10 @@ foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitec
                         'currentArchitectureName' => $currentArchitectureName,
                         'resultsEnergySourcesBasic' => $resultsEnergySourcesBasic,
                         'resultsEnergySourcesAlternative' => $resultsEnergySourcesAlternative,
-                        ]),
+                    ]),
                 ];
             }
-            
+
             echo Tabs::widget([
                 'items' => $items,
             ]);
@@ -148,6 +169,7 @@ foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitec
     </div>
 
 <?php
+
 }
 ?>
 
@@ -157,10 +179,10 @@ foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitec
 <div class="row">
     <div class="col-sm-6">
         <?= $this->render('_results_by_aircraft_parts', [
-                'flightModeModel' => $flightModeModel,
-                'aircraftPartsModel' => $aircraftPartsModel,
-                'N_out_by_parts' => $N_out_by_parts,
-                ]);
+            'flightModeModel' => $flightModeModel,
+            'aircraftPartsModel' => $aircraftPartsModel,
+            'N_out_by_parts' => $N_out_by_parts,
+        ]);
         ?>
     </div>
 </div>
