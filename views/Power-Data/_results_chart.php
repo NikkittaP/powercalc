@@ -51,7 +51,7 @@ $series[] = [
     'options' => [
         'credits' => ['enabled' => false],
         'chart'=>[
-            'height'=>  500,
+            'height'=>  900,
             //'width' => 1000,
             'style' => [
                 //'fontFamily' => 'Arial',
