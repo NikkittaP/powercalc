@@ -25,7 +25,7 @@
                 ?>
                 <td>
                     <?= (isset($N_out_by_parts[$currentFlightMode->id][$currentAircraftPart->id])) 
-                    ? $N_out_by_parts[$currentFlightMode->id][$currentAircraftPart->id] 
+                    ? round($N_out_by_parts[$currentFlightMode->id][$currentAircraftPart->id], 1) 
                     : '&ndash;';?>
                 </td>
                 <?php
