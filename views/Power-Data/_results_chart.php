@@ -9,6 +9,58 @@ use yii\helpers\VarDumper;
 
 $yAxisTitle = 'yAxisTitle';
 
+if ($chartType == 'TEXT_DATA')
+{
+    $basicArchitectureID = -1;
+    foreach ($selectedArchitectures as $currentArchitectureID) {
+        if ($chart_data[$currentArchitectureID]['isBasic'] == true)
+            $basicArchitectureID = $currentArchitectureID;
+    }
+    
+    foreach ($selectedArchitectures as $currentArchitectureID) {
+        foreach ($flightModeModel as $currentFlightMode) {
+            if ($currentArchitectureID != $basicArchitectureID)
+                $textData['DELTA_N'][$currentFlightMode->id][$currentArchitectureID] = round(($chart_data['DELTA_N'][$currentArchitectureID][$currentFlightMode->id]['N_takeoff'] - $chart_data['DELTA_N'][$basicArchitectureID][$currentFlightMode->id]['N_takeoff']), 1);
+            $textData['EFFICIENCY'][$currentFlightMode->id][$currentArchitectureID] = round(($chart_data['EFFICIENCY'][$currentArchitectureID][$currentFlightMode->id]['N_consumers_out'] / $chart_data['EFFICIENCY'][$currentArchitectureID][$currentFlightMode->id]['N_takeoff']) * 100, 1);
+        }
+    }
+
+    ?>
+    <table class="table table-bordered table-condensed table-hover medium kv-table">
+        <tbody>
+        <tr class="active">
+            <th colspan="2"></th>
+            <th class="text-center"><h5><b>ΔN_отбора</b></h5></th>
+            <th class="text-center"><h5><b>КПД</b></h5></th>
+        </tr>
+        <?php
+        foreach ($flightModeModel as $currentFlightMode) {
+            $isNewFM = true;
+            foreach ($selectedArchitectures as $currentArchitectureID) {
+        ?>
+                <tr>
+                    <?php
+                    if ($isNewFM) {
+                    ?>
+                        <td rowspan="<?=count($selectedArchitectures);?>" width="350"><b><?=$currentFlightMode->name;?></b></td>
+                    <?php
+                    }
+                    ?>
+                    <td><b><?=$chart_data['DELTA_N'][$currentArchitectureID]['architectureName'];?></b></td>
+                    <td><?=$textData['DELTA_N'][$currentFlightMode->id][$currentArchitectureID];?></td>
+                    <td><?=$textData['EFFICIENCY'][$currentFlightMode->id][$currentArchitectureID];?></td>
+                </tr>
+        <?php
+            $isNewFM = false;
+            }
+        }
+        ?>
+        </tbody>
+    </table>
+    <?php
+    return;
+}
+
 if ($chartType == 'ENERGYSOURCE_Q') {
     $yAxisTitle = 'Потребление';
 

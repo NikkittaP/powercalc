@@ -1,6 +1,7 @@
 <?php
 
 use yii\bootstrap\Tabs;
+use yii\bootstrap\Collapse;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\VarDumper;
@@ -129,6 +130,22 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
         ];
 
         echo Tabs::widget(['items' => $items_root]);
+
+        // Текстовые данные в виде таблицы
+        echo Collapse::widget([
+           'items' => [
+               [
+                   'label' => 'Текстовые данные графиков',
+                   'content' =>  $this->render('_results_chart', [
+                                    'chartType' => 'TEXT_DATA',
+                                    'title' => 'Текстовые данные графиков',
+                                    'chart_data' => $chart_data,
+                                    'flightModeModel' => $flightModeModel,
+                                    'selectedArchitectures' => $selectedArchitectures,
+                                ])
+               ],
+            ]
+        ]);
         ?>
     </div>
 </div>
