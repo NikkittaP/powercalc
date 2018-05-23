@@ -40,9 +40,9 @@ class PumpEfficiency extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'QCurQmax' => 'Qcur Qmax',
-            'pumpEfficiency' => 'Pump Efficiency',
-            'pumpEfficiencyRK' => 'Pump Efficiency Rk',
+            'QCurQmax' => 'Qтек/Qmax',
+            'pumpEfficiency' => 'КПД насоса',
+            'pumpEfficiencyRK' => 'КПД насоса + РК',
         ];
     }
 }
