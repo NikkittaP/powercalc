@@ -71,4 +71,17 @@ class ConstantsController extends Controller
 
         return $this->redirect(['index']);
     }
+
+    public function actionTruncate()
+    {
+        $sql = "SET foreign_key_checks = 0;";
+        $sql.= "TRUNCATE Constants;";
+        $sql.= "SET foreign_key_checks = 1;";
+
+        $connection = Yii::$app->getDb();
+        $command = $connection->createCommand($sql);
+        $command->execute();
+
+        return $this->redirect(['index']);
+    }
 }

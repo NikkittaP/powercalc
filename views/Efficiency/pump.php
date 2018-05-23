@@ -7,8 +7,8 @@ $this->title = 'Заполнение данных для таблицы КПД �
 ?>
 
 <div class="row">
-<div class="col-sm-3"></div>
-<div class="col-sm-6">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
 
     <?php
     $gridColumns[] = [
@@ -101,9 +101,31 @@ $this->title = 'Заполнение данных для таблицы КПД �
             'heading' => 'Заполнение данных для таблицы КПД насоса',
         ],
     ]);
-
-    if ($dataProvider->getCount() == 0)
-        echo Html::a('Загрузить предустановленные значения', ['/efficiency/loaddefaults'], ['class' => 'btn btn-success']);
     ?>
+    </div>
+    <div class="col-sm-3"></div>
 </div>
+
+<div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-3">
+        <?php
+        if ($dataProvider->getCount() == 0)
+            echo Html::a('Загрузить предустановленные значения', ['/efficiency/loaddefaults'], ['class' => 'btn btn-success']);
+        ?>
+    </div>
+    <div class="col-sm-3">
+        <div class="pull-right">
+            <?php
+            echo Html::a('Очистить таблицу', ['/efficiency/truncatepump'], [
+                'class' => 'btn btn-danger',
+                'data' => [
+                    'confirm' => 'Вы действительно хотите очистить таблицу?',
+                    'method' => 'post',
+                ],
+                ]);
+            ?>
+        </div>
+    </div>
+    <div class="col-sm-3"></div>
 </div>

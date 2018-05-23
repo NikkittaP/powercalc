@@ -82,4 +82,17 @@ class EfficiencyController extends Controller
 
         return $this->redirect(['pump']);
     }
+
+    public function actionTruncatepump()
+    {
+        $sql = "SET foreign_key_checks = 0;";
+        $sql.= "TRUNCATE PumpEfficiency;";
+        $sql.= "SET foreign_key_checks = 1;";
+
+        $connection = Yii::$app->getDb();
+        $command = $connection->createCommand($sql);
+        $command->execute();
+
+        return $this->redirect(['pump']);
+    }
 }

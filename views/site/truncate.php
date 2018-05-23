@@ -51,8 +51,11 @@ $this->registerJs($script, yii\web\View::POS_HEAD);
     <br /><br />
     <div class="form-group">
         <?= Html::submitButton('Очистить', [
-            'data' => ['confirm' => 'Вы действительно хотите очистить выбранные таблицы?'],
-            'class' => 'btn btn-primary'
+            'class' => 'btn btn-primary',
+            'data' => [
+                'confirm' => 'Вы действительно хотите очистить выбранные таблицы?',
+                'method' => 'post',
+            ]
             ]) ?>
     </div>
     <?= Html::endForm() ?>
