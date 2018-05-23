@@ -40,6 +40,7 @@ AppAsset::register($this);
         'items' => [
             ['label' => 'Очистка БД', 'url' => ['/site/truncate'], 'linkOptions' => ['class' => 'redlink']],
             ['label' => 'КПД насоса', 'url' => ['/efficiency/pump']],
+            ['label' => 'Переменные', 'url' => ['/constants/index']],
             ['label' => 'Описание', 'url' => ['/site/about']],
             ['label' => 'Главная', 'url' => ['/site/index']],
         ],

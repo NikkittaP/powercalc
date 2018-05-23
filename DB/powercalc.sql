@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `AircraftParts` (
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.AircraftParts: ~3 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.AircraftParts: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `AircraftParts` DISABLE KEYS */;
 /*!40000 ALTER TABLE `AircraftParts` ENABLE KEYS */;
 
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `ArchitecturesNames` (
   CONSTRAINT `FK_ArchitecturesNames_VehiclesLayoutsNames` FOREIGN KEY (`vehicleLayoutName_id`) REFERENCES `VehiclesLayoutsNames` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.ArchitecturesNames: ~5 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.ArchitecturesNames: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `ArchitecturesNames` DISABLE KEYS */;
 /*!40000 ALTER TABLE `ArchitecturesNames` ENABLE KEYS */;
 
@@ -64,9 +64,26 @@ CREATE TABLE IF NOT EXISTS `Architecture_to_VehicleLayout` (
   CONSTRAINT `FK_Architecture_to_VehicleLayout_VehicleLayout` FOREIGN KEY (`vehicleLayout_id`) REFERENCES `VehicleLayout` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.Architecture_to_VehicleLayout: ~260 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.Architecture_to_VehicleLayout: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `Architecture_to_VehicleLayout` DISABLE KEYS */;
 /*!40000 ALTER TABLE `Architecture_to_VehicleLayout` ENABLE KEYS */;
+
+-- Дамп структуры для таблица PowerDistributionData.Constants
+DROP TABLE IF EXISTS `Constants`;
+CREATE TABLE IF NOT EXISTS `Constants` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL DEFAULT '0',
+  `value` varchar(255) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Индекс 2` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+-- Дамп данных таблицы PowerDistributionData.Constants: ~0 rows (приблизительно)
+/*!40000 ALTER TABLE `Constants` DISABLE KEYS */;
+INSERT INTO `Constants` (`id`, `name`, `value`) VALUES
+	(1, 'chartWidth', '1500'),
+	(2, 'chartHeight', '900');
+/*!40000 ALTER TABLE `Constants` ENABLE KEYS */;
 
 -- Дамп структуры для таблица PowerDistributionData.Consumers
 DROP TABLE IF EXISTS `Consumers`;
@@ -84,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `Consumers` (
   CONSTRAINT `FK_Consumers_AircraftParts` FOREIGN KEY (`aircraftPart_id`) REFERENCES `AircraftParts` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.Consumers: ~60 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.Consumers: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `Consumers` DISABLE KEYS */;
 /*!40000 ALTER TABLE `Consumers` ENABLE KEYS */;
 
@@ -104,7 +121,7 @@ CREATE TABLE IF NOT EXISTS `EnergySources` (
   CONSTRAINT `FK_EnergySources_EnergySourceTypes` FOREIGN KEY (`energySourceType_id`) REFERENCES `energysourcetypes` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.EnergySources: ~7 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.EnergySources: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `EnergySources` DISABLE KEYS */;
 /*!40000 ALTER TABLE `EnergySources` ENABLE KEYS */;
 
@@ -137,7 +154,7 @@ CREATE TABLE IF NOT EXISTS `FlightModes` (
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.FlightModes: ~21 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.FlightModes: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `FlightModes` DISABLE KEYS */;
 /*!40000 ALTER TABLE `FlightModes` ENABLE KEYS */;
 
@@ -156,7 +173,7 @@ CREATE TABLE IF NOT EXISTS `FlightModes_to_VehicleLayout` (
   CONSTRAINT `FK_FlightModes_to_VehicleLayout_VehicleLayout` FOREIGN KEY (`vehicleLayout_id`) REFERENCES `VehicleLayout` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.FlightModes_to_VehicleLayout: ~1 260 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.FlightModes_to_VehicleLayout: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `FlightModes_to_VehicleLayout` DISABLE KEYS */;
 /*!40000 ALTER TABLE `FlightModes_to_VehicleLayout` ENABLE KEYS */;
 
@@ -172,7 +189,7 @@ CREATE TABLE IF NOT EXISTS `PumpEfficiency` (
   UNIQUE KEY `QCurQmax_UNIQUE` (`QCurQmax`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.PumpEfficiency: ~0 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.PumpEfficiency: ~9 rows (приблизительно)
 /*!40000 ALTER TABLE `PumpEfficiency` DISABLE KEYS */;
 INSERT INTO `PumpEfficiency` (`id`, `QCurQmax`, `pumpEfficiency`, `pumpEfficiencyRK`) VALUES
 	(1, 0, 0, 0),
@@ -211,7 +228,7 @@ CREATE TABLE IF NOT EXISTS `ResultsConsumers` (
   CONSTRAINT `FK_ResultsConsumers_VehiclesLayoutsNames` FOREIGN KEY (`vehicleLayoutName_id`) REFERENCES `VehiclesLayoutsNames` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.ResultsConsumers: ~440 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.ResultsConsumers: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `ResultsConsumers` DISABLE KEYS */;
 /*!40000 ALTER TABLE `ResultsConsumers` ENABLE KEYS */;
 
@@ -245,7 +262,7 @@ CREATE TABLE IF NOT EXISTS `ResultsEnergySources` (
   CONSTRAINT `FK_ResultsEnergySources_VehiclesLayoutsNames` FOREIGN KEY (`vehicleLayoutName_id`) REFERENCES `VehiclesLayoutsNames` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.ResultsEnergySources: ~56 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.ResultsEnergySources: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `ResultsEnergySources` DISABLE KEYS */;
 /*!40000 ALTER TABLE `ResultsEnergySources` ENABLE KEYS */;
 
@@ -263,7 +280,7 @@ CREATE TABLE IF NOT EXISTS `VehicleLayout` (
   CONSTRAINT `FK_VehicleLayout_VehiclesLayoutsNames` FOREIGN KEY (`vehicleLayoutName_id`) REFERENCES `VehiclesLayoutsNames` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.VehicleLayout: ~60 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.VehicleLayout: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `VehicleLayout` DISABLE KEYS */;
 /*!40000 ALTER TABLE `VehicleLayout` ENABLE KEYS */;
 
