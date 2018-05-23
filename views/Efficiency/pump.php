@@ -25,7 +25,7 @@ $this->title = 'Заполнение данных для таблицы КПД �
                 'pluginOptions' => [
                     'min' => 0,
                     'max' => 1,
-                    'step' => 0.1,
+                    'step' => 0.0001,
                     'decimals' => 4,
                     'verticalbuttons' => true,
                 ]
@@ -49,7 +49,7 @@ $this->title = 'Заполнение данных для таблицы КПД �
                 'pluginOptions' => [
                     'min' => 0,
                     'max' => 1,
-                    'step' => 0.01,
+                    'step' => 0.0001,
                     'decimals' => 4,
                     'verticalbuttons' => true,
                 ]
@@ -73,7 +73,7 @@ $this->title = 'Заполнение данных для таблицы КПД �
                 'pluginOptions' => [
                     'min' => 0,
                     'max' => 1,
-                    'step' => 0.01,
+                    'step' => 0.0001,
                     'decimals' => 4,
                     'verticalbuttons' => true,
                 ]
@@ -89,7 +89,7 @@ $this->title = 'Заполнение данных для таблицы КПД �
         'toolbar' => [
             [
                 'content'=>
-                    Html::a('<i class="glyphicon glyphicon-plus"></i>', ['/efficiency/createPump'], ['class'=>'btn btn-success'])
+                    Html::a('<i class="glyphicon glyphicon-plus"></i>', ['/efficiency/createpump'], ['class'=>'btn btn-success'])
             ],
         ],
         'striped' => true,

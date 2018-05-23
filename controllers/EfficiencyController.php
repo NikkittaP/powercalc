@@ -49,4 +49,12 @@ class EfficiencyController extends Controller
             'dataProvider' => $dataProvider,
         ]);
     }
+
+    public function actionCreatepump()
+    {
+        $model = new PumpEfficiency();
+        $model->save();
+
+        return $this->redirect(['pump']);
+    }
 }
