@@ -5,11 +5,9 @@ use kartik\grid\GridView;
 
 $this->title = 'Переменные';
 ?>
-
 <div class="row">
 <div class="col-sm-3"></div>
 <div class="col-sm-6">
-
     <?php
     $gridColumns[] = [
         'attribute' => 'id'
@@ -61,6 +59,9 @@ $this->title = 'Переменные';
             'heading' => 'Переменные',
         ],
     ]);
+
+    if ($dataProvider->getCount()==0)
+        echo Html::a('Загрузить предустановленные значения', ['/constants/loaddefaults'], ['class'=>'btn btn-success']);
     ?>
 </div>
 </div>

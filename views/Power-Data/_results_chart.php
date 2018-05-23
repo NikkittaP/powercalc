@@ -173,8 +173,8 @@ echo Highcharts::widget([
     'options' => [
         'credits' => ['enabled' => false],
         'chart' => [
-            'height' => 900,
-            //'width' => 1000,
+            'height' => (app\models\Constants::getValue('chartHeight') == null) ? 1500 : app\models\Constants::getValue('chartHeight'),
+            'width' => (app\models\Constants::getValue('chartWidth') == null) ? 900 : app\models\Constants::getValue('chartWidth'),
             'style' => [
             //'fontFamily' => 'Arial',
             ],

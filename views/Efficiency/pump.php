@@ -88,8 +88,8 @@ $this->title = 'Заполнение данных для таблицы КПД �
         'columns' => $gridColumns,
         'toolbar' => [
             [
-                'content'=>
-                    Html::a('<i class="glyphicon glyphicon-plus"></i>', ['/efficiency/createpump'], ['class'=>'btn btn-success'])
+                'content' =>
+                    Html::a('<i class="glyphicon glyphicon-plus"></i>', ['/efficiency/createpump'], ['class' => 'btn btn-success'])
             ],
         ],
         'striped' => true,
@@ -101,6 +101,9 @@ $this->title = 'Заполнение данных для таблицы КПД �
             'heading' => 'Заполнение данных для таблицы КПД насоса',
         ],
     ]);
+
+    if ($dataProvider->getCount() == 0)
+        echo Html::a('Загрузить предустановленные значения', ['/efficiency/loaddefaults'], ['class' => 'btn btn-success']);
     ?>
 </div>
 </div>

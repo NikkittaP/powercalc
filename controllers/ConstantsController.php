@@ -54,4 +54,21 @@ class ConstantsController extends Controller
 
         return $this->redirect(['index']);
     }
+
+    public function actionLoaddefaults()
+    {
+        $defaultData = [
+            ['chartWidth', '1450'],
+            ['chartHeight', '600'],
+        ];
+
+        foreach ($defaultData as $record) {
+            $model = new Constants();
+            $model->name = $record[0];
+            $model->value = $record[1];
+            $model->save();
+        }
+
+        return $this->redirect(['index']);
+    }
 }

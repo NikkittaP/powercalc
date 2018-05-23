@@ -57,4 +57,29 @@ class EfficiencyController extends Controller
 
         return $this->redirect(['pump']);
     }
+
+    public function actionLoaddefaults()
+    {
+        $defaultData = [
+            [0.0000, 0.0000, 0.0000],
+            [0.0300, 0.2000, 0.1900],
+            [0.0600, 0.3200, 0.3010],
+            [0.1250, 0.4600, 0.4320],
+            [0.2500, 0.6300, 0.5920],
+            [0.3750, 0.7250, 0.6820],
+            [0.5000, 0.7900, 0.7430],
+            [0.7500, 0.8550, 0.8037],
+            [1.0000, 0.8850, 0.8319]
+        ];
+
+        foreach ($defaultData as $record) {
+            $model = new PumpEfficiency();
+            $model->QCurQmax = $record[0];
+            $model->pumpEfficiency = $record[1];
+            $model->pumpEfficiencyRK = $record[2];
+            $model->save();
+        }
+
+        return $this->redirect(['pump']);
+    }
 }

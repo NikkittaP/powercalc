@@ -42,4 +42,12 @@ class Constants extends \yii\db\ActiveRecord
             'value' => 'Значение',
         ];
     }
+
+    public static function getValue($name){
+        $data = Constants::find()->where(['name' => $name])->one();
+        if ($data != null)
+            return $data->value;
+        else
+            return null;
+    }
 }
