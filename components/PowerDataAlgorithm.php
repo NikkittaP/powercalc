@@ -507,9 +507,6 @@ class PowerDataAlgorithm extends Component
         $y0 = $left['pumpEfficiencyRK'];
         $y1 = $right['pumpEfficiencyRK'];
 
-        if ($x1-$x0 == 0)
-            $asd = 123;
-
         $interpolated = $y0 + ($y1 - $y0) * ($x - $x0) / ($x1 - $x0);
 
         return $interpolated;
