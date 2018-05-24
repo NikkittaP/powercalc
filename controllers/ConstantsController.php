@@ -60,6 +60,7 @@ class ConstantsController extends Controller
         $defaultData = [
             ['chartWidth', '1450'],
             ['chartHeight', '600'],
+            ['isEfficiencyFixed', '1'],
         ];
 
         foreach ($defaultData as $record) {

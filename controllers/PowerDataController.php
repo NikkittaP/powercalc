@@ -13,7 +13,9 @@ use yii\web\NotFoundHttpException;
 use \app\models\AircraftParts;
 use \app\models\ArchitecturesNames;
 use \app\models\ArchitectureToVehicleLayout;
+use \app\models\Constants;
 use \app\models\EnergySources;
+use \app\models\PumpEfficiency;
 use \app\models\FlightModes;
 use \app\models\FlightModesToVehicleLayout;
 use \app\models\ResultsConsumers;
@@ -661,6 +663,18 @@ class PowerDataController extends Controller
             ]);
         }
 
+        $efficiencyPumpModels = PumpEfficiency::find()->all();
+        $efficiencyPump = [];
+        foreach($efficiencyPumpModels as $efficiencyPumpModel)
+        {
+            $efficiencyPump[] = [
+                'QCurQmax' => $efficiencyPumpModel->QCurQmax,
+                'pumpEfficiency' => $efficiencyPumpModel->pumpEfficiency,
+                'pumpEfficiencyRK' => $efficiencyPumpModel->pumpEfficiencyRK
+            ];
+        }
+        $algorithm->setEfficiencyPump($efficiencyPump);
+
         $algorithm->setConstants([
             'useQ0' => 1,
             'efficiencyPipeline' => 0.94,
@@ -669,7 +683,7 @@ class PowerDataController extends Controller
             'efficiencyCables' => 0.98,
             'efficiencyGenerator' => 0.9,
             'Kat2bar' => 0.980665,
-            'isEfficiencyFixed' => 1,
+            'isEfficiencyFixed' => (Constants::getValue('isEfficiencyFixed') == null) ? 1 : Constants::getValue('isEfficiencyFixed'),
             'efficiencyPump' => 0.885,
         ]);
 

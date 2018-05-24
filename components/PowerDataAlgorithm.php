@@ -51,6 +51,14 @@ class PowerDataAlgorithm extends Component
         ]
     ]
 
+    $efficiencyPump = [
+        [
+            'QCurQmax' => $QCurQmax,                            // Qтек/Qmax
+            'pumpEfficiency' => $pumpEfficiency,                // КПД насоса
+            'pumpEfficiencyRK' => $pumpEfficiencyRK,            // КПД насоса + РК
+        ]
+    ]
+
     $constants = [
         'useQ0' => $useQ0,                                      // Учитывать Qo
         'efficiencyPipeline' => $efficiencyPipeline,            // КПД трубопровода
@@ -104,6 +112,7 @@ class PowerDataAlgorithm extends Component
     public $architectures = [];
     public $architectureBasicID;
     public $flightModes = [];
+    public $efficiencyPump = [];
 
     public $constants = [];
 
@@ -116,7 +125,7 @@ class PowerDataAlgorithm extends Component
     /* Добавить энергосистему */
     public function addEnergySource($id, $data)
     {
-       $this->energySources[$id] = $data;
+        $this->energySources[$id] = $data;
     }
     /* Добавить архитектуру */
     public function addArchitecture($id, $data)
@@ -126,20 +135,25 @@ class PowerDataAlgorithm extends Component
             $this->architectureBasicID = $id;
     }
     /* Добавить режим полета */
-   public function addFlightMode($id, $data)
-   {
-      $this->flightModes[$id] = $data;
-   }
+    public function addFlightMode($id, $data)
+    {
+        $this->flightModes[$id] = $data;
+    }
     /* Добавить потребителя */
     public function addConsumer($id, $data)
     {
         $this->consumers[$id] = $data;
     }
-     /* Задать константы */
-     public function setConstants($data)
-     {
-         $this->constants = $data;
-     }
+    /* Задать массив КПД насоса */
+    public function setEfficiencyPump($data)
+    {
+        $this->efficiencyPump = $data;
+    }
+    /* Задать константы */
+    public function setConstants($data)
+    {
+        $this->constants = $data;
+    }
      
 
 /***********************************************************
@@ -472,7 +486,33 @@ class PowerDataAlgorithm extends Component
     /* Интерполяция КПД насоса для КПД _НЕ_ fix */
     public function getInterpolatedEfficiencyPump($Q_curr_to_Q_max)
     {
-        return 0.885;
+        if ($Q_curr_to_Q_max > 1)
+            $Q_curr_to_Q_max = 1;
+
+        for ($i = 0; $i < count($this->efficiencyPump); $i++)
+        {
+            $current = $this->efficiencyPump[$i];
+            if ($current['QCurQmax'] >= $Q_curr_to_Q_max)
+            {
+                $left = $this->efficiencyPump[$i - 1];
+                $right = $this->efficiencyPump[$i];
+
+                break;
+            }
+        }
+
+        $x = $Q_curr_to_Q_max;
+        $x0 = $left['QCurQmax'];
+        $x1 = $right['QCurQmax'];
+        $y0 = $left['pumpEfficiencyRK'];
+        $y1 = $right['pumpEfficiencyRK'];
+
+        if ($x1-$x0 == 0)
+            $asd = 123;
+
+        $interpolated = $y0 + ($y1 - $y0) * ($x - $x0) / ($x1 - $x0);
+
+        return $interpolated;
     }
 }
 ?>
