@@ -76,13 +76,14 @@ CREATE TABLE IF NOT EXISTS `Constants` (
   `value` varchar(255) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `Индекс 2` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.Constants: ~0 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.Constants: ~3 rows (приблизительно)
 /*!40000 ALTER TABLE `Constants` DISABLE KEYS */;
 INSERT INTO `Constants` (`id`, `name`, `value`) VALUES
-	(1, 'chartWidth', '1500'),
-	(2, 'chartHeight', '900');
+	(1, 'chartWidth', '1450'),
+	(2, 'chartHeight', '600'),
+	(3, 'isEfficiencyFixed', '0');
 /*!40000 ALTER TABLE `Constants` ENABLE KEYS */;
 
 -- Дамп структуры для таблица PowerDistributionData.Consumers
@@ -114,6 +115,7 @@ CREATE TABLE IF NOT EXISTS `EnergySources` (
   `qMax` float unsigned DEFAULT NULL COMMENT 'Qmax для расчёта Q располагаемого',
   `pumpPressureNominal` float unsigned DEFAULT NULL COMMENT 'Pнас ном',
   `pumpPressureWorkQmax` float unsigned DEFAULT NULL COMMENT 'Pнас раб при Qmax',
+  `NMax` float unsigned DEFAULT NULL COMMENT 'Nmax для электросистем',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`),

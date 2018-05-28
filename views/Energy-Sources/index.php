@@ -34,6 +34,15 @@ $this->params['breadcrumbs'][] = $this->title;
             'qMax',
             'pumpPressureNominal',
             'pumpPressureWorkQmax',
+            [
+                'attribute' => 'NMax',
+                'value' => function ($model, $key, $index, $column) {
+                    if ($model->energySourceType_id != 4)
+                        return '-';
+
+                    return $model->NMax;
+                },
+            ],
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

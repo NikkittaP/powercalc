@@ -13,6 +13,7 @@ use Yii;
  * @property double $qMax Qmax для расчёта Q располагаемого
  * @property double $pumpPressureNominal Pнас ном
  * @property double $pumpPressureWorkQmax Pнас раб при Qmax
+ * @property double $NMax Nmax для электросистем
  *
  * @property Energysourcetypes $energySourceType
  */
@@ -34,7 +35,7 @@ class EnergySources extends \yii\db\ActiveRecord
         return [
             [['name', 'energySourceType_id'], 'required'],
             [['energySourceType_id'], 'integer'],
-            [['qMax', 'pumpPressureNominal', 'pumpPressureWorkQmax'], 'number'],
+            [['qMax', 'pumpPressureNominal', 'pumpPressureWorkQmax', 'NMax'], 'number'],
             [['name'], 'string', 'max' => 255],
             [['name'], 'unique'],
             [['energySourceType_id'], 'exist', 'skipOnError' => true, 'targetClass' => Energysourcetypes::className(), 'targetAttribute' => ['energySourceType_id' => 'id']],
@@ -53,6 +54,7 @@ class EnergySources extends \yii\db\ActiveRecord
             'qMax' => 'Q max',
             'pumpPressureNominal' => 'Pнас ном',
             'pumpPressureWorkQmax' => 'Pнас раб при Qmax',
+            'NMax' => 'N max',
         ];
     }
 

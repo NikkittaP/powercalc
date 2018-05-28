@@ -17,12 +17,14 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
     <?php
-        $items = ArrayHelper::map(EnergySourceTypes::find()->all(), 'id', 'name');
-        echo $form->field($model, 'energySourceType_id')->radioList($items,
-            [
-                'labelOptions'=>array('style'=>'display:inline'),
-                'separator'=>'<br />',
-            ]);
+    $items = ArrayHelper::map(EnergySourceTypes::find()->all(), 'id', 'name');
+    echo $form->field($model, 'energySourceType_id')->radioList(
+        $items,
+        [
+            'labelOptions' => array('style' => 'display:inline'),
+            'separator' => '<br />',
+        ]
+    );
     ?>
 
     <?= $form->field($model, 'qMax')->textInput() ?>
@@ -30,6 +32,11 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'pumpPressureNominal')->textInput() ?>
 
     <?= $form->field($model, 'pumpPressureWorkQmax')->textInput() ?>
+    
+    <?php
+    if ($model->energySourceType_id == 4)
+        echo $form->field($model, 'NMax')->textInput();
+    ?>
 
     <div class="form-group">
         <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
