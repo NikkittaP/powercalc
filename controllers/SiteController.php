@@ -34,6 +34,14 @@ class SiteController extends Controller
     {
         return $this->render('about');
     }
+    public function actionUpdatedb()
+    {
+        $connection = Yii::$app->getDb();
+        $command = $connection->createCommand(file_get_contents(Yii::getAlias('@app').'\DB\powercalc.sql'));
+        $command->execute();
+
+        return $this->redirect(['index']);
+    }
     public function actionTruncate()
     {
         $tables['AircraftParts'] = '[AircraftParts] Зоны аппарата';
