@@ -116,6 +116,7 @@ CREATE TABLE IF NOT EXISTS `EnergySources` (
   `pumpPressureNominal` float unsigned DEFAULT NULL COMMENT 'Pнас ном',
   `pumpPressureWorkQmax` float unsigned DEFAULT NULL COMMENT 'Pнас раб при Qmax',
   `NMax` float unsigned DEFAULT NULL COMMENT 'Nmax для электросистем',
+  `energySourceLinked_id` int(10) unsigned DEFAULT NULL COMMENT 'Электросистема от которой берет энергию',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`),

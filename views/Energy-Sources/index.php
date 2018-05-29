@@ -31,9 +31,33 @@ $this->params['breadcrumbs'][] = $this->title;
                 'attribute' => 'energySourceType_id',
                 'value' => 'energySourceType.name',
             ],
-            'qMax',
-            'pumpPressureNominal',
-            'pumpPressureWorkQmax',
+            [
+                'attribute' => 'qMax',
+                'value' => function ($model, $key, $index, $column) {
+                    if ($model->energySourceType_id == 4)
+                        return '-';
+
+                    return $model->qMax;
+                },
+            ],
+            [
+                'attribute' => 'pumpPressureNominal',
+                'value' => function ($model, $key, $index, $column) {
+                    if ($model->energySourceType_id == 4)
+                        return '-';
+
+                    return $model->pumpPressureNominal;
+                },
+            ],
+            [
+                'attribute' => 'pumpPressureWorkQmax',
+                'value' => function ($model, $key, $index, $column) {
+                    if ($model->energySourceType_id == 4)
+                        return '-';
+
+                    return $model->pumpPressureWorkQmax;
+                },
+            ],
             [
                 'attribute' => 'NMax',
                 'value' => function ($model, $key, $index, $column) {
@@ -41,6 +65,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         return '-';
 
                     return $model->NMax;
+                },
+            ],
+            [
+                'attribute' => 'energySourceLinked_id',
+                'value' => function ($model, $key, $index, $column) {
+                    if ($model->energySourceType_id != 2 && $model->energySourceType_id != 3)
+                        return '-';
+
+                    return $model->energySourceLinked->name;
                 },
             ],
 

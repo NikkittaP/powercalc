@@ -14,8 +14,10 @@ use Yii;
  * @property double $pumpPressureNominal Pнас ном
  * @property double $pumpPressureWorkQmax Pнас раб при Qmax
  * @property double $NMax Nmax для электросистем
+ * @property int $energySourceLinked_id Электросистема от которой берет энергию
  *
  * @property Energysourcetypes $energySourceType
+ * @property Energysources $energySources
  */
 class EnergySources extends \yii\db\ActiveRecord
 {
@@ -34,7 +36,7 @@ class EnergySources extends \yii\db\ActiveRecord
     {
         return [
             [['name', 'energySourceType_id'], 'required'],
-            [['energySourceType_id'], 'integer'],
+            [['energySourceType_id', 'energySourceLinked_id'], 'integer'],
             [['qMax', 'pumpPressureNominal', 'pumpPressureWorkQmax', 'NMax'], 'number'],
             [['name'], 'string', 'max' => 255],
             [['name'], 'unique'],
@@ -55,6 +57,7 @@ class EnergySources extends \yii\db\ActiveRecord
             'pumpPressureNominal' => 'Pнас ном',
             'pumpPressureWorkQmax' => 'Pнас раб при Qmax',
             'NMax' => 'N max',
+            'energySourceLinked_id' => 'Энергопитание',
         ];
     }
 
@@ -64,5 +67,10 @@ class EnergySources extends \yii\db\ActiveRecord
     public function getEnergySourceType()
     {
         return $this->hasOne(Energysourcetypes::className(), ['id' => 'energySourceType_id']);
+    }
+
+    public function getEnergySourceLinked()
+    {
+        return $this->hasOne(Energysources::className(), ['id' => 'energySourceLinked_id']);
     }
 }

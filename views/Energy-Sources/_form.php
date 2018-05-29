@@ -1,5 +1,6 @@
 <?php
 
+use \app\models\EnergySources;
 use \app\models\EnergySourceTypes;
 use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
@@ -36,6 +37,12 @@ use yii\widgets\ActiveForm;
     <?php
     if ($model->energySourceType_id == 4)
         echo $form->field($model, 'NMax')->textInput();
+
+    if ($model->energySourceType_id == 2 || $model->energySourceType_id == 3)
+    {
+        $items = ArrayHelper::map(EnergySources::find()->where(['energySourceType_id'=>'4'])->all(), 'id', 'name');
+        echo $form->field($model, 'energySourceLinked_id')->dropDownList($items);
+    }
     ?>
 
     <div class="form-group">
