@@ -821,8 +821,12 @@ class PowerDataController extends Controller
                 $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump'] = 0.0;
             if (!isset($chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qdisposable']))
                 $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qdisposable'] = 0.0;
+            if (!isset($chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['N_electric_total']))
+                $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['N_electric_total'] = 0.0;
+            
             $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump'] += $results->Qpump;
             $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qdisposable'] += $results->Qdisposable;
+            $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['N_electric_total'] += $results->N_electric_total;
         }
 
         return $this->render('results', [

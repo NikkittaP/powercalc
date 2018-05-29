@@ -145,10 +145,18 @@ if ($chartType == 'ENERGYSOURCE_Q') {
 
     foreach ($selectedArchitectures as $currentArchitectureID) {
         foreach ($flightModeModel as $currentFlightMode) {
-            if ($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable'] == 0)
-                $seriesColumnData[$currentArchitectureID][] = 0;
-            else
-                $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qpump'] / $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable']), 1);
+            if ($isElectric)
+            {
+                if ($NMax == 0)
+                    $seriesColumnData[$currentArchitectureID][] = 0;
+                else
+                    $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['N_electric_total'] / $NMax), 1);
+            } else {
+                if ($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable'] == 0)
+                    $seriesColumnData[$currentArchitectureID][] = 0;
+                else
+                    $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qpump'] / $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable']), 1);
+            }
         }
         $series[] = [
             'type' => 'column',

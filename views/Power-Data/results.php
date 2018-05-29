@@ -110,16 +110,18 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
         // К_одновременности (реализуемый)=Q_насоса/Q_распологаемый
         $items = [];
         foreach ($energySourcesModel as $currentEnergySource) {
-            if (in_array($currentEnergySource->id, $usedEnergySourcesInSelectedArchitectures) && $currentEnergySource->energySourceType_id != 4) {
+            if (in_array($currentEnergySource->id, $usedEnergySourcesInSelectedArchitectures)) {
                 $items[] = [
                     'label' => $currentEnergySource->name,
                     'content' => $this->render('_results_chart', [
                         'chartType' => 'SIMULTANEITY_INDEX',
-                        'title' => 'К_одновременности (реализуемый) по гидросистемам',
+                        'title' => ($currentEnergySource->energySourceType_id == 4) ? 'К_одновременности (реализуемый) для электросистемы '.$currentEnergySource->name : 'К_одновременности (реализуемый) для гидросистемы '.$currentEnergySource->name,
                         'chart_data' => $chart_data['SIMULTANEITY_INDEX'],
                         'flightModeModel' => $flightModeModel,
                         'selectedArchitectures' => $selectedArchitectures,
                         'energySourceID' => $currentEnergySource->id,
+                        'isElectric' => ($currentEnergySource->energySourceType_id == 4) ? true : false,
+                        'NMax' => $currentEnergySource->NMax,
                     ]),
                 ];
             }
