@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use \app\models\VehiclesLayoutsNames;
+use \app\models\Constants;
 use kartik\color\ColorInput;
 
 /* @var $this yii\web\View */
@@ -33,9 +34,7 @@ use kartik\color\ColorInput;
         'pluginOptions' => [
             'showAlpha' => false,
             'palette' => [
-                [
-                    '#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce', '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a',
-                ],
+                Constants::getValue('defaultChartColors')
             ],
         ],
     ]);

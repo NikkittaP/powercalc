@@ -36,6 +36,9 @@ class ConstantsController extends Controller
                 if (isset($posted['value'])) {
                     $output = $model->value;
                 }
+                if (isset($posted['description'])) {
+                    $output = $model->description;
+                }
 
                 $out = Json::encode(['output' => $output, 'message' => '']);
             }
@@ -58,15 +61,17 @@ class ConstantsController extends Controller
     public function actionLoaddefaults()
     {
         $defaultData = [
-            ['chartWidth', '1450'],
-            ['chartHeight', '600'],
-            ['isEfficiencyFixed', '1'],
+            ['isEfficiencyFixed', '1', 'КПД fix?'],
+            ['chartWidth', '1450', 'Ширина графика'],
+            ['chartHeight', '600', 'Высота графика'],
+            ['defaultChartColors', '#2f7ed8,#0d233a,#8bbc21,#910000,#1aadce,#492970,#f28f43,#77a1e5,#c42525,#a6c96a', 'Список стандартных цветов для графиков архитектур'],
         ];
 
         foreach ($defaultData as $record) {
             $model = new Constants();
             $model->name = $record[0];
             $model->value = $record[1];
+            $model->description = $record[2];
             $model->save();
         }
 

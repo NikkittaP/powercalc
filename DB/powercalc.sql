@@ -75,16 +75,18 @@ CREATE TABLE IF NOT EXISTS `Constants` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL DEFAULT '0',
   `value` varchar(255) NOT NULL DEFAULT '0',
+  `description` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `Индекс 2` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.Constants: ~3 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.Constants: ~4 rows (приблизительно)
 /*!40000 ALTER TABLE `Constants` DISABLE KEYS */;
-INSERT INTO `Constants` (`id`, `name`, `value`) VALUES
-	(1, 'chartWidth', '1450'),
-	(2, 'chartHeight', '600'),
-	(3, 'isEfficiencyFixed', '1');
+INSERT INTO `Constants` (`id`, `name`, `value`, `description`) VALUES
+	(1, 'isEfficiencyFixed', '1', 'КПД fix?'),
+	(2, 'chartWidth', '1450', 'Ширина графика'),
+	(3, 'chartHeight', '600', 'Высота графика'),
+	(4, 'defaultChartColors', '#2f7ed8,#0d233a,#8bbc21,#910000,#1aadce,#492970,#f28f43,#77a1e5,#c42525,#a6c96a', 'Список стандартных цветов для графиков архитектур');
 /*!40000 ALTER TABLE `Constants` ENABLE KEYS */;
 
 -- Дамп структуры для таблица PowerDistributionData.Consumers

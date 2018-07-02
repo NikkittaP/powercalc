@@ -10,6 +10,7 @@ use Yii;
  * @property int $id
  * @property string $name
  * @property string $value
+ * @property string $description
  */
 class Constants extends \yii\db\ActiveRecord
 {
@@ -27,7 +28,7 @@ class Constants extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'value'], 'string', 'max' => 255],
+            [['name', 'value', 'description'], 'string', 'max' => 255],
         ];
     }
 
@@ -40,13 +41,21 @@ class Constants extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Название',
             'value' => 'Значение',
+            'description' => 'Описание',
         ];
     }
 
     public static function getValue($name){
         $data = Constants::find()->where(['name' => $name])->one();
         if ($data != null)
+        {
+            if ($name == "defaultChartColors")
+            {
+                return explode(',',$data->value);
+            }
+
             return $data->value;
+        }
         else
             return null;
     }

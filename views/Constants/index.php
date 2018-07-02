@@ -6,8 +6,8 @@ use kartik\grid\GridView;
 $this->title = 'Переменные';
 ?>
 <div class="row">
-    <div class="col-sm-3"></div>
-    <div class="col-sm-6">
+    <div class="col-sm-1"></div>
+    <div class="col-sm-10">
     <?php
     $gridColumns[] = [
         'attribute' => 'id'
@@ -29,6 +29,20 @@ $this->title = 'Переменные';
     $gridColumns[] = [
         'class' => 'kartik\grid\EditableColumn',
         'attribute' => 'value',
+        'readonly' => false,
+        'editableOptions' => [
+            'asPopover' => false,
+            'inputType' => \kartik\editable\Editable::INPUT_TEXT,
+            'options' => [
+                'class' => 'form-control input-sm',
+            ],
+        ],
+        'hAlign' => 'center',
+        'vAlign' => 'center',
+    ];
+    $gridColumns[] = [
+        'class' => 'kartik\grid\EditableColumn',
+        'attribute' => 'description',
         'readonly' => false,
         'editableOptions' => [
             'asPopover' => false,
@@ -64,14 +78,14 @@ $this->title = 'Переменные';
 </div>
 
 <div class="row">
-    <div class="col-sm-3"></div>
-    <div class="col-sm-3">
+    <div class="col-sm-1"></div>
+    <div class="col-sm-5">
         <?php
         if ($dataProvider->getCount() == 0)
             echo Html::a('Загрузить предустановленные значения', ['/constants/loaddefaults'], ['class' => 'btn btn-success']);
         ?>
     </div>
-    <div class="col-sm-3">
+    <div class="col-sm-5">
         <div class="pull-right">
             <?php
             echo Html::a('Очистить таблицу', ['/constants/truncate'], [
