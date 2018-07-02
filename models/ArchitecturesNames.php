@@ -11,6 +11,7 @@ use Yii;
  * @property string $vehicleLayoutName_id
  * @property string $name Название архитектуры для модели (компоновки) ["База", "БЭС1"]
  * @property int $isBasic Является ли базовой архитектурой
+ * @property string $chartColor Цвет графика для архитектуры
  *
  * @property ArchitectureToVehicleLayout[] $architectureToVehicleLayouts
  * @property VehiclesLayoutsNames $vehicleLayoutName
@@ -36,6 +37,7 @@ class ArchitecturesNames extends \yii\db\ActiveRecord
             [['name'], 'string', 'max' => 255],
             [['vehicleLayoutName_id'], 'exist', 'skipOnError' => true, 'targetClass' => VehiclesLayoutsNames::className(), 'targetAttribute' => ['vehicleLayoutName_id' => 'id']],
             [['isBasic'], 'boolean'],
+            [['chartColor'], 'string', 'max' => 7],
         ];
     }
 
@@ -49,6 +51,7 @@ class ArchitecturesNames extends \yii\db\ActiveRecord
             'vehicleLayoutName_id' => 'Компоновка',
             'name' => 'Название',
             'isBasic' => 'Базовая?',
+            'chartColor' => 'Цвет графика',
         ];
     }
 

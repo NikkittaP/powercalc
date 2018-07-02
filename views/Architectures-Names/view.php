@@ -31,6 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'vehicleLayoutName_id',
             'name',
+            'chartColor',
         ],
     ]) ?>
 

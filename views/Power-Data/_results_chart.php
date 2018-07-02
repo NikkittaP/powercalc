@@ -78,6 +78,7 @@ if ($chartType == 'ENERGYSOURCE_Q') {
         }
         $series[] = [
             'type' => 'column',
+            'color' => $chart_data[$currentArchitectureID]['architectureChartColor'],
             'name' => $chart_data[$currentArchitectureID]['architectureName'],
             'data' => $seriesColumnData[$currentArchitectureID],
         ];
@@ -116,6 +117,7 @@ if ($chartType == 'ENERGYSOURCE_Q') {
             }
             $series[] = [
                 'type' => 'column',
+                'color' => $chart_data[$currentArchitectureID]['architectureChartColor'],
                 'name' => $chart_data[$currentArchitectureID]['architectureName'],
                 'data' => $seriesColumnData[$currentArchitectureID],
             ];
@@ -133,6 +135,7 @@ if ($chartType == 'ENERGYSOURCE_Q') {
         }
         $series[] = [
             'type' => 'column',
+            'color' => $chart_data[$currentArchitectureID]['architectureChartColor'],
             'name' => $chart_data[$currentArchitectureID]['architectureName'],
             'data' => $seriesColumnData[$currentArchitectureID],
         ];
@@ -160,6 +163,7 @@ if ($chartType == 'ENERGYSOURCE_Q') {
         }
         $series[] = [
             'type' => 'column',
+            'color' => $chart_data[$currentArchitectureID]['architectureChartColor'],
             'name' => $chart_data[$currentArchitectureID]['architectureName'],
             'data' => $seriesColumnData[$currentArchitectureID],
         ];

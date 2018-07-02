@@ -35,7 +35,12 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
             'name',
             'isBasic',
-
+            [
+                'attribute' => 'chartColor',
+                'contentOptions'=>function($model) {
+                    return ['style'=>'color:#FFFFFF; background-color: '.$model->chartColor];
+                },
+            ],
             ['class' => 'yii\grid\ActionColumn'],
         ],
     ]); ?>

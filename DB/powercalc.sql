@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `ArchitecturesNames` (
   `vehicleLayoutName_id` int(10) unsigned NOT NULL,
   `name` varchar(255) NOT NULL COMMENT 'Название архитектуры для модели (компоновки) ["База", "БЭС1"]',
   `isBasic` tinyint(4) DEFAULT NULL COMMENT 'Является ли базовой архитектурой',
+  `chartColor` varchar(7) DEFAULT NULL COMMENT 'Цвет графика для архитектуры',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `FK_ArchitecturesNames_VehiclesLayoutsNames` (`vehicleLayoutName_id`),
@@ -83,7 +84,7 @@ CREATE TABLE IF NOT EXISTS `Constants` (
 INSERT INTO `Constants` (`id`, `name`, `value`) VALUES
 	(1, 'chartWidth', '1450'),
 	(2, 'chartHeight', '600'),
-	(3, 'isEfficiencyFixed', '0');
+	(3, 'isEfficiencyFixed', '1');
 /*!40000 ALTER TABLE `Constants` ENABLE KEYS */;
 
 -- Дамп структуры для таблица PowerDistributionData.Consumers

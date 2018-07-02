@@ -58,6 +58,9 @@ class PowerDataController extends Controller
 
     public function actionImport($vehicleLayoutName_id)
     {
+        $defaultChartColors = ['#2f7ed8', '#0d233a', '#8bbc21', '#910000', '#1aadce', '#492970', '#f28f43', '#77a1e5', '#c42525', '#a6c96a'];
+        $chartColorIndex = 0;
+
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
         $listOfFiles = $this->getListOfFiles();
         
@@ -248,6 +251,12 @@ class PowerDataController extends Controller
                     $architectureNameModel->vehicleLayoutName_id = $vehicleLayoutName_id;
                     $architectureNameModel->name = $value['name'];
                     $architectureNameModel->isBasic = false;
+                    $architectureNameModel->chartColor = $defaultChartColors[$chartColorIndex];
+                   
+                    $chartColorIndex++;
+                    if ($chartColorIndex == count($defaultChartColors))
+                        $chartColorIndex = 0;
+                    
                     $architectureNameModel->save();
                 } else
                     $skippedData['architectures'][] = $value['name'];
@@ -785,6 +794,7 @@ class PowerDataController extends Controller
                 $usedEnergySourcesInSelectedArchitectures[] = $results->energySource_id;
 
             $chart_data['ENERGYSOURCE_Q'][$results->architectureName_id]['architectureName'] = $results->architectureName->name;
+            $chart_data['ENERGYSOURCE_Q'][$results->architectureName_id]['architectureChartColor'] = $results->architectureName->chartColor;
 
             if (!isset($chart_data['ENERGYSOURCE_Q'][$results->architectureName_id][$results->flightMode_id]['Qpump']))
                 $chart_data['ENERGYSOURCE_Q'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump'] = 0.0;
@@ -796,6 +806,7 @@ class PowerDataController extends Controller
             /***************************************************/
 
             $chart_data['DELTA_N'][$results->architectureName_id]['architectureName'] = $results->architectureName->name;
+            $chart_data['DELTA_N'][$results->architectureName_id]['architectureChartColor'] = $results->architectureName->chartColor;
             $chart_data['DELTA_N'][$results->architectureName_id]['isBasic'] = $results->architectureName->isBasic;
 
             if (!isset($chart_data['DELTA_N'][$results->architectureName_id][$results->flightMode_id]['N_takeoff']))
@@ -805,6 +816,7 @@ class PowerDataController extends Controller
             /***************************************************/
 
             $chart_data['EFFICIENCY'][$results->architectureName_id]['architectureName'] = $results->architectureName->name;
+            $chart_data['EFFICIENCY'][$results->architectureName_id]['architectureChartColor'] = $results->architectureName->chartColor;
 
             if (!isset($chart_data['EFFICIENCY'][$results->architectureName_id][$results->flightMode_id]['N_takeoff']))
                 $chart_data['EFFICIENCY'][$results->architectureName_id][$results->flightMode_id]['N_takeoff'] = 0.0;
@@ -816,6 +828,7 @@ class PowerDataController extends Controller
             /***************************************************/
 
             $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id]['architectureName'] = $results->architectureName->name;
+            $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id]['architectureChartColor'] = $results->architectureName->chartColor;
 
             if (!isset($chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump']))
                 $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump'] = 0.0;
