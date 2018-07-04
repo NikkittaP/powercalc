@@ -59,7 +59,7 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
                                 echo ' </td><td>';
                                 echo Html::a('Настройки', ['power-data/settings', 'vehicleLayoutName_id' => $vehiclesLayoutsName->id]);
                                 echo ' </td><td>';
-                                echo Html::a('Данные', ['power-data/index', 'vehicleLayoutName_id' => $vehiclesLayoutsName->id]);
+                                echo Html::a('Данные', ['power-data/data', 'vehicleLayoutName_id' => $vehiclesLayoutsName->id]);
                                 echo '</td><td>';
                                 echo Html::a('Результаты', ['power-data/results', 'vehicleLayoutName_id' => $vehiclesLayoutsName->id]);
                                 echo '</td></tr>';

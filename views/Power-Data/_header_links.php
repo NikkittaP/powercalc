@@ -24,7 +24,14 @@ use yii\helpers\Html;
             if ($currentPage=='data')
                 echo '<span style="font-size:18px;">Данные</span>';
             else
-                echo Html::a('Данные', ['power-data/index', 'vehicleLayoutName_id' => $vehicleLayoutNameID], ['style' => 'font-size:18px;']);
+                echo Html::a('Данные', ['power-data/data', 'vehicleLayoutName_id' => $vehicleLayoutNameID], ['style' => 'font-size:18px;']);
+            ?>
+        </td><td style="border-right:2px solid #333333;padding-left:15px;padding-right:15px;">
+            <?php
+            if ($currentPage=='edit')
+                echo '<span style="font-size:18px;">Редактирование данных</span>';
+            else
+                echo Html::a('Редактирование данных', ['power-data/edit', 'vehicleLayoutName_id' => $vehicleLayoutNameID], ['style' => 'font-size:18px;']);
             ?>
         </td><td style="padding-left:15px;padding-right:15px;">
             <?php

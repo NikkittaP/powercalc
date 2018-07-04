@@ -9,14 +9,14 @@ use kartik\widgets\ActiveForm;
 /* @var $searchModel app\models\VehiclesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Заполнение данных для компоновки "'.$vehicleLayoutNameModel->vehicle->name.': '.$vehicleLayoutNameModel->name.'"';
+$this->title = 'Данные для компоновки "'.$vehicleLayoutNameModel->vehicle->name.': '.$vehicleLayoutNameModel->name.'"';
 $this->params['breadcrumbs'][] = $this->title;
 
 echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutNameID' => $vehicleLayoutNameModel->id]);
 ?>
 
-<div class="power-data-index">
-    <?php
+<div class="power-data-data">
+<?php
     $consumers = ArrayHelper::map(app\models\Consumers::find()->orderBy('name')->asArray()->all(), 'id', 'name');
 
     $gridColumns = [
@@ -26,40 +26,14 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
             'hAlign' => 'center',
             'vAlign' => 'center',
         ],
-        /*
         [
-            'class' => 'kartik\grid\ExpandRowColumn',
-            'value' => function ($model, $key, $index, $column) {
-                return GridView::ROW_COLLAPSED;
-            },
-            'detail' => function ($model, $key, $index, $column) {
-                return Yii::$app->controller->renderPartial('_detail_view', ['model' => $model]);
-            },
-            'headerOptions' => ['class' => 'kartik-sheet-style'],
-            'expandOneOnly' => true,
-            'width' => '50px',
-        ],
-        */
-        [
-            'class' => 'kartik\grid\EditableColumn',
             'attribute' => 'consumer_id',
-            'content'=>function ($model, $key, $index, $column) use($consumers) {
+            'value' => function($model, $key, $index, $column) use($consumers) {
                 return $consumers[$model->consumer_id];
             },
-            'readonly' => false,
-            'editableOptions' => [
-                'asPopover' => false,
-                'header' => 'Потребитель',
-                'inputType' => \kartik\editable\Editable::INPUT_DROPDOWN_LIST,
-                'data'=>$consumers,
-                'displayValueConfig'=>$consumers,
-                'options' => [
-                    'class'=>'form-control input-sm',
-                    'prompt'=>'Выберите потребителя...'
-                ],
-            ],
-            //'width' => '400px',
-        ],
+            'contentOptions' => ['style' => 'width:200px;'],
+            'noWrap' => true
+        ]
     ];
 
     /* Столбцы архитектур */
@@ -79,34 +53,12 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
         $style =['style' => $border.$background];
 
         $gridColumns[] = [
-            'class' => 'kartik\grid\EditableColumn',
             'attribute'=>'architectureToVehicleLayouts_'.$architecturesName->id,
             'value'=>function ($model, $key, $index, $column) use($architecturesName, $architectureToVehicleLayouts, $energySources) {
                 if (!isset($architectureToVehicleLayouts[$model->id][$architecturesName->id]))
                     return '';
                 return $energySources[$architectureToVehicleLayouts[$model->id][$architecturesName->id]];
             },
-            'readonly' => false,
-            'editableOptions' => [
-                'name' => 'architectureToVehicleLayouts_'.$architecturesName->id,
-                'value'=>function ($model, $key, $index, $column) use($architecturesName, $architectureToVehicleLayouts, $energySources) {
-                    if (!isset($architectureToVehicleLayouts[$model->id][$architecturesName->id]))
-                        return '';
-                    return $energySources[$architectureToVehicleLayouts[$model->id][$architecturesName->id]];
-                },
-                'asPopover' => false,
-                'header' => 'Энергосистема',
-                'inputType' => \kartik\editable\Editable::INPUT_SELECT2,
-                'displayValueConfig'=>$energySources,
-                'options' => [
-                    'data'=>$energySources,
-                    'class'=>'form-control input-sm',
-                    'size' => 'sm',
-                    'options' => [
-                        'placeholder' => 'Энергосистема',
-                    ],
-                ],
-            ],
             'contentOptions' => $style,
             'headerOptions' => $style,
             'filterOptions' => $style,
@@ -126,31 +78,12 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
             $border = ['style' => 'border-left:5px solid green;'];
 
         $gridColumns[] = [
-            'class' => 'kartik\grid\EditableColumn',
             'attribute'=>'flightModesToVehicleLayout_'.$flightMode->id,
             'value'=>function ($model, $key, $index, $column) use($flightMode, $flightModesToVehicleLayouts) {
                 if (!isset($flightModesToVehicleLayouts[$model->id][$flightMode->id]))
                     return '';
-                return $flightModesToVehicleLayouts[$model->id][$flightMode->id];
+                return round($flightModesToVehicleLayouts[$model->id][$flightMode->id], 2);
             },
-            'readonly' => false,
-            'format' => ['decimal', 2],
-            'editableOptions' => [
-                'name' => 'flightModesToVehicleLayout_'.$flightMode->id,
-                'asPopover' => false,
-                'header' => 'Коэффициент использования',
-                'inputType' => \kartik\editable\Editable::INPUT_SPIN,
-                'options' => [
-                    'class'=>'form-control input-sm',
-                    'pluginOptions' => [
-                        'min' => 0,
-                        'max' => 1,
-                        'step' => 0.1,
-                        'decimals' => 2,
-                        'verticalbuttons' => true,
-                        ]
-                ],
-            ],
             'contentOptions' => function ($model, $key, $index, $column) use($border, $flightMode, $flightModesToVehicleLayouts) {
                 if (isset($flightModesToVehicleLayouts[$model->id][$flightMode->id]))
                 {
@@ -189,10 +122,8 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
     echo GridView::widget([
         'dataProvider'=> $dataProvider,
         'columns' => $gridColumns,
+        //'floatHeader'=>true,
         'toolbar' =>  [
-            [
-                'content' => $this->render('_form_insertRow', ['model' => $vehicleLayoutModel, 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id])
-            ],
             '{export}',
         ],
         'export' => [
@@ -203,9 +134,10 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
         'responsive'=>true,
         'condensed'=>true,
         'hover'=>true,
+        'options' => ['style' => 'width:100%;'],
         'panel' => [
             'type' => GridView::TYPE_PRIMARY,
-            'heading' => 'Заполнение данных для компоновки "<b>'.$vehicleLayoutNameModel->vehicle->name.': '.$vehicleLayoutNameModel->name.'</b>"',
+            'heading' => 'Данные для компоновки "<b>'.$vehicleLayoutNameModel->vehicle->name.': '.$vehicleLayoutNameModel->name.'</b>"',
             'footer' => $this->render('_footer', ['vehicleLayoutName_id' => $vehicleLayoutNameModel->id]),
         ],
     ]);

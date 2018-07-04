@@ -482,7 +482,7 @@ class PowerDataController extends Controller
             
             Yii::$app->session->setFlash('success', 'Настройки сохранены.');
 
-            return $this->redirect(['index', 'vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+            return $this->redirect(['data', 'vehicleLayoutName_id'=>$vehicleLayoutName_id]);
         }
 
         $usingArchitectures = $this->getUsingArchitectures($vehicleLayoutName_id);
@@ -495,7 +495,41 @@ class PowerDataController extends Controller
         ]);
     }
 
-    public function actionIndex($vehicleLayoutName_id)
+    public function actionData($vehicleLayoutName_id)
+    {
+        $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
+        $usingArchitectures = $this->getUsingArchitectures($vehicleLayoutName_id);
+        $usingFlightModes = $this->getUsingFlightModes($vehicleLayoutName_id);
+        $vehicleLayoutModel = new VehicleLayout();
+        $vehicleLayoutModel->attributes();
+        $searchModel = new VehicleLayoutSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $vehicleLayoutName_id);
+
+        $architectureToVehicleLayoutModels = ArchitectureToVehicleLayout::find()->all();
+        $architectureToVehicleLayouts = [];
+        foreach ($architectureToVehicleLayoutModels as $architectureToVehicleLayoutModel) {
+            $architectureToVehicleLayouts[$architectureToVehicleLayoutModel->vehicleLayout_id][$architectureToVehicleLayoutModel->architectureName_id] = $architectureToVehicleLayoutModel->energySource_id;
+        }
+
+        $flightModesToVehicleLayoutModels = FlightModesToVehicleLayout::find()->all();
+        $flightModesToVehicleLayouts = [];
+        foreach ($flightModesToVehicleLayoutModels as $flightModesToVehicleLayoutModel) {
+            $flightModesToVehicleLayouts[$flightModesToVehicleLayoutModel->vehicleLayout_id][$flightModesToVehicleLayoutModel->flightMode_id] = $flightModesToVehicleLayoutModel->usageFactor;
+        }
+
+        return $this->render('data', [
+            'vehicleLayoutNameModel'=>$vehicleLayoutNameModel,
+            'vehicleLayoutModel'=>$vehicleLayoutModel,
+            'searchModel'=>$searchModel,
+            'dataProvider'=>$dataProvider,
+            'usingArchitectures' => $usingArchitectures,
+            'usingFlightModes' => $usingFlightModes,
+            'architectureToVehicleLayouts' => $architectureToVehicleLayouts,
+            'flightModesToVehicleLayouts' => $flightModesToVehicleLayouts,
+        ]);
+    }
+
+    public function actionEdit($vehicleLayoutName_id)
     {
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
         $usingArchitectures = $this->getUsingArchitectures($vehicleLayoutName_id);
@@ -587,7 +621,7 @@ class PowerDataController extends Controller
             return $out;
         }
 
-        return $this->render('index', [
+        return $this->render('edit', [
             'vehicleLayoutNameModel'=>$vehicleLayoutNameModel,
             'vehicleLayoutModel'=>$vehicleLayoutModel,
             'searchModel'=>$searchModel,
