@@ -25,19 +25,36 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
+    <?php
+        $gridColumns =[
             'id',
             'name',
             [
                 'label' => 'Тип энергосистемы',
                 'attribute' => 'energySourceType.name',
             ],
-            'qMax',
-            'pumpPressureNominal',
-            'pumpPressureWorkQmax',
-        ],
+        ];
+
+        if ($model->energySourceType_id != 4)
+        {
+            $gridColumns[] = 'qMax';
+            $gridColumns[] = 'pumpPressureNominal';
+            $gridColumns[] = 'pumpPressureWorkQmax';
+        }
+        
+        if ($model->energySourceType_id == 4)
+            $gridColumns[] = 'NMax';
+        
+        if ($model->energySourceType_id == 2 || $model->energySourceType_id == 3)
+            $gridColumns[] =  [
+                'label' => 'Энергопитание',
+                'attribute' => 'energySourceLinked.name',
+            ];
+    ?>
+
+    <?= DetailView::widget([
+        'model' => $model,
+        'attributes' => $gridColumns,
     ]) ?>
 
 </div>

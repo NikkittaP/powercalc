@@ -28,11 +28,14 @@ use yii\widgets\ActiveForm;
     );
     ?>
 
-    <?= $form->field($model, 'qMax')->textInput() ?>
-
-    <?= $form->field($model, 'pumpPressureNominal')->textInput() ?>
-
-    <?= $form->field($model, 'pumpPressureWorkQmax')->textInput() ?>
+    <?php
+    if ($model->energySourceType_id != 4)
+    {
+        echo $form->field($model, 'qMax')->textInput() ;
+        echo $form->field($model, 'pumpPressureNominal')->textInput();
+        echo $form->field($model, 'pumpPressureWorkQmax')->textInput();
+    }
+    ?>
     
     <?php
     if ($model->energySourceType_id == 4)

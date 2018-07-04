@@ -25,7 +25,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-            'id',
+            [
+                'attribute' => 'id',
+                'contentOptions' => ['style' => 'width:30px;'],
+            ],
             'name',
             [
                 'attribute' => 'energySourceType_id',
