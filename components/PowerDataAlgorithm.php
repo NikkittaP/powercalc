@@ -196,7 +196,7 @@ class PowerDataAlgorithm extends Component
     /* [1] Архитектура -> Q распол */
         public function calcArchitectureQdisposable($energySourceID, $architectureID, $flightModeID)
         {
-            if ($this->energySources[$energySourceID]['type'] == 2 || $this->energySources[$energySourceID]['type'] == 3)
+            if ($this->energySources[$energySourceID]['type'] == 2 || $this->energySources[$energySourceID]['type'] == 3) // Гидроэлектросистема или Зональная гидроэлектросистема
                 $Qdisposable = $this->energySources[$energySourceID]['qMax'];
             else
                 $Qdisposable = $this->energySources[$energySourceID]['qMax'] * $this->flightModes[$flightModeID]['reductionFactor'];
