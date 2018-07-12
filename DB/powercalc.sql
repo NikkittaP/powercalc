@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `Architecture_to_VehicleLayout` (
   KEY `FK_Architecture_to_VehicleLayout_ArchitecturesNames` (`architectureName_id`),
   KEY `FK_Architecture_to_VehicleLayout_EnergySources` (`energySource_id`),
   CONSTRAINT `FK_Architecture_to_VehicleLayout_ArchitecturesNames` FOREIGN KEY (`architectureName_id`) REFERENCES `ArchitecturesNames` (`id`),
-  CONSTRAINT `FK_Architecture_to_VehicleLayout_EnergySources` FOREIGN KEY (`energySource_id`) REFERENCES `EnergySources` (`id`),
+  CONSTRAINT `FK_Architecture_to_VehicleLayout_EnergySources` FOREIGN KEY (`energySource_id`) REFERENCES `EnergySource_to_Architecture` (`id`),
   CONSTRAINT `FK_Architecture_to_VehicleLayout_VehicleLayout` FOREIGN KEY (`vehicleLayout_id`) REFERENCES `VehicleLayout` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -115,11 +115,6 @@ CREATE TABLE IF NOT EXISTS `EnergySources` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL COMMENT 'Название источника энергии ["ГС1", "ЛГС3", "ЭС1"]',
   `energySourceType_id` int(10) unsigned NOT NULL COMMENT 'Является ли электросистемой',
-  `qMax` float unsigned DEFAULT NULL COMMENT 'Qmax для расчёта Q располагаемого',
-  `pumpPressureNominal` float unsigned DEFAULT NULL COMMENT 'Pнас ном',
-  `pumpPressureWorkQmax` float unsigned DEFAULT NULL COMMENT 'Pнас раб при Qmax',
-  `NMax` float unsigned DEFAULT NULL COMMENT 'Nmax для электросистем',
-  `energySourceLinked_id` int(10) unsigned DEFAULT NULL COMMENT 'Электросистема от которой берет энергию',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`),
@@ -149,6 +144,27 @@ INSERT INTO `EnergySourceTypes` (`id`, `name`) VALUES
 	(3, 'Зональная гидроэлектросистема'),
 	(4, 'Электросистема');
 /*!40000 ALTER TABLE `EnergySourceTypes` ENABLE KEYS */;
+
+-- Дамп структуры для таблица PowerDistributionData.EnergySource_to_Architecture
+DROP TABLE IF EXISTS `EnergySource_to_Architecture`;
+CREATE TABLE IF NOT EXISTS `EnergySource_to_Architecture` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `energySource_id` int(10) unsigned NOT NULL,
+  `energySourceLinked_id` int(10) unsigned DEFAULT NULL COMMENT 'Электросистема от которой берет энергию',
+  `qMax` float unsigned DEFAULT NULL COMMENT 'Qmax для расчёта Q располагаемого',
+  `pumpPressureNominal` float unsigned DEFAULT NULL COMMENT 'Pнас ном',
+  `pumpPressureWorkQmax` float unsigned DEFAULT NULL COMMENT 'Pнас раб при Qmax',
+  `NMax` float unsigned DEFAULT NULL COMMENT 'Nmax для электросистем',
+  KEY `Индекс 1` (`id`),
+  KEY `FK_EnergySource_to_Architecture_EnergySources` (`energySource_id`),
+  KEY `FK_EnergySource_to_Architecture_EnergySources_2` (`energySourceLinked_id`),
+  CONSTRAINT `FK_EnergySource_to_Architecture_EnergySources` FOREIGN KEY (`energySource_id`) REFERENCES `EnergySources` (`id`),
+  CONSTRAINT `FK_EnergySource_to_Architecture_EnergySources_2` FOREIGN KEY (`energySourceLinked_id`) REFERENCES `EnergySources` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Дамп данных таблицы PowerDistributionData.EnergySource_to_Architecture: ~0 rows (приблизительно)
+/*!40000 ALTER TABLE `EnergySource_to_Architecture` DISABLE KEYS */;
+/*!40000 ALTER TABLE `EnergySource_to_Architecture` ENABLE KEYS */;
 
 -- Дамп структуры для таблица PowerDistributionData.FlightModes
 DROP TABLE IF EXISTS `FlightModes`;

@@ -47,10 +47,10 @@ class PowerDataController extends Controller
         ];
     }
 
-    public function is_in_array($keys, $string) 
+    public function is_in_array($keys, $string)
     {
         foreach ($keys as $key) {
-            if (stripos($key, $string) !== FALSE) {
+            if (stripos($key, $string) !== false) {
                 return true;
             }
         }
@@ -63,13 +63,13 @@ class PowerDataController extends Controller
 
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
         $listOfFiles = $this->getListOfFiles();
-        
+
         $post = \Yii::$app->request->post();
-        if ($post['selected_file'] !== null)
-        {
-            $inputFileName = Yii::getAlias('@app').'/import/'.$listOfFiles[$post['selected_file']];
+        if ($post['selected_file'] !== null) {
+            $inputFileName = Yii::getAlias('@app') . '/import/' . $listOfFiles[$post['selected_file']];
             $spreadsheet = IOFactory::load($inputFileName);
-            $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, true);
+            $sheetData = $spreadsheet->getSheet(0)->toArray(null, true, true, true);
+            $sheetData_ES = $spreadsheet->getSheet(1)->toArray(null, true, true, false);
 
             $importData = [];
             $importData['energySources'] = [];
@@ -83,8 +83,7 @@ class PowerDataController extends Controller
                 $architectureStarts = false;
                 $flightModesStarts = false;
 
-                if ($rowNum == 1)
-                {
+                if ($rowNum == 1) {
                     /*
                     A - пусто
                     B - КПД гидро
@@ -96,82 +95,49 @@ class PowerDataController extends Controller
                     ... - архитектуры
                     ... - пусто. Разделитель
                     ... - режимы полёта
-                    */
+                     */
                     foreach ($rowData as $letter => $data) {
                         if ($letter === $architectureStartLetter)
                             $architectureStarts = true;
-                        
-                        if ($architectureStarts && $data === null)
-                        {
+
+                        if ($architectureStarts && $data === null) {
                             $architectureStarts = false;
                             $flightModesStarts = true;
                         }
 
-                        if ($architectureStarts)
-                        {
-                            $importData['architectures'][]['name'] = preg_replace( "/\r|\n/", " ", $data);
+                        if ($architectureStarts) {
+                            $importData['architectures'][]['name'] = preg_replace("/\r|\n/", " ", $data);
                             $architectureEndLetter = $letter;
                         }
 
-                        if ($flightModesStarts && $data !== null)
-                        {
+                        if ($flightModesStarts && $data !== null) {
                             if ($flightModeStartLetter === 'A')
                                 $flightModeStartLetter = $letter;
 
-                            $importData['flightModes'][]['name'] = preg_replace( "/\r|\n/", " ", $data);
+                            $importData['flightModes'][]['name'] = preg_replace("/\r|\n/", " ", $data);
                             $flightModeEndLetter = $letter;
                         }
                     }
                 } else {
-                    if ($rowData['A'] === null)
-                    {
+                    if ($rowData['A'] === null) {
                         $consumerFinished = true;
                     } else {
-                        if ($consumerFinished)
-                        {
-                            $energySource = [];
-
+                        if ($consumerFinished) {
                             foreach ($rowData as $letter => $data) {
                                 if ($letter === $flightModeStartLetter)
                                     $flightModesStarts = true;
-                                
-                                switch ($letter) {
-                                    case 'A':
-                                        $energySource['name'] = $data;
-                                        break;
-                                    case 'B':
-                                        $energySource['energySourceType_id'] = $data;
-                                        break;
-                                    case 'C':
-                                        $energySource['qMax'] = $data;
-                                        break;
-                                    case 'D':
-                                        $energySource['pumpPressureNominal'] = $data;
-                                        break;
-                                    case 'E':
-                                        $energySource['pumpPressureWorkQmax'] = $data;
-                                        break;
-                                
-                                    default:
-                                        if ($flightModesStarts)
-                                        {
-                                            if ($data !== null)
-                                            {
-                                                foreach ($importData['flightModes'] as $key => $FM) {
-                                                    if ($FM['name'] === preg_replace( "/\r|\n/", " ", $sheetData[1][$letter]))
-                                                    {
-                                                        $importData['flightModes'][$key]['reductionFactor'] = $data;
-                                                        break;
-                                                    }
-                                                }
+
+                                if ($flightModesStarts) {
+                                    if ($data !== null) {
+                                        foreach ($importData['flightModes'] as $key => $FM) {
+                                            if ($FM['name'] === preg_replace("/\r|\n/", " ", $sheetData[1][$letter])) {
+                                                $importData['flightModes'][$key]['reductionFactor'] = $data;
+                                                break;
                                             }
                                         }
-
-                                        break;
+                                    }
                                 }
                             }
-
-                            $importData['energySources'][] = $energySource;
                         } else {
                             $consumer = [];
 
@@ -180,7 +146,7 @@ class PowerDataController extends Controller
                                     $architectureStarts = true;
                                 if ($letter === $flightModeStartLetter)
                                     $flightModesStarts = true;
-                                
+
                                 switch ($letter) {
                                     case 'A':
                                         $consumer['name'] = $data;
@@ -200,8 +166,7 @@ class PowerDataController extends Controller
                                     case 'F':
                                         $_exists = false;
                                         foreach ($importData['aircraftParts'] as $key => $AP) {
-                                            if ($AP['name'] == $data)
-                                            {
+                                            if ($AP['name'] == $data) {
                                                 $_exists = true;
                                                 break;
                                             }
@@ -209,11 +174,11 @@ class PowerDataController extends Controller
 
                                         if (!$_exists)
                                             $importData['aircraftParts'][]['name'] = $data;
-                                        
+
                                         $consumer['aircraftPart'] = $data;
 
                                         break;
-                                    
+
                                     default:
                                         if ($architectureStarts)
                                             $consumer['energySourcesToArchitectures'][] = ($data === '-') ? null : $data;
@@ -222,7 +187,7 @@ class PowerDataController extends Controller
 
                                         break;
                                 }
-                                    
+
                                 if ($letter === $architectureEndLetter)
                                     $architectureStarts = false;
                                 if ($letter === $flightModeEndLetter)
@@ -235,6 +200,43 @@ class PowerDataController extends Controller
                 }
             }
 
+            foreach ($sheetData_ES as $rowNum => $rowData) {
+                if ($rowNum == 0 || $rowNum == 1) {
+
+                } else {
+                    $energySource = [];
+
+                    for ($i = 0; $i < count($rowData); $i++) {
+                        $data = $rowData[$i];
+
+                        if ($i == 0)
+                            $energySource['name'] = $data;
+                        else if ($i == 1)
+                            $energySource['energySourceType_id'] = $data;
+                        else {
+                            foreach ($importData['architectures'] as $key => $AR) {
+                                if ($AR['name'] === preg_replace("/\r|\n/", " ", $sheetData_ES[0][$i])) {
+                                    $energySource['architectures'][$key]['qMax'] = $data;
+                                    $i++;
+                                    $energySource['architectures'][$key]['pumpPressureNominal'] = $rowData[$i];
+                                    $i++;
+                                    $energySource['architectures'][$key]['pumpPressureWorkQmax'] = $rowData[$i];
+                                    $i++;
+                                    $energySource['architectures'][$key]['NMax'] = $rowData[$i];
+
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    $importData['energySources'][] = $energySource;
+                }
+            }
+
+            VarDumper::dump($importData, $depth = 10, $highlight = true);
+            exit();
+
             $skippedData = [];
             $skippedData['architectures'] = [];
             $skippedData['flightModes'] = [];
@@ -245,43 +247,40 @@ class PowerDataController extends Controller
 
             foreach ($importData['architectures'] as $key => $value) {
                 $architectureNameModel = ArchitecturesNames::find()->where(['vehicleLayoutName_id' => $vehicleLayoutName_id, 'name' => $value['name']])->one();
-                if ($architectureNameModel === null)
-                {
+                if ($architectureNameModel === null) {
                     $architectureNameModel = new ArchitecturesNames();
                     $architectureNameModel->vehicleLayoutName_id = $vehicleLayoutName_id;
                     $architectureNameModel->name = $value['name'];
                     $architectureNameModel->isBasic = false;
                     $architectureNameModel->chartColor = $defaultChartColors[$chartColorIndex];
-                   
+
                     $chartColorIndex++;
                     if ($chartColorIndex == count($defaultChartColors))
                         $chartColorIndex = 0;
-                    
+
                     $architectureNameModel->save();
                 } else
                     $skippedData['architectures'][] = $value['name'];
-                
+
                 $importData['architectures'][$key]['db_id'] = $architectureNameModel->id;
             }
 
             foreach ($importData['flightModes'] as $key => $value) {
                 $flightModesModel = FlightModes::find()->where(['name' => $value['name']])->one();
-                if ($flightModesModel === null)
-                {
+                if ($flightModesModel === null) {
                     $flightModesModel = new FlightModes();
                     $flightModesModel->name = $value['name'];
                     $flightModesModel->reductionFactor = $value['reductionFactor'];
                     $flightModesModel->save();
                 } else
                     $skippedData['flightModes'][] = $value['name'];
-                
+
                 $importData['flightModes'][$key]['db_id'] = $flightModesModel->id;
             }
 
             foreach ($importData['energySources'] as $key => $value) {
                 $energySourcesModel = EnergySources::find()->where(['name' => $value['name']])->one();
-                if ($energySourcesModel === null)
-                {
+                if ($energySourcesModel === null) {
                     $energySourcesModel = new EnergySources();
                     $energySourcesModel->name = $value['name'];
                     $energySourcesModel->energySourceType_id = $value['energySourceType_id'];
@@ -291,35 +290,32 @@ class PowerDataController extends Controller
                     $energySourcesModel->save();
                 } else
                     $skippedData['energySources'][] = $value['name'];
-                
+
                 $importData['energySources'][$key]['db_id'] = $energySourcesModel->id;
             }
 
             foreach ($importData['aircraftParts'] as $key => $value) {
                 $aircraftPartsModel = AircraftParts::find()->where(['name' => $value['name']])->one();
-                if ($aircraftPartsModel === null)
-                {
+                if ($aircraftPartsModel === null) {
                     $aircraftPartsModel = new AircraftParts();
                     $aircraftPartsModel->name = $value['name'];
                     $aircraftPartsModel->save();
                 } else
                     $skippedData['aircraftParts'][] = $value['name'];
-                
+
                 $importData['aircraftParts'][$key]['db_id'] = $aircraftPartsModel->id;
             }
 
             foreach ($importData['consumers'] as $consumer) {
                 foreach ($importData['aircraftParts'] as $AP) {
-                    if ($AP['name'] == $consumer['aircraftPart'])
-                    {
+                    if ($AP['name'] == $consumer['aircraftPart']) {
                         $aircraftPartsID = $AP['db_id'];
                         break;
                     }
                 }
 
                 $consumerModel = Consumers::find()->where(['name' => $consumer['name']])->one();
-                if ($consumerModel === null)
-                {
+                if ($consumerModel === null) {
                     $consumerModel = new Consumers();
                     $consumerModel->name = $consumer['name'];
                     $consumerModel->aircraftPart_id = $aircraftPartsID;
@@ -332,8 +328,7 @@ class PowerDataController extends Controller
                     $skippedData['consumers'][] = $consumer['name'];
 
                 $vehicleLayoutModel = VehicleLayout::find()->where(['vehicleLayoutName_id' => $vehicleLayoutNameModel, 'consumer_id' => $consumerModel->id])->one();
-                if ($vehicleLayoutModel === null)
-                {
+                if ($vehicleLayoutModel === null) {
                     $vehicleLayoutModel = new VehicleLayout();
                     $vehicleLayoutModel->vehicleLayoutName_id = $vehicleLayoutName_id;
                     $vehicleLayoutModel->consumer_id = $consumerModel->id;
@@ -341,11 +336,9 @@ class PowerDataController extends Controller
 
                     foreach ($consumer['energySourcesToArchitectures'] as $key => $value) {
                         $architectureNameID = $importData['architectures'][$key]['db_id'];
-                        if ($value !== null)
-                        {
+                        if ($value !== null) {
                             foreach ($importData['energySources'] as $ES) {
-                                if ($ES['name'] == $value)
-                                {
+                                if ($ES['name'] == $value) {
                                     $energySourceID = $ES['db_id'];
                                     break;
                                 }
@@ -371,77 +364,68 @@ class PowerDataController extends Controller
                     $skippedData['vehicleLayout'][] = $consumer['name'];
             }
 
-            if (
-                count($skippedData['vehicleLayout']) == 0
+            if (count($skippedData['vehicleLayout']) == 0
                 && count($skippedData['consumers']) == 0
                 && count($skippedData['aircraftParts']) == 0
                 && count($skippedData['energySources']) == 0
                 && count($skippedData['flightModes']) == 0
-                && count($skippedData['architectures']) == 0
-            )
-            {
+                && count($skippedData['architectures']) == 0) {
                 Yii::$app->session->setFlash('success', 'Все данные успешно импортированы.');
             } else {
                 $msg = 'Данные частично импортированы. Следующие записи уже существуют в БД:<br /><br />';
 
-                if (count($skippedData['architectures']) != 0)
-                {
-                    $msg.='<b>Архитектуры:</b><br /><ul>';
+                if (count($skippedData['architectures']) != 0) {
+                    $msg .= '<b>Архитектуры:</b><br /><ul>';
                     foreach ($skippedData['architectures'] as $value) {
-                        $msg.='<li>'.$value.'</li>';
+                        $msg .= '<li>' . $value . '</li>';
                     }
-                    $msg.='</ul>';
+                    $msg .= '</ul>';
                 }
 
-                if (count($skippedData['flightModes']) != 0)
-                {
-                    $msg.='<b>Режимы полёта:</b><br /><ul>';
+                if (count($skippedData['flightModes']) != 0) {
+                    $msg .= '<b>Режимы полёта:</b><br /><ul>';
                     foreach ($skippedData['flightModes'] as $value) {
-                        $msg.='<li>'.$value.'</li>';
+                        $msg .= '<li>' . $value . '</li>';
                     }
-                    $msg.='</ul>';
+                    $msg .= '</ul>';
                 }
 
-                if (count($skippedData['energySources']) != 0)
-                {
-                    $msg.='<b>Энергосистемы:</b><br /><ul>';
+                if (count($skippedData['energySources']) != 0) {
+                    $msg .= '<b>Энергосистемы:</b><br /><ul>';
                     foreach ($skippedData['energySources'] as $value) {
-                        $msg.='<li>'.$value.'</li>';
+                        $msg .= '<li>' . $value . '</li>';
                     }
-                    $msg.='</ul>';
+                    $msg .= '</ul>';
                 }
 
-                if (count($skippedData['aircraftParts']) != 0)
-                {
-                    $msg.='<b>Зоны аппарата:</b><br /><ul>';
+                if (count($skippedData['aircraftParts']) != 0) {
+                    $msg .= '<b>Зоны аппарата:</b><br /><ul>';
                     foreach ($skippedData['aircraftParts'] as $value) {
-                        $msg.='<li>'.$value.'</li>';
+                        $msg .= '<li>' . $value . '</li>';
                     }
-                    $msg.='</ul>';
+                    $msg .= '</ul>';
                 }
 
-                if (count($skippedData['consumers']) != 0)
-                {
-                    $msg.='<b>Потребители:</b><br /><ul>';
+                if (count($skippedData['consumers']) != 0) {
+                    $msg .= '<b>Потребители:</b><br /><ul>';
                     foreach ($skippedData['consumers'] as $value) {
-                        $msg.='<li>'.$value.'</li>';
+                        $msg .= '<li>' . $value . '</li>';
                     }
-                    $msg.='</ul>';
+                    $msg .= '</ul>';
                 }
 
-                if (count($skippedData['vehicleLayout']) != 0)
-                {
-                    $msg.='<b>Корневые связи для потребителей:</b><br /><ul>';
+                if (count($skippedData['vehicleLayout']) != 0) {
+                    $msg .= '<b>Корневые связи для потребителей:</b><br /><ul>';
                     foreach ($skippedData['vehicleLayout'] as $value) {
-                        $msg.='<li>'.$value.'</li>';
+                        $msg .= '<li>' . $value . '</li>';
                     }
-                    $msg.='</ul>';
+                    $msg .= '</ul>';
                 }
 
                 Yii::$app->session->setFlash('warning', $msg);
             }
 
-            return $this->redirect(['settings', 'vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+            return $this->redirect(['settings', 'vehicleLayoutName_id' => $vehicleLayoutName_id]);
         }
 
         return $this->render('import', [
@@ -458,15 +442,14 @@ class PowerDataController extends Controller
         //VarDumper::dump( $post, $depth = 10, $highlight = true);
         if ($post['settings_basicArchitecture'] !== null) {
             $newBasicID = $post['settings_basicArchitecture'];
-            $newUsingArchitectures = $newBasicID.' ';
+            $newUsingArchitectures = $newBasicID . ' ';
             if (isset($post['settings_usingArchitectures']))
                 $newUsingArchitectures = $newUsingArchitectures . implode(' ', $post['settings_usingArchitectures']);
             if (isset($post['settings_usingFlightModes']))
                 $newUsingFlightModes = implode(' ', $post['settings_usingFlightModes']);
 
             $architecturesNamesBasic = ArchitecturesNames::find()->where(['vehicleLayoutName_id' => $vehicleLayoutNameModel->id, 'isBasic' => 1])->one();
-            if ($architecturesNamesBasic !== null && $architecturesNamesBasic->id != $newBasicID)
-            {
+            if ($architecturesNamesBasic !== null && $architecturesNamesBasic->id != $newBasicID) {
                 $architecturesNamesBasic->isBasic = false;
                 $architecturesNamesBasic->save();
             }
@@ -479,10 +462,10 @@ class PowerDataController extends Controller
             $vehiclesLayoutsNamesModel->usingArchitectures = $newUsingArchitectures;
             $vehiclesLayoutsNamesModel->usingFlightModes = $newUsingFlightModes;
             $vehiclesLayoutsNamesModel->save();
-            
+
             Yii::$app->session->setFlash('success', 'Настройки сохранены.');
 
-            return $this->redirect(['data', 'vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+            return $this->redirect(['data', 'vehicleLayoutName_id' => $vehicleLayoutName_id]);
         }
 
         $usingArchitectures = $this->getUsingArchitectures($vehicleLayoutName_id);
@@ -518,10 +501,10 @@ class PowerDataController extends Controller
         }
 
         return $this->render('data', [
-            'vehicleLayoutNameModel'=>$vehicleLayoutNameModel,
-            'vehicleLayoutModel'=>$vehicleLayoutModel,
-            'searchModel'=>$searchModel,
-            'dataProvider'=>$dataProvider,
+            'vehicleLayoutNameModel' => $vehicleLayoutNameModel,
+            'vehicleLayoutModel' => $vehicleLayoutModel,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
             'usingArchitectures' => $usingArchitectures,
             'usingFlightModes' => $usingFlightModes,
             'architectureToVehicleLayouts' => $architectureToVehicleLayouts,
@@ -555,31 +538,27 @@ class PowerDataController extends Controller
             $rowId = Yii::$app->request->post('editableKey');
             $VehicleLayoutModel = VehicleLayout::findOne($rowId);
 
-            $out = Json::encode(['output'=>'', 'message'=>'']);
+            $out = Json::encode(['output' => '', 'message' => '']);
             $posted = current($_POST['VehicleLayout']);
             $output = '';
 
-            if (isset($posted['consumer_id']))
-            {
+            if (isset($posted['consumer_id'])) {
                 $post = ['VehicleLayout' => $posted];
                 if ($VehicleLayoutModel->load($post)) {
                     $VehicleLayoutModel->save();
-    
-                    $output =  $VehicleLayoutModel->consumer_id;
-                    $out = Json::encode(['output'=>$output, 'message'=>'']);
+
+                    $output = $VehicleLayoutModel->consumer_id;
+                    $out = Json::encode(['output' => $output, 'message' => '']);
                 }
             }
 
-            if ($this->is_in_array(array_keys($posted), 'architectureToVehicleLayouts_'))
-            {
-                foreach ($posted as $key => $value)
-                {
-                    if (stripos($key, 'architectureToVehicleLayouts_') !== FALSE) {
+            if ($this->is_in_array(array_keys($posted), 'architectureToVehicleLayouts_')) {
+                foreach ($posted as $key => $value) {
+                    if (stripos($key, 'architectureToVehicleLayouts_') !== false) {
                         $architectureName_id = explode('_', $key)[1];
 
                         $ArchitectureToVehicleLayoutModel = ArchitectureToVehicleLayout::findOne(['vehicleLayout_id' => $VehicleLayoutModel->id, 'architectureName_id' => $architectureName_id]);
-                        if ($ArchitectureToVehicleLayoutModel === null)
-                        {
+                        if ($ArchitectureToVehicleLayoutModel === null) {
                             $ArchitectureToVehicleLayoutModel = new ArchitectureToVehicleLayout();
                             $ArchitectureToVehicleLayoutModel->vehicleLayout_id = $VehicleLayoutModel->id;
                             $ArchitectureToVehicleLayoutModel->architectureName_id = $architectureName_id;
@@ -588,22 +567,19 @@ class PowerDataController extends Controller
                         $ArchitectureToVehicleLayoutModel->energySource_id = ($value === '') ? null : $value;
                         $ArchitectureToVehicleLayoutModel->save();
 
-                        $output =  $ArchitectureToVehicleLayoutModel->energySource_id;
-                        $out = Json::encode(['output'=>$output, 'message'=>'']);
+                        $output = $ArchitectureToVehicleLayoutModel->energySource_id;
+                        $out = Json::encode(['output' => $output, 'message' => '']);
                     }
                 }
             }
 
-            if ($this->is_in_array(array_keys($posted), 'flightModesToVehicleLayout_'))
-            {
-                foreach ($posted as $key => $value)
-                {
-                    if (stripos($key, 'flightModesToVehicleLayout_') !== FALSE) {
+            if ($this->is_in_array(array_keys($posted), 'flightModesToVehicleLayout_')) {
+                foreach ($posted as $key => $value) {
+                    if (stripos($key, 'flightModesToVehicleLayout_') !== false) {
                         $flightMode_id = explode('_', $key)[1];
 
                         $FlightModesToVehicleLayoutModel = FlightModesToVehicleLayout::findOne(['vehicleLayout_id' => $VehicleLayoutModel->id, 'flightMode_id' => $flightMode_id]);
-                        if ($FlightModesToVehicleLayoutModel==null)
-                        {
+                        if ($FlightModesToVehicleLayoutModel == null) {
                             $FlightModesToVehicleLayoutModel = new FlightModesToVehicleLayout();
                             $FlightModesToVehicleLayoutModel->vehicleLayout_id = $VehicleLayoutModel->id;
                             $FlightModesToVehicleLayoutModel->flightMode_id = $flightMode_id;
@@ -612,20 +588,20 @@ class PowerDataController extends Controller
                         $FlightModesToVehicleLayoutModel->usageFactor = $value;
                         $FlightModesToVehicleLayoutModel->save();
 
-                        $output =  $FlightModesToVehicleLayoutModel->usageFactor;
-                        $out = Json::encode(['output'=>$output, 'message'=>'']);
+                        $output = $FlightModesToVehicleLayoutModel->usageFactor;
+                        $out = Json::encode(['output' => $output, 'message' => '']);
                     }
                 }
             }
-        
+
             return $out;
         }
 
         return $this->render('edit', [
-            'vehicleLayoutNameModel'=>$vehicleLayoutNameModel,
-            'vehicleLayoutModel'=>$vehicleLayoutModel,
-            'searchModel'=>$searchModel,
-            'dataProvider'=>$dataProvider,
+            'vehicleLayoutNameModel' => $vehicleLayoutNameModel,
+            'vehicleLayoutModel' => $vehicleLayoutModel,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
             'usingArchitectures' => $usingArchitectures,
             'usingFlightModes' => $usingFlightModes,
             'architectureToVehicleLayouts' => $architectureToVehicleLayouts,
@@ -643,7 +619,7 @@ class PowerDataController extends Controller
 
         $model->save();
 
-        return $this->redirect(['index', 'vehicleLayoutName_id'=>$model->vehicleLayoutName_id]);
+        return $this->redirect(['index', 'vehicleLayoutName_id' => $model->vehicleLayoutName_id]);
     }
 
     public function actionCalculate()
@@ -653,38 +629,34 @@ class PowerDataController extends Controller
         $usingFlightModes = $this->getUsingFlightModes($vehicleLayoutName_id);
 
         $algorithm = new PowerDataAlgorithm();
-       
+
         $architectureModels = ArchitecturesNames::find()->where(['id' => $usingArchitectures, 'vehicleLayoutName_id' => $vehicleLayoutName_id])->orderBy(['isBasic' => SORT_DESC])->all();
-        foreach($architectureModels as $architectureModel)
-        {
+        foreach ($architectureModels as $architectureModel) {
             $algorithm->addArchitecture($architectureModel->id, [
                 'isBasic' => $architectureModel->isBasic,
             ]);
         }
-        
+
         $flightModeModels = FlightModes::find()->where(['id' => $usingFlightModes])->all();
-        foreach($flightModeModels as $flightModeModel)
-        {
+        foreach ($flightModeModels as $flightModeModel) {
             $algorithm->addFlightMode($flightModeModel->id, [
                 'reductionFactor' => $flightModeModel->reductionFactor,
             ]);
         }
 
         $usedEnergySourcesIDs = [];
-        $vehicleLayoutModels = VehicleLayout::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id])->all();
-        foreach($vehicleLayoutModels as $vehicleLayoutModel)
-        {
+        $vehicleLayoutModels = VehicleLayout::find()->where(['vehicleLayoutName_id' => $vehicleLayoutName_id])->all();
+        foreach ($vehicleLayoutModels as $vehicleLayoutModel) {
             $energySourcePerArchitecture = [];
-            foreach($vehicleLayoutModel->architectureToVehicleLayouts as $architectureToVehicleLayout)
-            {
+            foreach ($vehicleLayoutModel->architectureToVehicleLayouts as $architectureToVehicleLayout) {
                 $energySourcePerArchitecture[$architectureToVehicleLayout->architectureName_id] = $architectureToVehicleLayout->energySource_id;
                 $usedEnergySourcesIDs[] = $architectureToVehicleLayout->energySource_id;
             }
-            
+
             $usageFactorPerFlightMode = [];
-            foreach($vehicleLayoutModel->flightModesToVehicleLayouts as $flightModesToVehicleLayout)
+            foreach ($vehicleLayoutModel->flightModesToVehicleLayouts as $flightModesToVehicleLayout)
                 $usageFactorPerFlightMode[$flightModesToVehicleLayout->flightMode_id] = $flightModesToVehicleLayout->usageFactor;
-            
+
             $algorithm->addConsumer($vehicleLayoutModel->consumer_id, [
                 'efficiencyHydro' => $vehicleLayoutModel->consumer->efficiencyHydro,
                 'efficiencyElectric' => $vehicleLayoutModel->consumer->efficiencyElectric,
@@ -696,8 +668,7 @@ class PowerDataController extends Controller
         }
 
         $energySourceModels = EnergySources::findAll($usedEnergySourcesIDs);
-        foreach($energySourceModels as $energySourceModel)
-        {
+        foreach ($energySourceModels as $energySourceModel) {
             $algorithm->addEnergySource($energySourceModel->id, [
                 'type' => $energySourceModel->energySourceType->id,
                 'qMax' => $energySourceModel->qMax,
@@ -708,8 +679,7 @@ class PowerDataController extends Controller
 
         $efficiencyPumpModels = PumpEfficiency::find()->all();
         $efficiencyPump = [];
-        foreach($efficiencyPumpModels as $efficiencyPumpModel)
-        {
+        foreach ($efficiencyPumpModels as $efficiencyPumpModel) {
             $efficiencyPump[] = [
                 'QCurQmax' => $efficiencyPumpModel->QCurQmax,
                 'pumpEfficiency' => $efficiencyPumpModel->pumpEfficiency,
@@ -730,13 +700,13 @@ class PowerDataController extends Controller
             'efficiencyPump' => 0.885,
         ]);
 
-        
+
         $algorithm->calculate();
 
         $this->clearPreviousResults($vehicleLayoutName_id);
         $this->saveResults($vehicleLayoutName_id, $algorithm->getResults());
 
-        return $this->redirect(['results', 'vehicleLayoutName_id'=>$vehicleLayoutName_id]);
+        return $this->redirect(['results', 'vehicleLayoutName_id' => $vehicleLayoutName_id]);
     }
 
     public function actionResults($vehicleLayoutName_id)
@@ -750,9 +720,11 @@ class PowerDataController extends Controller
 
         $basicArchitectureModel = ArrayHelper::map(
             ArchitecturesNames::find()
-            ->where(['isBasic'=>1, 'vehicleLayoutName_id'=>$vehicleLayoutName_id])
-            ->all(),
-            'id', 'name');
+                ->where(['isBasic' => 1, 'vehicleLayoutName_id' => $vehicleLayoutName_id])
+                ->all(),
+            'id',
+            'name'
+        );
 
         $selectedArchitectures = [key($basicArchitectureModel)];
         $post = \Yii::$app->request->post();
@@ -767,43 +739,45 @@ class PowerDataController extends Controller
         }
         $selectedArchitectures = array_unique($selectedArchitectures);
 
-        $alternativeArchitecture =  ArrayHelper::map(
+        $alternativeArchitecture = ArrayHelper::map(
             ArchitecturesNames::find()
-            ->where([
-                'isBasic'=>0,
-                'vehicleLayoutName_id'=>$vehicleLayoutName_id,
-                'id'=>array_values($selectedArchitectures)
+                ->where([
+                    'isBasic' => 0,
+                    'vehicleLayoutName_id' => $vehicleLayoutName_id,
+                    'id' => array_values($selectedArchitectures)
                 ])
                 ->all(),
-                'id', 'name');
+            'id',
+            'name'
+        );
         $resultsConsumersBasicModels = ResultsConsumers::find()
             ->where([
-                'vehicleLayoutName_id'=>$vehicleLayoutName_id,
-                'architectureName_id'=>key($basicArchitectureModel)
-                ])
-                ->orderBy('flightMode_id')
-                ->all();
+                'vehicleLayoutName_id' => $vehicleLayoutName_id,
+                'architectureName_id' => key($basicArchitectureModel)
+            ])
+            ->orderBy('flightMode_id')
+            ->all();
         $resultsConsumersAlternativeModels = ResultsConsumers::find()
             ->where([
-                'vehicleLayoutName_id'=>$vehicleLayoutName_id,
-                'architectureName_id'=>array_values($selectedArchitectures)
-                ])
-                ->andWhere(['<>','architectureName_id',key($basicArchitectureModel)])
-                ->all();
+                'vehicleLayoutName_id' => $vehicleLayoutName_id,
+                'architectureName_id' => array_values($selectedArchitectures)
+            ])
+            ->andWhere(['<>', 'architectureName_id', key($basicArchitectureModel)])
+            ->all();
         $resultsEnergySourcesBasicModels = ResultsEnergySources::find()
             ->where([
-                'vehicleLayoutName_id'=>$vehicleLayoutName_id,
-                'architectureName_id'=>key($basicArchitectureModel)
-                ])
-                ->orderBy('flightMode_id')
-                ->all();
+                'vehicleLayoutName_id' => $vehicleLayoutName_id,
+                'architectureName_id' => key($basicArchitectureModel)
+            ])
+            ->orderBy('flightMode_id')
+            ->all();
         $resultsEnergySourcesAlternativeModels = ResultsEnergySources::find()
             ->where([
-                'vehicleLayoutName_id'=>$vehicleLayoutName_id,
-                'architectureName_id'=>array_values($selectedArchitectures)
-                ])
-                ->andWhere(['<>','architectureName_id',key($basicArchitectureModel)])
-                ->all();
+                'vehicleLayoutName_id' => $vehicleLayoutName_id,
+                'architectureName_id' => array_values($selectedArchitectures)
+            ])
+            ->andWhere(['<>', 'architectureName_id', key($basicArchitectureModel)])
+            ->all();
 
         $N_out_by_parts = [];
         foreach ($resultsConsumersBasicModels as $results) {
@@ -817,10 +791,10 @@ class PowerDataController extends Controller
         $usedEnergySourcesInSelectedArchitectures = [];
         $data = ResultsEnergySources::find()
             ->where([
-                'vehicleLayoutName_id'=>$vehicleLayoutName_id,
-                'architectureName_id'=>array_values($selectedArchitectures),
+                'vehicleLayoutName_id' => $vehicleLayoutName_id,
+                'architectureName_id' => array_values($selectedArchitectures),
                 'flightMode_id' => $usingFlightModes,
-                ])
+            ])
             ->orderBy('flightMode_id')
             ->all();
         foreach ($data as $results) {
@@ -870,7 +844,7 @@ class PowerDataController extends Controller
                 $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qdisposable'] = 0.0;
             if (!isset($chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['N_electric_total']))
                 $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['N_electric_total'] = 0.0;
-            
+
             $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump'] += $results->Qpump;
             $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qdisposable'] += $results->Qdisposable;
             $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['N_electric_total'] += $results->N_electric_total;
@@ -911,7 +885,7 @@ class PowerDataController extends Controller
     protected function getListOfFiles()
     {
         $list = [];
-        if ($handle = opendir(Yii::getAlias('@app').'/import')) {
+        if ($handle = opendir(Yii::getAlias('@app') . '/import')) {
             while (false !== ($entry = readdir($handle))) {
                 if ($entry != "." && $entry != "..") {
                     if (strpos($entry, '~$') === false) {
@@ -919,7 +893,7 @@ class PowerDataController extends Controller
                     }
                 }
             }
-        
+
             closedir($handle);
         }
 
@@ -935,7 +909,7 @@ class PowerDataController extends Controller
     protected function saveResults($vehicleLayoutName_id, $results)
     {
         foreach ($results['consumers'] as $consumer_id => $array1) {
-           foreach ($array1 as $architecture_id => $array2) {
+            foreach ($array1 as $architecture_id => $array2) {
                 foreach ($array2 as $flightMode_id => $data) {
                     $resultsConsumersModel = new ResultsConsumers();
 
@@ -951,33 +925,33 @@ class PowerDataController extends Controller
 
                     $resultsConsumersModel->save();
                 }
-           }
+            }
         }
 
         foreach ($results['energySources'] as $energySource_id => $array1) {
             foreach ($array1 as $architecture_id => $array2) {
-                 foreach ($array2 as $flightMode_id => $data) {
-                     $resultsEnergySourcesModel = new ResultsEnergySources();
- 
-                     $resultsEnergySourcesModel->vehicleLayoutName_id = $vehicleLayoutName_id;
-                     $resultsEnergySourcesModel->energySource_id = $energySource_id;
-                     $resultsEnergySourcesModel->architectureName_id = $architecture_id;
-                     $resultsEnergySourcesModel->flightMode_id = $flightMode_id;
-                     $resultsEnergySourcesModel->Qpump = $data['Qpump'];
-                     $resultsEnergySourcesModel->Qdisposable = $data['Qdisposable'];
-                     $resultsEnergySourcesModel->P_pump_out = $data['P_pump_out'];
-                     $resultsEnergySourcesModel->Q_curr_to_Q_max = $data['Q_curr_to_Q_max'];
-                     $resultsEnergySourcesModel->N_pump_out = $data['N_pump_out'];
-                     $resultsEnergySourcesModel->N_pump_in = $data['N_pump_in'];
-                     $resultsEnergySourcesModel->N_consumers_in_hydro = $data['N_consumers_in_hydro'];
-                     $resultsEnergySourcesModel->N_consumers_out = $data['N_consumers_out'];
-                     $resultsEnergySourcesModel->N_electric_total = $data['N_electric_total'];
-                     $resultsEnergySourcesModel->N_takeoff = $data['N_takeoff'];
- 
-                     $resultsEnergySourcesModel->save();
-                 }
+                foreach ($array2 as $flightMode_id => $data) {
+                    $resultsEnergySourcesModel = new ResultsEnergySources();
+
+                    $resultsEnergySourcesModel->vehicleLayoutName_id = $vehicleLayoutName_id;
+                    $resultsEnergySourcesModel->energySource_id = $energySource_id;
+                    $resultsEnergySourcesModel->architectureName_id = $architecture_id;
+                    $resultsEnergySourcesModel->flightMode_id = $flightMode_id;
+                    $resultsEnergySourcesModel->Qpump = $data['Qpump'];
+                    $resultsEnergySourcesModel->Qdisposable = $data['Qdisposable'];
+                    $resultsEnergySourcesModel->P_pump_out = $data['P_pump_out'];
+                    $resultsEnergySourcesModel->Q_curr_to_Q_max = $data['Q_curr_to_Q_max'];
+                    $resultsEnergySourcesModel->N_pump_out = $data['N_pump_out'];
+                    $resultsEnergySourcesModel->N_pump_in = $data['N_pump_in'];
+                    $resultsEnergySourcesModel->N_consumers_in_hydro = $data['N_consumers_in_hydro'];
+                    $resultsEnergySourcesModel->N_consumers_out = $data['N_consumers_out'];
+                    $resultsEnergySourcesModel->N_electric_total = $data['N_electric_total'];
+                    $resultsEnergySourcesModel->N_takeoff = $data['N_takeoff'];
+
+                    $resultsEnergySourcesModel->save();
+                }
             }
-         }
+        }
     }
 
     protected function findModelVehicleLayoutNames($id)
