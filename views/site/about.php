@@ -258,6 +258,8 @@ $this->title = 'Описание инструмента';
                             <li><b>qMax</b> &ndash; Qmax для расчёта Q располагаемого.</li>
                             <li><b>pumpPressureNominal</b> &ndash; Pнас ном.</li>
                             <li><b>pumpPressureWorkQmax</b> &ndash; Pнас раб при Qmax.</li>
+                            <li><b>NMax</b> &ndash; N max для электросистем.</li>
+                            <li><b>energySourceLinked_id</b> &ndash; связанная энергосистема от которой берется мощность.</li>
                         </ul>
                     <li><b>FlightModes</b> &ndash; режимы полёта.</li>
                         <ul>
