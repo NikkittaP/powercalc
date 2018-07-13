@@ -3,8 +3,11 @@
 namespace app\controllers;
 
 use Yii;
+use yii\helpers\VarDumper;
+use app\models\ArchitecturesNames;
 use app\models\EnergySources;
 use app\models\EnergySourcesSearch;
+use app\models\EnergySourceToArchitecture;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -38,9 +41,69 @@ class EnergySourcesController extends Controller
         $searchModel = new EnergySourcesSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
+        $energySourceToArchitecture = [];
+        $energySources = EnergySources::find()->all();
+        $architecturesNames = ArchitecturesNames::find()->all();
+        foreach ($energySources as $energySource) {
+            foreach ($architecturesNames as $architectureName) {
+                $flag = 0; // 0 - Пустое. 1 - Частично заполненное. 2 - Заполненное
+
+                $energySourceToArchitectureModel = EnergySourceToArchitecture::find()->where(['energySource_id' => $energySource->id, 'architectureName_id' => $architectureName->id])->one();
+                if ($energySourceToArchitectureModel === null) {
+                    $energySourceToArchitectureModel = new EnergySourceToArchitecture();
+                    $energySourceToArchitectureModel->energySource_id = $energySource->id;
+                    $energySourceToArchitectureModel->architectureName_id = $architectureName->id;
+                    $energySourceToArchitectureModel->save();
+
+                    $flag = 0;
+                } else {
+                    if ($energySource->energySourceType_id == 1) {
+                        if ($energySourceToArchitectureModel->qMax === null &&
+                            $energySourceToArchitectureModel->pumpPressureNominal === null &&
+                            $energySourceToArchitectureModel->pumpPressureWorkQmax === null)
+                            $flag = 0;
+                        else if ($energySourceToArchitectureModel->qMax === null ||
+                            $energySourceToArchitectureModel->pumpPressureNominal === null ||
+                            $energySourceToArchitectureModel->pumpPressureWorkQmax === null)
+                            $flag = 1;
+                        else
+                            $flag = 2;
+                    } else if ($energySource->energySourceType_id == 2 || $energySource->energySourceType_id == 3) {
+                        if ($energySourceToArchitectureModel->qMax === null &&
+                            $energySourceToArchitectureModel->pumpPressureNominal === null &&
+                            $energySourceToArchitectureModel->pumpPressureWorkQmax === null &&
+                            $energySourceToArchitectureModel->energySourceLinked_id === null &&
+                            $energySourceToArchitectureModel->NMax === null)
+                            $flag = 0;
+                        else if ($energySourceToArchitectureModel->qMax === null ||
+                            $energySourceToArchitectureModel->pumpPressureNominal === null ||
+                            $energySourceToArchitectureModel->pumpPressureWorkQmax === null ||
+                            $energySourceToArchitectureModel->energySourceLinked_id === null ||
+                            $energySourceToArchitectureModel->NMax === null)
+                            $flag = 1;
+                        else
+                            $flag = 2;
+                    } else if ($energySource->energySourceType_id == 4) {
+                        if ($energySourceToArchitectureModel->energySourceLinked_id === null &&
+                            $energySourceToArchitectureModel->NMax === null)
+                            $flag = 0;
+                        else if ($energySourceToArchitectureModel->energySourceLinked_id === null ||
+                            $energySourceToArchitectureModel->NMax === null)
+                            $flag = 1;
+                        else
+                            $flag = 2;
+                    }
+                }
+
+                $energySourceToArchitecture[$energySource->id][$architectureName->id] = $flag;
+            }
+        }
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'architecturesNames' => $architecturesNames,
+            'energySourceToArchitecture' => $energySourceToArchitecture,
         ]);
     }
 

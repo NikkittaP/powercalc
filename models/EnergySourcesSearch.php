@@ -20,7 +20,6 @@ class EnergySourcesSearch extends EnergySources
         return [
             [['id', 'energySourceType_id'], 'integer'],
             [['name'], 'safe'],
-            [['qMax', 'pumpPressureNominal', 'pumpPressureWorkQmax'], 'number'],
         ];
     }
 
@@ -62,9 +61,6 @@ class EnergySourcesSearch extends EnergySources
         $query->andFilterWhere([
             'id' => $this->id,
             'energySourceType_id' => $this->energySourceType_id,
-            'qMax' => $this->qMax,
-            'pumpPressureNominal' => $this->pumpPressureNominal,
-            'pumpPressureWorkQmax' => $this->pumpPressureWorkQmax,
         ]);
 
         $query->andFilterWhere(['like', 'name', $this->name]);

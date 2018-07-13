@@ -35,6 +35,25 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => 'energySourceType.name',
             ],
             [
+                'attribute' => 'architectureAvailability',
+                'content' => function ($model, $key, $index, $column) use ($architecturesNames, $energySourceToArchitecture) {
+                    $out = '';
+                    foreach ($architecturesNames as $architectureName) {
+                        $icon = '';
+                        if ($energySourceToArchitecture[$model->id][$architectureName->id] == 0)
+                            $icon = '<span class="glyphicon glyphicon-remove text-danger"></span>';
+                        else if ($energySourceToArchitecture[$model->id][$architectureName->id] == 1)
+                            $icon = '<span class="glyphicon glyphicon-adjust text-warning"></span>';
+                        else if ($energySourceToArchitecture[$model->id][$architectureName->id] == 2)
+                            $icon = '<span class="glyphicon glyphicon-ok text-success"></span>';
+
+                        $out .= $icon. '&nbsp;&nbsp;' . Html::a($architectureName->name, ['energy-sources/update', 'id' => $model->id, 'architectureName_id'=>$architectureName->id]).'<br />';
+                    }
+                    return $out;
+                },
+            ],
+            /*
+            [
                 'attribute' => 'qMax',
                 'value' => function ($model, $key, $index, $column) {
                     if ($model->energySourceType_id == 4)
@@ -79,6 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
                     return $model->energySourceLinked->name;
                 },
             ],
+             */
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

@@ -48,6 +48,7 @@ class SiteController extends Controller
         $tables['ArchitecturesNames'] = '[ArchitecturesNames] Архитектуры';
         $tables['Consumers'] = '[Consumers] Потребители';
         $tables['EnergySources'] = '[EnergySources] Энергосистемы';
+        $tables['EnergySource_to_Architecture'] = '[EnergySource_to_Architecture] Параметры энергосистем для каждой архитектуры';
         $tables['FlightModes'] = '[FlightModes] Режимы полета';
 
         $tables['VehicleLayout'] = '[VehicleLayout] Корневая таблица связей';

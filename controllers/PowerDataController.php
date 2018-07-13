@@ -15,6 +15,7 @@ use \app\models\ArchitecturesNames;
 use \app\models\ArchitectureToVehicleLayout;
 use \app\models\Constants;
 use \app\models\EnergySources;
+use \app\models\EnergySourceToArchitecture;
 use \app\models\PumpEfficiency;
 use \app\models\FlightModes;
 use \app\models\FlightModesToVehicleLayout;
@@ -234,13 +235,10 @@ class PowerDataController extends Controller
                 }
             }
 
-            VarDumper::dump($importData, $depth = 10, $highlight = true);
-            exit();
-
             $skippedData = [];
             $skippedData['architectures'] = [];
             $skippedData['flightModes'] = [];
-            $skippedData['energySources'] = [];
+            //$skippedData['energySources'] = []; Отключил
             $skippedData['aircraftParts'] = [];
             $skippedData['consumers'] = [];
             $skippedData['vehicleLayout'] = [];
@@ -283,13 +281,29 @@ class PowerDataController extends Controller
                 if ($energySourcesModel === null) {
                     $energySourcesModel = new EnergySources();
                     $energySourcesModel->name = $value['name'];
-                    $energySourcesModel->energySourceType_id = $value['energySourceType_id'];
-                    $energySourcesModel->qMax = $value['qMax'];
-                    $energySourcesModel->pumpPressureNominal = $value['pumpPressureNominal'];
-                    $energySourcesModel->pumpPressureWorkQmax = $value['pumpPressureWorkQmax'];
-                    $energySourcesModel->save();
-                } else
-                    $skippedData['energySources'][] = $value['name'];
+                }
+
+                $energySourcesModel->energySourceType_id = $value['energySourceType_id'];
+                $energySourcesModel->save();
+
+                foreach ($value['architectures'] as $keyAR => $valueAR) {
+                    $energySourceID = $energySourcesModel->id;
+                    $architectureNameID = $importData['architectures'][$keyAR]['db_id'];
+
+                    $energySourceToArchitectureModel = EnergySourceToArchitecture::find()->where(['energySource_id' => $energySourceID, 'architectureName_id' => $architectureNameID])->one();
+                    if ($energySourceToArchitectureModel === null) {
+                        $energySourceToArchitectureModel = new EnergySourceToArchitecture();
+                        $energySourceToArchitectureModel->energySource_id = $energySourceID;
+                        $energySourceToArchitectureModel->architectureName_id = $architectureNameID;
+                    }
+
+                    $energySourceToArchitectureModel->qMax = $valueAR['qMax'];
+                    $energySourceToArchitectureModel->pumpPressureNominal = $valueAR['pumpPressureNominal'];
+                    $energySourceToArchitectureModel->pumpPressureWorkQmax = $valueAR['pumpPressureWorkQmax'];
+                    $energySourceToArchitectureModel->NMax = $valueAR['NMax'];
+                    $energySourceToArchitectureModel->save();
+                    //VarDumper::dump( $energySourceToArchitectureModel->getErrors(), $depth = 10, $highlight = true);
+                }
 
                 $importData['energySources'][$key]['db_id'] = $energySourcesModel->id;
             }
@@ -367,7 +381,7 @@ class PowerDataController extends Controller
             if (count($skippedData['vehicleLayout']) == 0
                 && count($skippedData['consumers']) == 0
                 && count($skippedData['aircraftParts']) == 0
-                && count($skippedData['energySources']) == 0
+                //&& count($skippedData['energySources']) == 0
                 && count($skippedData['flightModes']) == 0
                 && count($skippedData['architectures']) == 0) {
                 Yii::$app->session->setFlash('success', 'Все данные успешно импортированы.');
@@ -390,6 +404,7 @@ class PowerDataController extends Controller
                     $msg .= '</ul>';
                 }
 
+                /*
                 if (count($skippedData['energySources']) != 0) {
                     $msg .= '<b>Энергосистемы:</b><br /><ul>';
                     foreach ($skippedData['energySources'] as $value) {
@@ -397,6 +412,7 @@ class PowerDataController extends Controller
                     }
                     $msg .= '</ul>';
                 }
+                */
 
                 if (count($skippedData['aircraftParts']) != 0) {
                     $msg .= '<b>Зоны аппарата:</b><br /><ul>';

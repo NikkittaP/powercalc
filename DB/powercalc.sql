@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `Architecture_to_VehicleLayout` (
   KEY `FK_Architecture_to_VehicleLayout_ArchitecturesNames` (`architectureName_id`),
   KEY `FK_Architecture_to_VehicleLayout_EnergySources` (`energySource_id`),
   CONSTRAINT `FK_Architecture_to_VehicleLayout_ArchitecturesNames` FOREIGN KEY (`architectureName_id`) REFERENCES `ArchitecturesNames` (`id`),
-  CONSTRAINT `FK_Architecture_to_VehicleLayout_EnergySources` FOREIGN KEY (`energySource_id`) REFERENCES `EnergySource_to_Architecture` (`id`),
+  CONSTRAINT `FK_Architecture_to_VehicleLayout_EnergySources` FOREIGN KEY (`energySource_id`) REFERENCES `EnergySources` (`id`),
   CONSTRAINT `FK_Architecture_to_VehicleLayout_VehicleLayout` FOREIGN KEY (`vehicleLayout_id`) REFERENCES `VehicleLayout` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -150,6 +150,7 @@ DROP TABLE IF EXISTS `EnergySource_to_Architecture`;
 CREATE TABLE IF NOT EXISTS `EnergySource_to_Architecture` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `energySource_id` int(10) unsigned NOT NULL,
+  `architectureName_id` int(10) unsigned NOT NULL,
   `energySourceLinked_id` int(10) unsigned DEFAULT NULL COMMENT 'Электросистема от которой берет энергию',
   `qMax` float unsigned DEFAULT NULL COMMENT 'Qmax для расчёта Q располагаемого',
   `pumpPressureNominal` float unsigned DEFAULT NULL COMMENT 'Pнас ном',
@@ -158,6 +159,8 @@ CREATE TABLE IF NOT EXISTS `EnergySource_to_Architecture` (
   KEY `Индекс 1` (`id`),
   KEY `FK_EnergySource_to_Architecture_EnergySources` (`energySource_id`),
   KEY `FK_EnergySource_to_Architecture_EnergySources_2` (`energySourceLinked_id`),
+  KEY `FK_EnergySource_to_Architecture_ArchitecturesNames` (`architectureName_id`),
+  CONSTRAINT `FK_EnergySource_to_Architecture_ArchitecturesNames` FOREIGN KEY (`architectureName_id`) REFERENCES `ArchitecturesNames` (`id`),
   CONSTRAINT `FK_EnergySource_to_Architecture_EnergySources` FOREIGN KEY (`energySource_id`) REFERENCES `EnergySources` (`id`),
   CONSTRAINT `FK_EnergySource_to_Architecture_EnergySources_2` FOREIGN KEY (`energySourceLinked_id`) REFERENCES `EnergySources` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
