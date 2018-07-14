@@ -318,13 +318,12 @@ CREATE TABLE IF NOT EXISTS `Vehicles` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.Vehicles: ~2 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.Vehicles: ~1 rows (приблизительно)
 /*!40000 ALTER TABLE `Vehicles` DISABLE KEYS */;
 INSERT INTO `Vehicles` (`id`, `name`) VALUES
-	(2, 'Sukhoi Superjet 100'),
-	(1, 'МС-21');
+	(1, 'Ил-96-300');
 /*!40000 ALTER TABLE `Vehicles` ENABLE KEYS */;
 
 -- Дамп структуры для таблица PowerDistributionData.VehiclesLayoutsNames
@@ -339,14 +338,12 @@ CREATE TABLE IF NOT EXISTS `VehiclesLayoutsNames` (
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `FK_VehiclesLayoutsNames_Vehicles` (`vehicle_id`),
   CONSTRAINT `FK_VehiclesLayoutsNames_Vehicles` FOREIGN KEY (`vehicle_id`) REFERENCES `Vehicles` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.VehiclesLayoutsNames: ~3 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.VehiclesLayoutsNames: ~1 rows (приблизительно)
 /*!40000 ALTER TABLE `VehiclesLayoutsNames` DISABLE KEYS */;
 INSERT INTO `VehiclesLayoutsNames` (`id`, `vehicle_id`, `name`, `usingArchitectures`, `usingFlightModes`) VALUES
-	(1, 1, 'Простая компоновка', NULL, NULL),
-	(2, 1, 'Сложная компоновка', NULL, NULL),
-	(3, 2, 'Простая компоновка', NULL, NULL);
+	(1, 1, 'Базовая компоновка', NULL, NULL);
 /*!40000 ALTER TABLE `VehiclesLayoutsNames` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
