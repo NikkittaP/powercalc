@@ -54,9 +54,9 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
 
         $gridColumns[] = [
             'attribute'=>'architectureToVehicleLayouts_'.$architecturesName->id,
-            'value'=>function ($model, $key, $index, $column) use($architecturesName, $architectureToVehicleLayouts, $energySources) {
+            'content'=>function ($model, $key, $index, $column) use($architecturesName, $architectureToVehicleLayouts, $energySources) {
                 if (!isset($architectureToVehicleLayouts[$model->id][$architecturesName->id]))
-                    return '';
+                    return '&ndash;';
                 return $energySources[$architectureToVehicleLayouts[$model->id][$architecturesName->id]];
             },
             'contentOptions' => $style,
@@ -79,10 +79,10 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
 
         $gridColumns[] = [
             'attribute'=>'flightModesToVehicleLayout_'.$flightMode->id,
-            'value'=>function ($model, $key, $index, $column) use($flightMode, $flightModesToVehicleLayouts) {
+            'content'=>function ($model, $key, $index, $column) use($flightMode, $flightModesToVehicleLayouts) {
                 if (!isset($flightModesToVehicleLayouts[$model->id][$flightMode->id]))
                     return '';
-                return round($flightModesToVehicleLayouts[$model->id][$flightMode->id], 2);
+                return '<b>'.round($flightModesToVehicleLayouts[$model->id][$flightMode->id], 2).'</b>';
             },
             'contentOptions' => function ($model, $key, $index, $column) use($border, $flightMode, $flightModesToVehicleLayouts) {
                 if (isset($flightModesToVehicleLayouts[$model->id][$flightMode->id]))

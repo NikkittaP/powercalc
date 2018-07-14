@@ -41,3 +41,4 @@ themes/classic/views/
 import/~$import.xlsx
 composer.lock
 composer.json
+web/assets

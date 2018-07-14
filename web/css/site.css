@@ -3,10 +3,12 @@ body {
     height: 100%;
 }
 
+.darkred,
 .darkred>.kv-editable>.kv-editable-link {
     color: #a84644;
 }
 
+.darkyellow,
 .darkyellow>.kv-editable>.kv-editable-link {
     color: #886e41;
 }
