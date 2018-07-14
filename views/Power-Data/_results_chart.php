@@ -1,6 +1,7 @@
 <?php
 
 use miloschuman\highcharts\Highcharts;
+use yii\jui\Resizable;
 use yii\web\JsExpression;
 ?>
 
@@ -217,16 +218,36 @@ foreach ($flightModeModel as $currentFlightMode) {
     $flightModes[] = $currentFlightMode->name;
 }
 
+$chartHeight = (app\models\Constants::getValue('chartHeight') == null) ? 1500 : app\models\Constants::getValue('chartHeight');
+$chartWidth = (app\models\Constants::getValue('chartWidth') == null) ? 900 : app\models\Constants::getValue('chartWidth');
+
+Resizable::begin([
+    'clientEvents' => [
+        'resize' => 'function( event, ui ) {
+            resizeChart(this.offsetWidth, this.offsetHeight);
+          }',
+    ],
+    'clientOptions' => [
+        'grid' => [20, 10],
+        'minHeight' => 100,
+        'minWidth' => 200,
+    ],
+    'options' => [
+        'style' => "width:" . $chartWidth . "px;height:" . $chartHeight . "px",
+    ],
+]);
+
 echo Highcharts::widget([
     'scripts' => [
         'modules/exporting',
         'themes/avocado',
     ],
     'options' => [
+        'id' => 'results_chart',
         'credits' => ['enabled' => false],
         'chart' => [
-            'height' => (app\models\Constants::getValue('chartHeight') == null) ? 1500 : app\models\Constants::getValue('chartHeight'),
-            'width' => (app\models\Constants::getValue('chartWidth') == null) ? 900 : app\models\Constants::getValue('chartWidth'),
+            'height' => $chartHeight,
+            'width' => $chartWidth,
             'style' => [
                 //'fontFamily' => 'Arial',
             ],
@@ -247,4 +268,25 @@ echo Highcharts::widget([
         'series' => $series,
     ],
 ]);
+
+Resizable::end();
+
+?>
+
+<div id="sizeLabel"></div><br />
+
+<?php
+
+$script = <<< JS
+
+    function resizeChart(width, height) {
+        var chart = $('#w1').highcharts();
+        chart.setSize(width, height, false);
+        document.getElementById("sizeLabel").innerHTML = "Размеры графика: "+width+"x"+height;
+    }
+
+JS;
+
+$this->registerJs($script, yii\web\View::POS_HEAD);
+
 ?>

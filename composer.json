@@ -25,7 +25,8 @@
         "kartik-v/yii2-editable": "*",
         "phpoffice/phpspreadsheet": "^1.2",
         "newerton/yii2-fancybox-3": "@dev",
-        "kartik-v/yii2-widget-colorinput": "*"
+        "kartik-v/yii2-widget-colorinput": "*",
+        "yiisoft/yii2-jui": "^2.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.0",

@@ -13,6 +13,10 @@ body {
     color: #886e41;
 }
 
+.ui-resizable {
+    background-color: #999
+} 
+
 .container {
     width: auto;
     margin: 0 auto;
