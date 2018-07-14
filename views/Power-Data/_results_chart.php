@@ -68,8 +68,21 @@ if ($chartType == 'ENERGYSOURCE_Q') {
     $seriesLineData = [];
     $series = [];
 
-    foreach ($flightModeModel as $currentFlightMode) {
-        $seriesLineData[] = round($chart_data[$currentFlightMode->id][$energySourceID]['Qdisposable'], 1);
+    foreach ($selectedArchitectures as $currentArchitectureID) {
+
+        $tmp = [];
+        $allZeros = true;
+        foreach ($flightModeModel as $currentFlightMode) {
+            $value = round($chart_data[$currentFlightMode->id][$energySourceID][$currentArchitectureID]['Qdisposable'], 1);
+
+            if ($value != 0)
+                $allZeros = false;
+
+            $tmp[] = $value;
+        }
+
+        if (!$allZeros)
+            $seriesLineData[$currentArchitectureID] = $tmp;
     }
 
     foreach ($selectedArchitectures as $currentArchitectureID) {
@@ -84,18 +97,24 @@ if ($chartType == 'ENERGYSOURCE_Q') {
         ];
     }
 
-    $series[] = [
-        'type' => 'spline',
-    //'type' => 'areaspline',
-        'fillOpacity' => 0.1,
-        'name' => 'Располагаемый расход',
-        'data' => $seriesLineData,
-        'marker' => [
-            'lineWidth' => 2,
-            'lineColor' => new JsExpression('Highcharts.getOptions().colors[3]'),
-            'fillColor' => 'white',
-        ],
-    ];
+    foreach ($selectedArchitectures as $currentArchitectureID) {
+        if (isset($seriesLineData[$currentArchitectureID]))
+        {
+            $series[] = [
+                'type' => 'spline',
+                //'type' => 'areaspline',
+                'fillOpacity' => 0.1,
+                'name' => 'Располагаемый расход '.$chart_data[$currentArchitectureID]['architectureName'],
+                'data' => $seriesLineData[$currentArchitectureID],
+                'color' => $chart_data[$currentArchitectureID]['architectureChartColor'],
+                'marker' => [
+                    'lineWidth' => 2,
+                    'lineColor' => $chart_data[$currentArchitectureID]['architectureChartColor'],
+                    'fillColor' => 'white',
+                ],
+            ];
+        }
+    }
     
 } else if ($chartType == 'DELTA_N') {
     $yAxisTitle = 'ΔN_отбора';
