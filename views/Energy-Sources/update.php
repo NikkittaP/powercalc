@@ -7,7 +7,7 @@ use yii\helpers\Html;
 
 $this->title = 'Обновить данные энергосистемы ' . $energySource->name . ' для архитектуры ' . $architectureName->name;
 $this->params['breadcrumbs'][] = ['label' => 'Энергосистемы', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $energySource->name, 'url' => ['view', 'id' => $model->id]];
+$this->params['breadcrumbs'][] = ['label' => $energySource->name];//, 'url' => ['view', 'id' => $model->id]];
 $this->params['breadcrumbs'][] = 'Обновить';
 ?>
 <div class="energy-sources-update">
