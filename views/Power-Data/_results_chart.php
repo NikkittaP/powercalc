@@ -2,25 +2,27 @@
 
 use miloschuman\highcharts\Highcharts;
 use yii\web\JsExpression;
-use yii\helpers\VarDumper;
 ?>
 
 <?php
 
 $yAxisTitle = 'yAxisTitle';
 
-if ($chartType == 'TEXT_DATA')
-{
+if ($chartType == 'TEXT_DATA') {
     $basicArchitectureID = -1;
     foreach ($selectedArchitectures as $currentArchitectureID) {
-        if ($chart_data[$currentArchitectureID]['isBasic'] == true)
+        if ($chart_data[$currentArchitectureID]['isBasic'] == true) {
             $basicArchitectureID = $currentArchitectureID;
+        }
+
     }
-    
+
     foreach ($selectedArchitectures as $currentArchitectureID) {
         foreach ($flightModeModel as $currentFlightMode) {
-            if ($currentArchitectureID != $basicArchitectureID)
+            if ($currentArchitectureID != $basicArchitectureID) {
                 $textData['DELTA_N'][$currentFlightMode->id][$currentArchitectureID] = round(($chart_data['DELTA_N'][$currentArchitectureID][$currentFlightMode->id]['N_takeoff'] - $chart_data['DELTA_N'][$basicArchitectureID][$currentFlightMode->id]['N_takeoff']), 1);
+            }
+
             $textData['EFFICIENCY'][$currentFlightMode->id][$currentArchitectureID] = round(($chart_data['EFFICIENCY'][$currentArchitectureID][$currentFlightMode->id]['N_consumers_out'] / $chart_data['EFFICIENCY'][$currentArchitectureID][$currentFlightMode->id]['N_takeoff']) * 100, 1);
         }
     }
@@ -34,31 +36,31 @@ if ($chartType == 'TEXT_DATA')
             <th class="text-center"><h5><b>КПД</b></h5></th>
         </tr>
         <?php
-        foreach ($flightModeModel as $currentFlightMode) {
-            $isNewFM = true;
-            foreach ($selectedArchitectures as $currentArchitectureID) {
-        ?>
+foreach ($flightModeModel as $currentFlightMode) {
+        $isNewFM = true;
+        foreach ($selectedArchitectures as $currentArchitectureID) {
+            ?>
                 <tr>
                     <?php
-                    if ($isNewFM) {
-                    ?>
+if ($isNewFM) {
+                ?>
                         <td rowspan="<?=count($selectedArchitectures);?>" width="350"><b><?=$currentFlightMode->name;?></b></td>
                     <?php
-                    }
-                    ?>
+}
+            ?>
                     <td><b><?=$chart_data['DELTA_N'][$currentArchitectureID]['architectureName'];?></b></td>
                     <td><?=$textData['DELTA_N'][$currentFlightMode->id][$currentArchitectureID];?></td>
                     <td><?=$textData['EFFICIENCY'][$currentFlightMode->id][$currentArchitectureID];?></td>
                 </tr>
         <?php
-            $isNewFM = false;
-            }
+$isNewFM = false;
         }
-        ?>
+    }
+    ?>
         </tbody>
     </table>
     <?php
-    return;
+return;
 }
 
 if ($chartType == 'ENERGYSOURCE_Q') {
@@ -75,36 +77,53 @@ if ($chartType == 'ENERGYSOURCE_Q') {
         foreach ($flightModeModel as $currentFlightMode) {
             $value = round($chart_data[$currentFlightMode->id][$energySourceID][$currentArchitectureID]['Qdisposable'], 1);
 
-            if ($value != 0)
+            if ($value != 0) {
                 $allZeros = false;
+            }
 
             $tmp[] = $value;
         }
 
-        if (!$allZeros)
+        if (!$allZeros) {
             $seriesLineData[$currentArchitectureID] = $tmp;
-    }
-
-    foreach ($selectedArchitectures as $currentArchitectureID) {
-        foreach ($flightModeModel as $currentFlightMode) {
-            $seriesColumnData[$currentArchitectureID][] = round($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qpump'], 1);
         }
-        $series[] = [
-            'type' => 'column',
-            'color' => $chart_data[$currentArchitectureID]['architectureChartColor'],
-            'name' => $chart_data[$currentArchitectureID]['architectureName'],
-            'data' => $seriesColumnData[$currentArchitectureID],
-        ];
+
     }
 
     foreach ($selectedArchitectures as $currentArchitectureID) {
-        if (isset($seriesLineData[$currentArchitectureID]))
-        {
+        $tmp = [];
+        $allZeros = true;
+        foreach ($flightModeModel as $currentFlightMode) {
+            $value = round($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qpump'], 1);
+
+            if ($value != 0) {
+                $allZeros = false;
+            }
+
+            $tmp[] = $value;
+        }
+
+        if (!$allZeros) {
+            $seriesColumnData[$currentArchitectureID] = $tmp;
+        }
+
+        if (isset($seriesColumnData[$currentArchitectureID])) {
+            $series[] = [
+                'type' => 'column',
+                'color' => $chart_data[$currentArchitectureID]['architectureChartColor'],
+                'name' => $chart_data[$currentArchitectureID]['architectureName'],
+                'data' => $seriesColumnData[$currentArchitectureID],
+            ];
+        }
+    }
+
+    foreach ($selectedArchitectures as $currentArchitectureID) {
+        if (isset($seriesLineData[$currentArchitectureID])) {
             $series[] = [
                 'type' => 'spline',
                 //'type' => 'areaspline',
                 'fillOpacity' => 0.1,
-                'name' => 'Располагаемый расход '.$chart_data[$currentArchitectureID]['architectureName'],
+                'name' => 'Располагаемый расход ' . $chart_data[$currentArchitectureID]['architectureName'],
                 'data' => $seriesLineData[$currentArchitectureID],
                 'color' => $chart_data[$currentArchitectureID]['architectureChartColor'],
                 'marker' => [
@@ -115,7 +134,7 @@ if ($chartType == 'ENERGYSOURCE_Q') {
             ];
         }
     }
-    
+
 } else if ($chartType == 'DELTA_N') {
     $yAxisTitle = 'ΔN_отбора';
 
@@ -124,13 +143,14 @@ if ($chartType == 'ENERGYSOURCE_Q') {
 
     $basicArchitectureID = -1;
     foreach ($selectedArchitectures as $currentArchitectureID) {
-        if ($chart_data[$currentArchitectureID]['isBasic'] == true)
+        if ($chart_data[$currentArchitectureID]['isBasic'] == true) {
             $basicArchitectureID = $currentArchitectureID;
+        }
+
     }
-    
+
     foreach ($selectedArchitectures as $currentArchitectureID) {
-        if ($currentArchitectureID != $basicArchitectureID)
-        {
+        if ($currentArchitectureID != $basicArchitectureID) {
             foreach ($flightModeModel as $currentFlightMode) {
                 $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id]['N_takeoff'] - $chart_data[$basicArchitectureID][$currentFlightMode->id]['N_takeoff']), 1);
             }
@@ -144,10 +164,10 @@ if ($chartType == 'ENERGYSOURCE_Q') {
     }
 } else if ($chartType == 'EFFICIENCY') {
     $yAxisTitle = 'КПД, %';
-    
+
     $seriesColumnData = [];
     $series = [];
-    
+
     foreach ($selectedArchitectures as $currentArchitectureID) {
         foreach ($flightModeModel as $currentFlightMode) {
             $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id]['N_consumers_out'] / $chart_data[$currentArchitectureID][$currentFlightMode->id]['N_takeoff']) * 100, 1);
@@ -167,17 +187,20 @@ if ($chartType == 'ENERGYSOURCE_Q') {
 
     foreach ($selectedArchitectures as $currentArchitectureID) {
         foreach ($flightModeModel as $currentFlightMode) {
-            if ($isElectric)
-            {
-                if ($NMax == 0)
+            if ($isElectric) {
+                if ($NMax == 0) {
                     $seriesColumnData[$currentArchitectureID][] = 0;
-                else
+                } else {
                     $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['N_electric_total'] / $NMax), 1);
+                }
+
             } else {
-                if ($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable'] == 0)
+                if ($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable'] == 0) {
                     $seriesColumnData[$currentArchitectureID][] = 0;
-                else
+                } else {
                     $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qpump'] / $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable']), 1);
+                }
+
             }
         }
         $series[] = [
@@ -188,8 +211,6 @@ if ($chartType == 'ENERGYSOURCE_Q') {
         ];
     }
 }
-
-
 
 $flightModes = [];
 foreach ($flightModeModel as $currentFlightMode) {
@@ -207,16 +228,16 @@ echo Highcharts::widget([
             'height' => (app\models\Constants::getValue('chartHeight') == null) ? 1500 : app\models\Constants::getValue('chartHeight'),
             'width' => (app\models\Constants::getValue('chartWidth') == null) ? 900 : app\models\Constants::getValue('chartWidth'),
             'style' => [
-            //'fontFamily' => 'Arial',
+                //'fontFamily' => 'Arial',
             ],
         ],
-        'title' => [ 'text' => $title ],
+        'title' => ['text' => $title],
         'xAxis' => [
-            'title' => [ 'text' => 'Режимы полёта' ],
+            'title' => ['text' => 'Режимы полёта'],
             'categories' => $flightModes,
         ],
         'yAxis' => [
-            'title' => [ 'text' => $yAxisTitle ],
+            'title' => ['text' => $yAxisTitle],
         ],
         'plotOptions' => [
             'column' => [
@@ -224,6 +245,6 @@ echo Highcharts::widget([
             ],
         ],
         'series' => $series,
-    ]
+    ],
 ]);
 ?>
