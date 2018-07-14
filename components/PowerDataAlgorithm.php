@@ -32,10 +32,14 @@ class PowerDataAlgorithm extends Component
 
     $energySources = [
         $id => [
-            'type' => $type,                                    // Тип энергосистемы. [1 => 'Гидросистема', 2 => 'Гидроэлектросистема', 3 => 'Зональная гидроэлектросистема', 4 => 'Электросистема',]
-            'qMax' => $qMax,                                    // Qmax для расчёта Q располагаемого
-            'pumpPressureNominal' => $pumpPressureNominal,      // Pнас ном
-            'pumpPressureWorkQmax' => $pumpPressureWorkQmax,    // Pнас раб при Qmax
+            'type' => $type,                                        // Тип энергосистемы. [1 => 'Гидросистема', 2 => 'Гидроэлектросистема', 3 => 'Зональная гидроэлектросистема', 4 => 'Электросистема',]
+            $architectureID => [
+                'energySourceLinked_id' => $energySourceLinked_id   // Энергопитание от энергосистемы с заданным id
+                'qMax' => $qMax,                                    // Qmax для расчёта Q располагаемого
+                'pumpPressureNominal' => $pumpPressureNominal,      // Pнас ном
+                'pumpPressureWorkQmax' => $pumpPressureWorkQmax,    // Pнас раб при Qmax
+                'NMax' => $NMax,                                    // Nmax
+            ]
         ]
     ]
 
@@ -165,11 +169,11 @@ class PowerDataAlgorithm extends Component
         public function calcConsumerConsumption($consumerID, $architectureID, $flightModeID)
         {
             $consumer = $this->consumers[$consumerID];
-            $energySourceBasic = $this->energySources[$consumer['energySourcePerArchitecture'][$this->architectureBasicID]];
+            $energySourceBasicType = $this->energySources[$consumer['energySourcePerArchitecture'][$this->architectureBasicID]]['type'];
 
             if ($consumer['usageFactorPerFlightMode'][$flightModeID]==0)
             {
-                if ($energySourceBasic['type'] == 4) // Электросистема
+                if ($energySourceBasicType == 4) // Электросистема
                     $consumption = 0;
                 else
                     $consumption = $consumer['q0'] * $this->constants['useQ0'];
@@ -197,9 +201,9 @@ class PowerDataAlgorithm extends Component
         public function calcArchitectureQdisposable($energySourceID, $architectureID, $flightModeID)
         {
             if ($this->energySources[$energySourceID]['type'] == 2 || $this->energySources[$energySourceID]['type'] == 3) // Гидроэлектросистема или Зональная гидроэлектросистема
-                $Qdisposable = $this->energySources[$energySourceID]['qMax'];
+                $Qdisposable = $this->energySources[$energySourceID][$architectureID]['qMax'];
             else
-                $Qdisposable = $this->energySources[$energySourceID]['qMax'] * $this->flightModes[$flightModeID]['reductionFactor'];
+                $Qdisposable = $this->energySources[$energySourceID][$architectureID]['qMax'] * $this->flightModes[$flightModeID]['reductionFactor'];
 
             $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qdisposable'] = $Qdisposable;
         }
@@ -211,8 +215,8 @@ class PowerDataAlgorithm extends Component
             $Qpump = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qpump'];
             $Qdisposable = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qdisposable'];
 
-            $P_pump_out = $this->energySources[$energySourceID]['pumpPressureNominal'] - 
-                ($this->energySources[$energySourceID]['pumpPressureNominal'] - $this->energySources[$energySourceID]['pumpPressureWorkQmax'])
+            $P_pump_out = $this->energySources[$energySourceID][$architectureID]['pumpPressureNominal'] - 
+                ($this->energySources[$energySourceID][$architectureID]['pumpPressureNominal'] - $this->energySources[$energySourceID][$architectureID]['pumpPressureWorkQmax'])
                 /
                 $Qdisposable
                 *
@@ -315,10 +319,10 @@ class PowerDataAlgorithm extends Component
         public function calcConsumerN_in_electric($consumerID, $architectureID, $flightModeID)
         {
             $consumer = $this->consumers[$consumerID];
-            $energySourceAlt = $this->energySources[$consumer['energySourcePerArchitecture'][$architectureID]];
+            $energySourceAltType = $this->energySources[$consumer['energySourcePerArchitecture'][$architectureID]]['type'];
             $N_out = $this->results['consumers'][$consumerID][$this->architectureBasicID][$flightModeID]['N_out'];
 
-            if ($energySourceAlt['type'] == 4)  // Электросистема
+            if ($energySourceAltType == 4)  // Электросистема
                 $N_in_electric = $N_out / $consumer['efficiencyElectric'];
             else
                 $N_in_electric = '-';

@@ -685,12 +685,22 @@ class PowerDataController extends Controller
 
         $energySourceModels = EnergySources::findAll($usedEnergySourcesIDs);
         foreach ($energySourceModels as $energySourceModel) {
-            $algorithm->addEnergySource($energySourceModel->id, [
+            $energySource = [
                 'type' => $energySourceModel->energySourceType->id,
-                'qMax' => $energySourceModel->qMax,
-                'pumpPressureNominal' => $energySourceModel->pumpPressureNominal,
-                'pumpPressureWorkQmax' => $energySourceModel->pumpPressureWorkQmax,
-            ]);
+            ];
+
+            foreach ($architectureModels as $architectureModel) {
+                $energySourceToArchitectureModel = EnergySourceToArchitecture::find()->where(['energySource_id' => $energySourceModel->id, 'architectureName_id' => $architectureModel->id])->one();
+
+                $energySource[$architectureModel->id] = [
+                    'energySourceLinked_id' => $energySourceToArchitectureModel->energySourceLinked_id,
+                    'qMax' => $energySourceToArchitectureModel->qMax,
+                    'pumpPressureNominal' => $energySourceToArchitectureModel->pumpPressureNominal,
+                    'pumpPressureWorkQmax' => $energySourceToArchitectureModel->pumpPressureWorkQmax,
+                    'NMax' => $energySourceToArchitectureModel->NMax,
+                ];
+            }
+            $algorithm->addEnergySource($energySourceModel->id, $energySource);
         }
 
         $efficiencyPumpModels = PumpEfficiency::find()->all();
