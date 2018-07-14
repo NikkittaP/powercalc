@@ -187,7 +187,13 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
                     <div class="panel-body" style="padding:0px;">
                         <table class="table table-striped">
 
+
                             <?php
+                            $energySources = EnergySources::find()->count();
+                            echo '<tr><td>';
+                            echo '<i>Всего '.$energySources.' энергосистем</i>';
+                            echo ' </td></tr>';
+                            /*
                             $energySources = EnergySources::find()->all();
                             foreach ($energySources as $energySource)
                             {
@@ -195,6 +201,7 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
                                 echo Html::a($energySource->name, ['energy-sources/view', 'id' => $energySource->id]);
                                 echo ' </td></tr>';
                             }
+                            */
                             ?>
                         </table>
                     </div>

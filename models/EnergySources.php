@@ -20,6 +20,11 @@ use Yii;
 class EnergySources extends \yii\db\ActiveRecord
 {
     public $architectureAvailability;
+    public $qMax;
+    public $pumpPressureNominal;
+    public $pumpPressureWorkQmax;
+    public $NMax;
+    public $energySourceLinked;
     /**
      * @inheritdoc
      */
@@ -51,7 +56,12 @@ class EnergySources extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Название',
             'energySourceType_id' => 'Тип энергосистемы',
-            'architectureAvailability' => 'Архитектуры'
+            'architectureAvailability' => 'Архитектуры',
+            'qMax' => 'Q max',
+            'pumpPressureNominal' => 'Pнас ном',
+            'pumpPressureWorkQmax' => 'Pнас раб при Qmax',
+            'NMax' => 'N max',
+            'energySourceLinked' => 'Энергопитание',
         ];
     }
 

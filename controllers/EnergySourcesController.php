@@ -2,15 +2,14 @@
 
 namespace app\controllers;
 
-use Yii;
-use yii\helpers\VarDumper;
 use app\models\ArchitecturesNames;
 use app\models\EnergySources;
 use app\models\EnergySourcesSearch;
 use app\models\EnergySourceToArchitecture;
+use Yii;
+use yii\filters\VerbFilter;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 
 /**
  * EnergySourcesController implements the CRUD actions for EnergySources model.
@@ -42,11 +41,32 @@ class EnergySourcesController extends Controller
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         $energySourceToArchitecture = [];
+        $energySourceData = [];
         $energySources = EnergySources::find()->all();
         $architecturesNames = ArchitecturesNames::find()->all();
         foreach ($energySources as $energySource) {
             foreach ($architecturesNames as $architectureName) {
                 $flag = 0; // 0 - Пустое. 1 - Частично заполненное. 2 - Заполненное
+
+                if ($energySource->energySourceType_id == 1) {
+                    $energySourceData[$energySource->id][$architectureName->id]["qMax"] = null;
+                    $energySourceData[$energySource->id][$architectureName->id]["pumpPressureNominal"] = null;
+                    $energySourceData[$energySource->id][$architectureName->id]["pumpPressureWorkQmax"] = null;
+                    $energySourceData[$energySource->id][$architectureName->id]["energySourceLinked_id"] = "&ndash;";
+                    $energySourceData[$energySource->id][$architectureName->id]["NMax"] = "&ndash;";
+                } else if ($energySource->energySourceType_id == 2 || $energySource->energySourceType_id == 3) {
+                    $energySourceData[$energySource->id][$architectureName->id]["qMax"] = null;
+                    $energySourceData[$energySource->id][$architectureName->id]["pumpPressureNominal"] = null;
+                    $energySourceData[$energySource->id][$architectureName->id]["pumpPressureWorkQmax"] = null;
+                    $energySourceData[$energySource->id][$architectureName->id]["energySourceLinked_id"] = null;
+                    $energySourceData[$energySource->id][$architectureName->id]["NMax"] = "&ndash;";
+                } else if ($energySource->energySourceType_id == 4) {
+                    $energySourceData[$energySource->id][$architectureName->id]["qMax"] = "&ndash;";
+                    $energySourceData[$energySource->id][$architectureName->id]["pumpPressureNominal"] = "&ndash;";
+                    $energySourceData[$energySource->id][$architectureName->id]["pumpPressureWorkQmax"] = "&ndash;";
+                    $energySourceData[$energySource->id][$architectureName->id]["energySourceLinked_id"] = "&ndash;";
+                    $energySourceData[$energySource->id][$architectureName->id]["NMax"] = null;
+                }
 
                 $energySourceToArchitectureModel = EnergySourceToArchitecture::find()->where(['energySource_id' => $energySource->id, 'architectureName_id' => $architectureName->id])->one();
                 if ($energySourceToArchitectureModel === null) {
@@ -60,38 +80,89 @@ class EnergySourcesController extends Controller
                     if ($energySource->energySourceType_id == 1) {
                         if ($energySourceToArchitectureModel->qMax === null &&
                             $energySourceToArchitectureModel->pumpPressureNominal === null &&
-                            $energySourceToArchitectureModel->pumpPressureWorkQmax === null)
+                            $energySourceToArchitectureModel->pumpPressureWorkQmax === null) {
                             $flag = 0;
-                        else if ($energySourceToArchitectureModel->qMax === null ||
+                        } else if ($energySourceToArchitectureModel->qMax === null ||
                             $energySourceToArchitectureModel->pumpPressureNominal === null ||
-                            $energySourceToArchitectureModel->pumpPressureWorkQmax === null)
+                            $energySourceToArchitectureModel->pumpPressureWorkQmax === null) {
                             $flag = 1;
-                        else
+
+                            if ($energySourceToArchitectureModel->qMax !== null) {
+                                $energySourceData[$energySource->id][$architectureName->id]["qMax"] = $energySourceToArchitectureModel->qMax;
+                            }
+
+                            if ($energySourceToArchitectureModel->pumpPressureNominal !== null) {
+                                $energySourceData[$energySource->id][$architectureName->id]["pumpPressureNominal"] = $energySourceToArchitectureModel->pumpPressureNominal;
+                            }
+
+                            if ($energySourceToArchitectureModel->pumpPressureWorkQmax !== null) {
+                                $energySourceData[$energySource->id][$architectureName->id]["pumpPressureWorkQmax"] = $energySourceToArchitectureModel->pumpPressureWorkQmax;
+                            }
+                        } else {
                             $flag = 2;
+
+                            $energySourceData[$energySource->id][$architectureName->id]["qMax"] = $energySourceToArchitectureModel->qMax;
+                            $energySourceData[$energySource->id][$architectureName->id]["pumpPressureNominal"] = $energySourceToArchitectureModel->pumpPressureNominal;
+                            $energySourceData[$energySource->id][$architectureName->id]["pumpPressureWorkQmax"] = $energySourceToArchitectureModel->pumpPressureWorkQmax;
+                        }
+
                     } else if ($energySource->energySourceType_id == 2 || $energySource->energySourceType_id == 3) {
                         if ($energySourceToArchitectureModel->qMax === null &&
                             $energySourceToArchitectureModel->pumpPressureNominal === null &&
                             $energySourceToArchitectureModel->pumpPressureWorkQmax === null &&
                             $energySourceToArchitectureModel->energySourceLinked_id === null &&
-                            $energySourceToArchitectureModel->NMax === null)
+                            $energySourceToArchitectureModel->NMax === null) {
                             $flag = 0;
-                        else if ($energySourceToArchitectureModel->qMax === null ||
+                        } else if ($energySourceToArchitectureModel->qMax === null ||
                             $energySourceToArchitectureModel->pumpPressureNominal === null ||
                             $energySourceToArchitectureModel->pumpPressureWorkQmax === null ||
                             $energySourceToArchitectureModel->energySourceLinked_id === null ||
-                            $energySourceToArchitectureModel->NMax === null)
+                            $energySourceToArchitectureModel->NMax === null) {
                             $flag = 1;
-                        else
+
+                            if ($energySourceToArchitectureModel->qMax !== null) {
+                                $energySourceData[$energySource->id][$architectureName->id]["qMax"] = $energySourceToArchitectureModel->qMax;
+                            }
+
+                            if ($energySourceToArchitectureModel->pumpPressureNominal !== null) {
+                                $energySourceData[$energySource->id][$architectureName->id]["pumpPressureNominal"] = $energySourceToArchitectureModel->pumpPressureNominal;
+                            }
+
+                            if ($energySourceToArchitectureModel->pumpPressureWorkQmax !== null) {
+                                $energySourceData[$energySource->id][$architectureName->id]["pumpPressureWorkQmax"] = $energySourceToArchitectureModel->pumpPressureWorkQmax;
+                            }
+
+                            if ($energySourceToArchitectureModel->energySourceLinked_id !== null) {
+                                $energySourceData[$energySource->id][$architectureName->id]["energySourceLinked_id"] = $energySourceToArchitectureModel->energySourceLinked_id;
+                            }
+
+                            //if ($energySourceToArchitectureModel->NMax !== null) {
+                            //    $energySourceData[$energySource->id][$architectureName->id]["NMax"] = $energySourceToArchitectureModel->NMax;
+                            //}
+                        } else {
                             $flag = 2;
+
+                            $energySourceData[$energySource->id][$architectureName->id]["qMax"] = $energySourceToArchitectureModel->qMax;
+                            $energySourceData[$energySource->id][$architectureName->id]["pumpPressureNominal"] = $energySourceToArchitectureModel->pumpPressureNominal;
+                            $energySourceData[$energySource->id][$architectureName->id]["pumpPressureWorkQmax"] = $energySourceToArchitectureModel->pumpPressureWorkQmax;
+                            $energySourceData[$energySource->id][$architectureName->id]["energySourceLinked_id"] = $energySourceToArchitectureModel->energySourceLinked_id;
+                            //$energySourceData[$energySource->id][$architectureName->id]["NMax"] = $energySourceToArchitectureModel->NMax;
+                        }
                     } else if ($energySource->energySourceType_id == 4) {
-                        if ($energySourceToArchitectureModel->energySourceLinked_id === null &&
-                            $energySourceToArchitectureModel->NMax === null)
+                        if ($energySourceToArchitectureModel->NMax === null) {
                             $flag = 0;
-                        else if ($energySourceToArchitectureModel->energySourceLinked_id === null ||
-                            $energySourceToArchitectureModel->NMax === null)
+                        } else if ($energySourceToArchitectureModel->NMax === null) {
                             $flag = 1;
-                        else
+
+                            if ($energySourceToArchitectureModel->NMax !== null) {
+                                $energySourceData[$energySource->id][$architectureName->id]["NMax"] = $energySourceToArchitectureModel->NMax;
+                            }
+                        } else {
                             $flag = 2;
+
+                            $energySourceData[$energySource->id][$architectureName->id]["NMax"] = $energySourceToArchitectureModel->NMax;
+                        }
+
                     }
                 }
 
@@ -104,6 +175,7 @@ class EnergySourcesController extends Controller
             'dataProvider' => $dataProvider,
             'architecturesNames' => $architecturesNames,
             'energySourceToArchitecture' => $energySourceToArchitecture,
+            'energySourceData' => $energySourceData,
         ]);
     }
 
@@ -146,9 +218,11 @@ class EnergySourcesController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
+    public function actionUpdate($id, $architecture_id)
+    { 
+        $energySource = $this->findModel($id);
+        $architectureName = ArchitecturesNames::find()->where(['id'=>$architecture_id])->one();
+        $model = EnergySourceToArchitecture::find()->where(['energySource_id' => $id, 'architectureName_id' => $architecture_id])->one();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             //return $this->redirect(['view', 'id' => $model->id]);
@@ -156,6 +230,8 @@ class EnergySourcesController extends Controller
         }
 
         return $this->render('update', [
+            'energySource' => $energySource,
+            'architectureName' => $architectureName,
             'model' => $model,
         ]);
     }
