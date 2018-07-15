@@ -216,27 +216,42 @@ if ($chartType == 'ENERGYSOURCE_Q') {
     $series = [];
 
     foreach ($selectedArchitectures as $currentArchitectureID) {
+        $tmp = [];
+        $allZeros = true;
         foreach ($flightModeModel as $currentFlightMode) {
             if ($isElectric) {
                 if ($NMax == 0) {
-                    $seriesColumnData[$currentArchitectureID][] = 0;
+                    $value = 0;
                 } else {
-                    $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['N_electric_total'] / $NMax), 1);
+                    $value = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['N_electric_total'] / $NMax), 1);
                 }
             } else {
                 if ($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['QpumpUF1'] == 0) {
-                    $seriesColumnData[$currentArchitectureID][] = 0;
+                    $value = 0;
                 } else {
-                    $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable'] / $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['QpumpUF1']), 1);
+                    $value = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable'] / $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['QpumpUF1']), 1);
                 }
             }
+
+            if ($value != 0) {
+                $allZeros = false;
+            }
+
+            $tmp[] = $value;
         }
-        $series[] = [
-            'type' => 'column',
-            'color' => $chart_data[$currentArchitectureID]['architectureChartColor'],
-            'name' => $chart_data[$currentArchitectureID]['architectureName'],
-            'data' => $seriesColumnData[$currentArchitectureID],
-        ];
+
+        if (!$allZeros) {
+            $seriesColumnData[$currentArchitectureID] = $tmp;
+        }
+
+        if (isset($seriesColumnData[$currentArchitectureID])) {
+            $series[] = [
+                'type' => 'column',
+                'color' => $chart_data[$currentArchitectureID]['architectureChartColor'],
+                'name' => $chart_data[$currentArchitectureID]['architectureName'],
+                'data' => $seriesColumnData[$currentArchitectureID],
+            ];
+        }
     }
 }
 
