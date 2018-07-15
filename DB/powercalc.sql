@@ -277,6 +277,7 @@ CREATE TABLE IF NOT EXISTS `ResultsEnergySources` (
   `N_consumers_in_hydro` double DEFAULT NULL COMMENT 'Nпотр_вх_гс',
   `N_consumers_out` double DEFAULT NULL COMMENT 'Nпотр_вых',
   `N_electric_total` double DEFAULT NULL COMMENT 'Nэс_всего',
+  `N_generator_out` double DEFAULT NULL COMMENT 'Nген_вых',
   `N_takeoff` double DEFAULT NULL COMMENT 'Nотбора',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
