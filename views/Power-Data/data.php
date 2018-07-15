@@ -33,10 +33,7 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
     <?= Html::endForm() ?>
 
     <?php
-    if ($selectedConsumerGroup == 0)
-        $consumers = ArrayHelper::map(app\models\Consumers::find()->orderBy('name')->asArray()->all(), 'id', 'name');
-    else
-        $consumers = ArrayHelper::map(app\models\Consumers::find()->where(['consumerGroup_id' => $selectedConsumerGroup])->orderBy('name')->asArray()->all(), 'id', 'name');
+    $consumers = ArrayHelper::map(app\models\Consumers::find()->orderBy('name')->asArray()->all(), 'id', 'name');
 
     $gridColumns = [
         [

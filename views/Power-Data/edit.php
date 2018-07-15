@@ -16,6 +16,21 @@ echo $this->render('_header_links', ['currentPage' => 'edit', 'vehicleLayoutName
 ?>
 
 <div class="power-data-edit">
+
+    <h3>Выберите группу потребителей для отображения данных по ним:</h3>
+    <?php
+    echo Html::beginForm(['power-data/edit', 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id], 'post', ['class'=>'form-group']);
+    echo Html::hiddenInput('isPost', '1');
+    $items = ArrayHelper::map(app\models\ConsumerGroups::find()->all(), 'id', 'name');
+    array_unshift($items,'Все');
+    echo Html::dropDownList('selected_consumer_group', $selectedConsumerGroup, $items, ['class'=>'form-control', 'style'=>'width:300px;']);
+    ?>
+    <br />
+    <div class="form-group">
+        <?= Html::submitButton('Показать', ['class' => 'btn btn-primary']) ?>
+    </div>
+    <?= Html::endForm() ?>
+
     <?php
     $consumers = ArrayHelper::map(app\models\Consumers::find()->orderBy('name')->asArray()->all(), 'id', 'name');
 
