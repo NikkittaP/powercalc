@@ -835,7 +835,7 @@ class PowerDataController extends Controller
 
             $chart_data['ENERGYSOURCE_Q'][$results->architectureName_id][$results->flightMode_id]['flightModeName'] = $results->flightMode->name;
             $chart_data['ENERGYSOURCE_Q'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qpump'] += $results->Qpump;
-            $chart_data['ENERGYSOURCE_Q'][$results->flightMode_id][$results->energySource_id]['Qdisposable'] = $results->Qdisposable; // А если Энергосистема есть и в базовой и в альтернативной, то какую брать Qраспол!?
+            $chart_data['ENERGYSOURCE_Q'][$results->flightMode_id][$results->energySource_id][$results->architectureName_id]['Qdisposable'] = $results->Qdisposable; // А если Энергосистема есть и в базовой и в альтернативной, то какую брать Qраспол!?
 
             /***************************************************/
 

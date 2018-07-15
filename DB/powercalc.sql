@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `Constants` (
 INSERT INTO `Constants` (`id`, `name`, `value`, `description`) VALUES
 	(1, 'isEfficiencyFixed', '1', 'КПД fix?'),
 	(2, 'chartWidth', '1450', 'Ширина графика'),
-	(3, 'chartHeight', '600', 'Высота графика'),
+	(3, 'chartHeight', '850', 'Высота графика'),
 	(4, 'defaultChartColors', '#2f7ed8,#0d233a,#8bbc21,#910000,#1aadce,#492970,#f28f43,#77a1e5,#c42525,#a6c96a', 'Список стандартных цветов для графиков архитектур');
 /*!40000 ALTER TABLE `Constants` ENABLE KEYS */;
 
