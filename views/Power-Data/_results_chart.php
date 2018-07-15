@@ -37,31 +37,31 @@ if ($chartType == 'TEXT_DATA') {
             <th class="text-center"><h5><b>КПД</b></h5></th>
         </tr>
         <?php
-foreach ($flightModeModel as $currentFlightMode) {
-        $isNewFM = true;
-        foreach ($selectedArchitectures as $currentArchitectureID) {
+        foreach ($flightModeModel as $currentFlightMode) {
+            $isNewFM = true;
+            foreach ($selectedArchitectures as $currentArchitectureID) {
             ?>
                 <tr>
                     <?php
-if ($isNewFM) {
-                ?>
+                    if ($isNewFM) {
+                    ?>
                         <td rowspan="<?=count($selectedArchitectures);?>" width="350"><b><?=$currentFlightMode->name;?></b></td>
                     <?php
-}
-            ?>
+                    }
+                    ?>
                     <td><b><?=$chart_data['DELTA_N'][$currentArchitectureID]['architectureName'];?></b></td>
                     <td><?=$textData['DELTA_N'][$currentFlightMode->id][$currentArchitectureID];?></td>
                     <td><?=$textData['EFFICIENCY'][$currentFlightMode->id][$currentArchitectureID];?></td>
                 </tr>
-        <?php
-$isNewFM = false;
+                <?php
+                $isNewFM = false;
+            }
         }
-    }
-    ?>
+        ?>
         </tbody>
     </table>
     <?php
-return;
+    return;
 }
 
 if ($chartType == 'ENERGYSOURCE_Q') {
@@ -147,20 +147,34 @@ if ($chartType == 'ENERGYSOURCE_Q') {
         if ($chart_data[$currentArchitectureID]['isBasic'] == true) {
             $basicArchitectureID = $currentArchitectureID;
         }
-
     }
 
     foreach ($selectedArchitectures as $currentArchitectureID) {
         if ($currentArchitectureID != $basicArchitectureID) {
+            $tmp = [];
+            $allZeros = true;
             foreach ($flightModeModel as $currentFlightMode) {
-                $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id]['N_takeoff'] - $chart_data[$basicArchitectureID][$currentFlightMode->id]['N_takeoff']), 1);
+                $value = round(($chart_data[$currentArchitectureID][$currentFlightMode->id]['N_takeoff'] - $chart_data[$basicArchitectureID][$currentFlightMode->id]['N_takeoff']), 1);
+
+                if ($value != 0) {
+                    $allZeros = false;
+                }
+
+                $tmp[] = $value;
             }
-            $series[] = [
-                'type' => 'column',
-                'color' => $chart_data[$currentArchitectureID]['architectureChartColor'],
-                'name' => $chart_data[$currentArchitectureID]['architectureName'],
-                'data' => $seriesColumnData[$currentArchitectureID],
-            ];
+
+            if (!$allZeros) {
+                $seriesColumnData[$currentArchitectureID] = $tmp;
+            }
+
+            if (isset($seriesColumnData[$currentArchitectureID])) {
+                $series[] = [
+                    'type' => 'column',
+                    'color' => $chart_data[$currentArchitectureID]['architectureChartColor'],
+                    'name' => $chart_data[$currentArchitectureID]['architectureName'],
+                    'data' => $seriesColumnData[$currentArchitectureID],
+                ];
+            }
         }
     }
 } else if ($chartType == 'EFFICIENCY') {
@@ -170,15 +184,30 @@ if ($chartType == 'ENERGYSOURCE_Q') {
     $series = [];
 
     foreach ($selectedArchitectures as $currentArchitectureID) {
+        $tmp = [];
+        $allZeros = true;
         foreach ($flightModeModel as $currentFlightMode) {
-            $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id]['N_consumers_out'] / $chart_data[$currentArchitectureID][$currentFlightMode->id]['N_takeoff']) * 100, 1);
+            $value = round(($chart_data[$currentArchitectureID][$currentFlightMode->id]['N_consumers_out'] / $chart_data[$currentArchitectureID][$currentFlightMode->id]['N_takeoff']) * 100, 1);
+
+            if ($value != 0) {
+                $allZeros = false;
+            }
+
+            $tmp[] = $value;
         }
-        $series[] = [
-            'type' => 'column',
-            'color' => $chart_data[$currentArchitectureID]['architectureChartColor'],
-            'name' => $chart_data[$currentArchitectureID]['architectureName'],
-            'data' => $seriesColumnData[$currentArchitectureID],
-        ];
+
+        if (!$allZeros) {
+            $seriesColumnData[$currentArchitectureID] = $tmp;
+        }
+
+        if (isset($seriesColumnData[$currentArchitectureID])) {
+            $series[] = [
+                'type' => 'column',
+                'color' => $chart_data[$currentArchitectureID]['architectureChartColor'],
+                'name' => $chart_data[$currentArchitectureID]['architectureName'],
+                'data' => $seriesColumnData[$currentArchitectureID],
+            ];
+        }
     }
 } else if ($chartType == 'SIMULTANEITY_INDEX') {
     $yAxisTitle = 'К_одновременности';
