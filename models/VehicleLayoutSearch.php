@@ -39,9 +39,12 @@ class VehicleLayoutSearch extends VehicleLayout
      *
      * @return ActiveDataProvider
      */
-    public function search($params, $vehicleLayoutName_id)
+    public function search($vehicleLayoutName_id, $selectedConsumerGroup)
     {
-        $query = VehicleLayout::find()->where(['vehicleLayoutName_id'=>$vehicleLayoutName_id])->indexBy('id');
+        if ($selectedConsumerGroup == 0)
+            $query = VehicleLayout::find()->where(['vehicleLayoutName_id' => $vehicleLayoutName_id])->indexBy('id');
+        else
+            $query = VehicleLayout::find()->joinWith('consumer')->where(['vehicleLayoutName_id' => $vehicleLayoutName_id, 'consumerGroup_id' => $selectedConsumerGroup])->indexBy('id');
         
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

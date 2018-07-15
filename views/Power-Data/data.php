@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\VarDumper;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use kartik\grid\GridView;
@@ -16,8 +17,26 @@ echo $this->render('_header_links', ['currentPage' => 'data', 'vehicleLayoutName
 ?>
 
 <div class="power-data-data">
-<?php
-    $consumers = ArrayHelper::map(app\models\Consumers::find()->orderBy('name')->asArray()->all(), 'id', 'name');
+
+    <h3>Выберите группу потребителей для отображения данных по ним:</h3>
+    <?php
+    echo Html::beginForm(['power-data/data', 'vehicleLayoutName_id' => $vehicleLayoutNameModel->id], 'post', ['class'=>'form-group']);
+    echo Html::hiddenInput('isPost', '1');
+    $items = ArrayHelper::map(app\models\ConsumerGroups::find()->all(), 'id', 'name');
+    array_unshift($items,'Все');
+    echo Html::dropDownList('selected_consumer_group', $selectedConsumerGroup, $items, ['class'=>'form-control', 'style'=>'width:300px;']);
+    ?>
+    <br />
+    <div class="form-group">
+        <?= Html::submitButton('Показать', ['class' => 'btn btn-primary']) ?>
+    </div>
+    <?= Html::endForm() ?>
+
+    <?php
+    if ($selectedConsumerGroup == 0)
+        $consumers = ArrayHelper::map(app\models\Consumers::find()->orderBy('name')->asArray()->all(), 'id', 'name');
+    else
+        $consumers = ArrayHelper::map(app\models\Consumers::find()->where(['consumerGroup_id' => $selectedConsumerGroup])->orderBy('name')->asArray()->all(), 'id', 'name');
 
     $gridColumns = [
         [

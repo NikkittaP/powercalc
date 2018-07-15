@@ -538,10 +538,17 @@ class PowerDataController extends Controller
         $vehicleLayoutNameModel = $this->findModelVehicleLayoutNames($vehicleLayoutName_id);
         $usingArchitectures = $this->getUsingArchitectures($vehicleLayoutName_id);
         $usingFlightModes = $this->getUsingFlightModes($vehicleLayoutName_id);
-        $vehicleLayoutModel = new VehicleLayout();
-        $vehicleLayoutModel->attributes();
+
+        $selectedConsumerGroup = 0;
+        $post = \Yii::$app->request->post();
+        if (isset($post['isPost'])) {
+            if (isset($post['selected_consumer_group'])) {
+                $selectedConsumerGroup = (int)$post['selected_consumer_group'];
+            }
+        }
+
         $searchModel = new VehicleLayoutSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $vehicleLayoutName_id);
+        $dataProvider = $searchModel->search($vehicleLayoutName_id, $selectedConsumerGroup);
 
         $architectureToVehicleLayoutModels = ArchitectureToVehicleLayout::find()->all();
         $architectureToVehicleLayouts = [];
@@ -557,11 +564,10 @@ class PowerDataController extends Controller
 
         return $this->render('data', [
             'vehicleLayoutNameModel' => $vehicleLayoutNameModel,
-            'vehicleLayoutModel' => $vehicleLayoutModel,
-            'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
             'usingArchitectures' => $usingArchitectures,
             'usingFlightModes' => $usingFlightModes,
+            'selectedConsumerGroup' => $selectedConsumerGroup,
             'architectureToVehicleLayouts' => $architectureToVehicleLayouts,
             'flightModesToVehicleLayouts' => $flightModesToVehicleLayouts,
         ]);
