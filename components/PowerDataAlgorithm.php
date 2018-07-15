@@ -106,6 +106,7 @@ class PowerDataAlgorithm extends Component
                         'N_consumers_in_hydro' => $N_consumers_in_hydro,    // Nпотр_вх_гс
                         'N_consumers_out' => $N_consumers_out,              // Nпотр_вых
                         'N_electric_total' => $N_electric_total,            // Nэс_всего
+                        'N_generator_out' => $N_generator_out,              // Nген_вых
                         'N_takeoff' => $N_takeoff,                          // Nотбора
                     ]
                 ]
@@ -373,6 +374,13 @@ class PowerDataAlgorithm extends Component
     }
 
 /* [8] */
+    /* [8] Архитектура -> Nген_вых */
+    public function calcArchitectureN_generator_out($energySourceID, $architectureID, $flightModeID)
+    {
+        $N_generator_out = $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_electric_total'] / $this->constants['efficiencyCables'];
+
+        $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['N_generator_out'] = $N_generator_out;
+    }
     /* [8] Архитектура -> Nотбора */
         public function calcArchitectureN_takeoff($energySourceID, $architectureID, $flightModeID)
         {
@@ -471,6 +479,10 @@ class PowerDataAlgorithm extends Component
                         $this->calcArchitectureN_electric_total($energySourceID, $architectureID, $flightModeID);
 
                 /* [8] -------------------------------------------------------- */
+                foreach ($this->energySources as $energySourceID => $energySourceData)
+                if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID, false))
+                    $this->calcArchitectureN_generator_out($energySourceID, $architectureID, $flightModeID);
+                
                 foreach ($this->energySources as $energySourceID => $energySourceData)
                     if ($this->isEnergySourceCorrespondToArchitecture($architectureID, $energySourceID, false))
                         $this->calcArchitectureN_takeoff($energySourceID, $architectureID, $flightModeID);

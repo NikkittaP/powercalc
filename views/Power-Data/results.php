@@ -10,13 +10,13 @@ use kartik\grid\GridView;
 use kartik\widgets\ActiveForm;
 
 use app\models\ArchitecturesNames;
+use app\models\EnergySourceToArchitecture;
 use app\models\ResultsConsumers;
 use app\models\ResultsEnergySources;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\VehiclesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
-
 
 $script = <<< JS
     function resizeChart(chart_id, width, height) {
@@ -127,6 +127,23 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
         $items = [];
         foreach ($energySourcesModel as $currentEnergySource) {
             if (in_array($currentEnergySource->id, $usedEnergySourcesInSelectedArchitectures)) {
+                $NMax = [];
+                if ($currentEnergySource->energySourceType_id == 4)
+                {
+                    $architectureNamesModels = ArchitecturesNames::find()
+                    ->where([
+                        'vehicleLayoutName_id' => $vehicleLayoutNameModel->id,
+                        'id' => array_values($selectedArchitectures)
+                    ])->all();
+                    foreach ($architectureNamesModels as $architectureNamesModel) {
+                        $NMax[$architectureNamesModel->id] = EnergySourceToArchitecture::find()
+                        ->where([
+                            'energySource_id' => $currentEnergySource->id,
+                            'architectureName_id' => $architectureNamesModel->id
+                        ])->one()->NMax;
+                    }
+                }
+
                 $items[] = [
                     'label' => $currentEnergySource->name,
                     'content' => $this->render('_results_chart', [
@@ -138,7 +155,7 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
                         'selectedArchitectures' => $selectedArchitectures,
                         'energySourceID' => $currentEnergySource->id,
                         'isElectric' => ($currentEnergySource->energySourceType_id == 4) ? true : false,
-                        'NMax' => $currentEnergySource->NMax,
+                        'NMax' => $NMax,
                     ]),
                 ];
             }

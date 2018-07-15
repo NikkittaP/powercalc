@@ -868,12 +868,12 @@ class PowerDataController extends Controller
                 $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['QpumpUF1'] = 0.0;
             if (!isset($chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qdisposable']))
                 $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qdisposable'] = 0.0;
-            if (!isset($chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['N_electric_total']))
-                $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['N_electric_total'] = 0.0;
+            if (!isset($chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['N_generator_out']))
+                $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['N_generator_out'] = 0.0;
 
-            $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['QpumpUF1'] += $results->QpumpUF1;
-            $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qdisposable'] += $results->Qdisposable;
-            $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['N_electric_total'] += $results->N_electric_total;
+            $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['QpumpUF1'] = $results->QpumpUF1;
+            $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['Qdisposable'] = $results->Qdisposable;
+            $chart_data['SIMULTANEITY_INDEX'][$results->architectureName_id][$results->flightMode_id][$results->energySource_id]['N_generator_out'] = $results->N_generator_out;
         }
 
         return $this->render('results', [
@@ -974,6 +974,7 @@ class PowerDataController extends Controller
                     $resultsEnergySourcesModel->N_consumers_in_hydro = $data['N_consumers_in_hydro'];
                     $resultsEnergySourcesModel->N_consumers_out = $data['N_consumers_out'];
                     $resultsEnergySourcesModel->N_electric_total = $data['N_electric_total'];
+                    $resultsEnergySourcesModel->N_generator_out = $data['N_generator_out'];
                     $resultsEnergySourcesModel->N_takeoff = $data['N_takeoff'];
 
                     $resultsEnergySourcesModel->save();

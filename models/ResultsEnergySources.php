@@ -22,6 +22,7 @@ use Yii;
  * @property double $N_consumers_in_hydro Nпотр_вх_гс
  * @property double $N_consumers_out Nпотр_вых
  * @property double $N_electric_total Nэс_всего
+ * @property double $N_generator_out Nген_вых
  * @property double $N_takeoff Nотбора
  *
  * @property ArchitecturesNames $architectureName
@@ -47,7 +48,7 @@ class ResultsEnergySources extends \yii\db\ActiveRecord
         return [
             [['vehicleLayoutName_id', 'architectureName_id', 'flightMode_id', 'energySource_id'], 'required'],
             [['vehicleLayoutName_id', 'architectureName_id', 'flightMode_id', 'energySource_id'], 'integer'],
-            [['Qpump', 'QpumpUF1', 'Qdisposable', 'P_pump_out', 'Q_curr_to_Q_max', 'N_pump_out', 'N_pump_in', 'N_consumers_in_hydro', 'N_consumers_out', 'N_electric_total', 'N_takeoff'], 'number'],
+            [['Qpump', 'QpumpUF1', 'Qdisposable', 'P_pump_out', 'Q_curr_to_Q_max', 'N_pump_out', 'N_pump_in', 'N_consumers_in_hydro', 'N_consumers_out', 'N_electric_total', 'N_generator_out', 'N_takeoff'], 'number'],
             [['architectureName_id'], 'exist', 'skipOnError' => true, 'targetClass' => ArchitecturesNames::className(), 'targetAttribute' => ['architectureName_id' => 'id']],
             [['energySource_id'], 'exist', 'skipOnError' => true, 'targetClass' => EnergySources::className(), 'targetAttribute' => ['energySource_id' => 'id']],
             [['flightMode_id'], 'exist', 'skipOnError' => true, 'targetClass' => FlightModes::className(), 'targetAttribute' => ['flightMode_id' => 'id']],
@@ -76,6 +77,7 @@ class ResultsEnergySources extends \yii\db\ActiveRecord
             'N_consumers_in_hydro' => 'Nпотр_вх_гс',
             'N_consumers_out' => 'Nпотр_вых',
             'N_electric_total' => 'Nэс_всего',
+            'N_generator_out' => 'Nген_вых',
             'N_takeoff' => 'Nотбора',
         ];
     }

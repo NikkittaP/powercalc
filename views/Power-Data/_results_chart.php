@@ -37,31 +37,31 @@ if ($chartType == 'TEXT_DATA') {
             <th class="text-center"><h5><b>КПД</b></h5></th>
         </tr>
         <?php
-        foreach ($flightModeModel as $currentFlightMode) {
-            $isNewFM = true;
-            foreach ($selectedArchitectures as $currentArchitectureID) {
+foreach ($flightModeModel as $currentFlightMode) {
+        $isNewFM = true;
+        foreach ($selectedArchitectures as $currentArchitectureID) {
             ?>
                 <tr>
                     <?php
-                    if ($isNewFM) {
-                    ?>
+if ($isNewFM) {
+                ?>
                         <td rowspan="<?=count($selectedArchitectures);?>" width="350"><b><?=$currentFlightMode->name;?></b></td>
                     <?php
-                    }
-                    ?>
+}
+            ?>
                     <td><b><?=$chart_data['DELTA_N'][$currentArchitectureID]['architectureName'];?></b></td>
                     <td><?=$textData['DELTA_N'][$currentFlightMode->id][$currentArchitectureID];?></td>
                     <td><?=$textData['EFFICIENCY'][$currentFlightMode->id][$currentArchitectureID];?></td>
                 </tr>
                 <?php
-                $isNewFM = false;
-            }
+$isNewFM = false;
         }
-        ?>
+    }
+    ?>
         </tbody>
     </table>
     <?php
-    return;
+return;
 }
 
 if ($chartType == 'ENERGYSOURCE_Q') {
@@ -220,16 +220,22 @@ if ($chartType == 'ENERGYSOURCE_Q') {
         $allZeros = true;
         foreach ($flightModeModel as $currentFlightMode) {
             if ($isElectric) {
-                if ($NMax == 0) {
+                if ($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['N_generator_out'] == 0) {
                     $value = 0;
                 } else {
-                    $value = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['N_electric_total'] / $NMax), 1);
+                    $value = round(($NMax[$currentArchitectureID] / $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['N_generator_out']), 1);
+                    if ($value > 1) {
+                        $value = 1;
+                    }
                 }
             } else {
                 if ($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['QpumpUF1'] == 0) {
                     $value = 0;
                 } else {
                     $value = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable'] / $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['QpumpUF1']), 1);
+                    if ($value > 1) {
+                        $value = 1;
+                    }
                 }
             }
 
@@ -266,7 +272,7 @@ $chartWidth = (app\models\Constants::getValue('chartWidth') == null) ? 900 : app
 Resizable::begin([
     'clientEvents' => [
         'resize' => 'function( event, ui ) {
-            resizeChart("#resultsChart_'.$id.'", this.offsetWidth, this.offsetHeight);
+            resizeChart("#resultsChart_' . $id . '", this.offsetWidth, this.offsetHeight);
           }',
     ],
     'clientOptions' => [
@@ -281,7 +287,7 @@ Resizable::begin([
 
 echo Highcharts::widget([
     'htmlOptions' => [
-        'id' => 'resultsChart_'.$id,
+        'id' => 'resultsChart_' . $id,
     ],
     'scripts' => [
         'modules/exporting',
@@ -293,7 +299,7 @@ echo Highcharts::widget([
             'height' => $chartHeight,
             'width' => $chartWidth,
             'style' => [
-            //'fontFamily' => 'Arial',
+                //'fontFamily' => 'Arial',
             ],
         ],
         'title' => ['text' => $title],
