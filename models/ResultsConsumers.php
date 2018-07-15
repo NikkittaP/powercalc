@@ -13,6 +13,7 @@ use Yii;
  * @property int $flightMode_id
  * @property int $consumer_id
  * @property double $consumption Расход
+ * @property double $consumptionUF1 Расход при UsageFactor=1 для расчета K одновременности
  * @property double $P_in Pin
  * @property double $N_in_hydro Nin_гс
  * @property double $N_out Nвых
@@ -41,7 +42,7 @@ class ResultsConsumers extends \yii\db\ActiveRecord
         return [
             [['vehicleLayoutName_id', 'architectureName_id', 'flightMode_id', 'consumer_id'], 'required'],
             [['vehicleLayoutName_id', 'architectureName_id', 'flightMode_id', 'consumer_id'], 'integer'],
-            [['consumption', 'P_in', 'N_in_hydro', 'N_out', 'N_in_electric'], 'number'],
+            [['consumption', 'consumptionUF1', 'P_in', 'N_in_hydro', 'N_out', 'N_in_electric'], 'number'],
             [['architectureName_id'], 'exist', 'skipOnError' => true, 'targetClass' => ArchitecturesNames::className(), 'targetAttribute' => ['architectureName_id' => 'id']],
             [['consumer_id'], 'exist', 'skipOnError' => true, 'targetClass' => Consumers::className(), 'targetAttribute' => ['consumer_id' => 'id']],
             [['flightMode_id'], 'exist', 'skipOnError' => true, 'targetClass' => FlightModes::className(), 'targetAttribute' => ['flightMode_id' => 'id']],
@@ -61,6 +62,7 @@ class ResultsConsumers extends \yii\db\ActiveRecord
             'flightMode_id' => 'Режим полета',
             'consumer_id' => 'Потребитель',
             'consumption' => 'Расход',
+            'consumptionUF1' => 'Расход при UF=1',
             'P_in' => 'Pin',
             'N_in_hydro' => 'Nin_гс',
             'N_out' => 'Nвых',

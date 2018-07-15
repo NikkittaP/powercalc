@@ -13,6 +13,7 @@ use Yii;
  * @property int $flightMode_id
  * @property int $energySource_id
  * @property double $Qpump Q нас
+ * @property double $QpumpUF1 Q нас при UsageFactor=1 для расчета K одновременности
  * @property double $Qdisposable Q распол
  * @property double $P_pump_out P нас вых
  * @property double $Q_curr_to_Q_max Qтек/Qmax
@@ -46,7 +47,7 @@ class ResultsEnergySources extends \yii\db\ActiveRecord
         return [
             [['vehicleLayoutName_id', 'architectureName_id', 'flightMode_id', 'energySource_id'], 'required'],
             [['vehicleLayoutName_id', 'architectureName_id', 'flightMode_id', 'energySource_id'], 'integer'],
-            [['Qpump', 'Qdisposable', 'P_pump_out', 'Q_curr_to_Q_max', 'N_pump_out', 'N_pump_in', 'N_consumers_in_hydro', 'N_consumers_out', 'N_electric_total', 'N_takeoff'], 'number'],
+            [['Qpump', 'QpumpUF1', 'Qdisposable', 'P_pump_out', 'Q_curr_to_Q_max', 'N_pump_out', 'N_pump_in', 'N_consumers_in_hydro', 'N_consumers_out', 'N_electric_total', 'N_takeoff'], 'number'],
             [['architectureName_id'], 'exist', 'skipOnError' => true, 'targetClass' => ArchitecturesNames::className(), 'targetAttribute' => ['architectureName_id' => 'id']],
             [['energySource_id'], 'exist', 'skipOnError' => true, 'targetClass' => EnergySources::className(), 'targetAttribute' => ['energySource_id' => 'id']],
             [['flightMode_id'], 'exist', 'skipOnError' => true, 'targetClass' => FlightModes::className(), 'targetAttribute' => ['flightMode_id' => 'id']],
@@ -66,6 +67,7 @@ class ResultsEnergySources extends \yii\db\ActiveRecord
             'flightMode_id' => 'Flight Mode ID',
             'energySource_id' => 'Энергосистема',
             'Qpump' => 'Q нас',
+            'QpumpUF1' => 'Q нас при UF=1',
             'Qdisposable' => 'Q распол',
             'P_pump_out' => 'P нас вых',
             'Q_curr_to_Q_max' => 'Qтек/Qmax',

@@ -223,14 +223,12 @@ if ($chartType == 'ENERGYSOURCE_Q') {
                 } else {
                     $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['N_electric_total'] / $NMax), 1);
                 }
-
             } else {
-                if ($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable'] == 0) {
+                if ($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['QpumpUF1'] == 0) {
                     $seriesColumnData[$currentArchitectureID][] = 0;
                 } else {
-                    $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qpump'] / $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable']), 1);
+                    $seriesColumnData[$currentArchitectureID][] = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable'] / $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['QpumpUF1']), 1);
                 }
-
             }
         }
         $series[] = [
@@ -253,7 +251,7 @@ $chartWidth = (app\models\Constants::getValue('chartWidth') == null) ? 900 : app
 Resizable::begin([
     'clientEvents' => [
         'resize' => 'function( event, ui ) {
-            resizeChart(this.offsetWidth, this.offsetHeight);
+            resizeChart("#resultsChart_'.$id.'", this.offsetWidth, this.offsetHeight);
           }',
     ],
     'clientOptions' => [
@@ -267,18 +265,20 @@ Resizable::begin([
 ]);
 
 echo Highcharts::widget([
+    'htmlOptions' => [
+        'id' => 'resultsChart_'.$id,
+    ],
     'scripts' => [
         'modules/exporting',
         'themes/avocado',
     ],
     'options' => [
-        'id' => 'results_chart',
         'credits' => ['enabled' => false],
         'chart' => [
             'height' => $chartHeight,
             'width' => $chartWidth,
             'style' => [
-                //'fontFamily' => 'Arial',
+            //'fontFamily' => 'Arial',
             ],
         ],
         'title' => ['text' => $title],
@@ -299,23 +299,4 @@ echo Highcharts::widget([
 ]);
 
 Resizable::end();
-
-?>
-
-<div id="sizeLabel"></div><br />
-
-<?php
-
-$script = <<< JS
-
-    function resizeChart(width, height) {
-        var chart = $('#w1').highcharts();
-        chart.setSize(width, height, false);
-        document.getElementById("sizeLabel").innerHTML = "Размеры графика: "+width+"x"+height;
-    }
-
-JS;
-
-$this->registerJs($script, yii\web\View::POS_HEAD);
-
 ?>

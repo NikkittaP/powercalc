@@ -238,6 +238,7 @@ CREATE TABLE IF NOT EXISTS `ResultsConsumers` (
   `flightMode_id` int(10) unsigned NOT NULL,
   `consumer_id` int(10) unsigned NOT NULL,
   `consumption` double DEFAULT NULL COMMENT 'Расход',
+  `consumptionUF1` double DEFAULT NULL COMMENT 'Расход при UsageFactor=1 для расчета K одновременности',
   `P_in` double DEFAULT NULL COMMENT 'Pin',
   `N_in_hydro` double DEFAULT NULL COMMENT 'Nin_гс',
   `N_out` double DEFAULT NULL COMMENT 'Nвых',
@@ -267,6 +268,7 @@ CREATE TABLE IF NOT EXISTS `ResultsEnergySources` (
   `flightMode_id` int(10) unsigned NOT NULL,
   `energySource_id` int(10) unsigned NOT NULL,
   `Qpump` double DEFAULT NULL COMMENT 'Q нас',
+  `QpumpUF1` double DEFAULT NULL COMMENT 'Q нас при UsageFactor=1 для расчета K одновременности',
   `Qdisposable` double DEFAULT NULL COMMENT 'Q распол',
   `P_pump_out` double DEFAULT NULL COMMENT 'P нас вых',
   `Q_curr_to_Q_max` double DEFAULT NULL COMMENT 'Qтек/Qmax',
@@ -320,7 +322,7 @@ CREATE TABLE IF NOT EXISTS `Vehicles` (
   UNIQUE KEY `name_UNIQUE` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.Vehicles: ~1 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.Vehicles: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `Vehicles` DISABLE KEYS */;
 INSERT INTO `Vehicles` (`id`, `name`) VALUES
 	(1, 'Ил-96-300');
@@ -340,7 +342,7 @@ CREATE TABLE IF NOT EXISTS `VehiclesLayoutsNames` (
   CONSTRAINT `FK_VehiclesLayoutsNames_Vehicles` FOREIGN KEY (`vehicle_id`) REFERENCES `Vehicles` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.VehiclesLayoutsNames: ~1 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.VehiclesLayoutsNames: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `VehiclesLayoutsNames` DISABLE KEYS */;
 INSERT INTO `VehiclesLayoutsNames` (`id`, `vehicle_id`, `name`, `usingArchitectures`, `usingFlightModes`) VALUES
 	(1, 1, 'Базовая компоновка', NULL, NULL);

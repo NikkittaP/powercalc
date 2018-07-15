@@ -17,6 +17,19 @@ use app\models\ResultsEnergySources;
 /* @var $searchModel app\models\VehiclesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
+
+$script = <<< JS
+    function resizeChart(chart_id, width, height) {
+        var chart = $(chart_id).highcharts();
+        $(chart_id).width(width);
+        $(chart_id).height(height);
+        chart.setSize(width, height, false);
+        document.getElementById("sizeLabel").innerHTML = "Размеры графика: "+width+"x"+height;
+    }
+JS;
+$this->registerJs($script, yii\web\View::POS_HEAD);
+
+
 $this->title = 'Результаты расчёта для компоновки "' . $vehicleLayoutNameModel->vehicle->name . ': ' . $vehicleLayoutNameModel->name . '"';
 $this->params['breadcrumbs'][] = $this->title;
 
@@ -58,6 +71,7 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
                 $items[] = [
                     'label' => $currentEnergySource->name,
                     'content' => $this->render('_results_chart', [
+                        'id' => 'ENERGYSOURCE_Q'.count($items),
                         'chartType' => 'ENERGYSOURCE_Q',
                         'title' => 'Сравнение потребления архитектур для энергосистемы <b>' . $currentEnergySource->name . '</b>',
                         'chart_data' => $chart_data['ENERGYSOURCE_Q'],
@@ -78,6 +92,7 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
         $items[] = [
             'label' => 'ΔN_отбора',
             'content' => $this->render('_results_chart', [
+                'id' => 'DELTA_N'.count($items),
                 'chartType' => 'DELTA_N',
                 'title' => 'ΔN_отбора по архитектурам',
                 'chart_data' => $chart_data['DELTA_N'],
@@ -95,6 +110,7 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
         $items[] = [
             'label' => 'КПД',
             'content' => $this->render('_results_chart', [
+                'id' => 'EFFICIENCY'.count($items),
                 'chartType' => 'EFFICIENCY',
                 'title' => 'КПД по архитектурам',
                 'chart_data' => $chart_data['EFFICIENCY'],
@@ -114,6 +130,7 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
                 $items[] = [
                     'label' => $currentEnergySource->name,
                     'content' => $this->render('_results_chart', [
+                        'id' => 'SIMULTANEITY_INDEX'.count($items),
                         'chartType' => 'SIMULTANEITY_INDEX',
                         'title' => ($currentEnergySource->energySourceType_id == 4) ? 'К_одновременности (реализуемый) для электросистемы '.$currentEnergySource->name : 'К_одновременности (реализуемый) для гидросистемы '.$currentEnergySource->name,
                         'chart_data' => $chart_data['SIMULTANEITY_INDEX'],
@@ -132,7 +149,11 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
         ];
 
         echo Tabs::widget(['items' => $items_root]);
+?>
 
+        <div id="sizeLabel"></div>
+
+<?php
         // Текстовые данные в виде таблицы
         echo Collapse::widget([
            'items' => [

@@ -83,6 +83,7 @@ class PowerDataAlgorithm extends Component
                 $architectureID => [
                     $flightModeID => [
                         'consumption' => $consumption,          // Расход
+                        'consumptionUF1' => $consumptionUF1,    // Расход при UsageFactor=1 для расчета K одновременности
                         'P_in' => $P_in,                        // Pin
                         'N_in_hydro' => $N_in_hydro,            // Nin_гс
                         'N_out' => $N_out,                      // Nвых
@@ -96,6 +97,7 @@ class PowerDataAlgorithm extends Component
                 $architectureID => [
                     $flightModeID => [
                         'Qpump' => $Qpump,                                  // Q нас
+                        'QpumpUF1' => $QpumpUF1,                            // Q нас при UsageFactor=1 для расчета K одновременности
                         'Qdisposable' => $Qdisposable,                      // Q распол
                         'P_pump_out' => $P_pump_out,                        // P нас вых
                         'Q_curr_to_Q_max' => $Q_curr_to_Q_max,              // Qтек/Qmax
@@ -174,14 +176,22 @@ class PowerDataAlgorithm extends Component
             if ($consumer['usageFactorPerFlightMode'][$flightModeID]==0)
             {
                 if ($energySourceBasicType == 4) // Электросистема
+                {
                     $consumption = 0;
+                    $consumptionUF1 = 0;
+                }
                 else
+                {
                     $consumption = $consumer['q0'] * $this->constants['useQ0'];
+                    $consumptionUF1 = $consumer['q0'] * $this->constants['useQ0'];
+                }
             } else {
                 $consumption = $consumer['usageFactorPerFlightMode'][$flightModeID] * $consumer['qMax'];
+                $consumptionUF1 = 1.0 * $consumer['qMax'];
             }
             
             $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['consumption'] = $consumption;
+            $this->results['consumers'][$consumerID][$architectureID][$flightModeID]['consumptionUF1'] = $consumptionUF1;
         }
 
  /* [1] */
@@ -189,13 +199,18 @@ class PowerDataAlgorithm extends Component
         public function calcArchitectureQpump($energySourceID, $architectureID, $flightModeID)
         {
             $Qpump = 0;
+            $QpumpUF1 = 0;
 
             foreach ($this->results['consumers'] as $consumerID => $results) {
                 if ($this->consumers[$consumerID]['energySourcePerArchitecture'][$architectureID]==$energySourceID)
                     $Qpump += $results[$this->architectureBasicID][$flightModeID]['consumption'];
+                
+                if ($this->consumers[$consumerID]['energySourcePerArchitecture'][$architectureID]==$energySourceID)
+                    $QpumpUF1 += $results[$this->architectureBasicID][$flightModeID]['consumptionUF1'];
             }
 
             $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['Qpump'] = $Qpump;
+            $this->results['energySources'][$energySourceID][$architectureID][$flightModeID]['QpumpUF1'] = $QpumpUF1;
         }
     /* [1] Архитектура -> Q распол */
         public function calcArchitectureQdisposable($energySourceID, $architectureID, $flightModeID)
