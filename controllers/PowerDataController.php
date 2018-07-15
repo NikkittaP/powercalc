@@ -182,7 +182,6 @@ class PowerDataController extends Controller
                                         $consumer['aircraftPart'] = $data;
 
                                         break;
-
                                     case 'G':
                                         $_exists = false;
                                         foreach ($importData['consumerGroups'] as $key => $CG) {
