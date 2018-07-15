@@ -14,6 +14,7 @@ use \app\models\AircraftParts;
 use \app\models\ArchitecturesNames;
 use \app\models\ArchitectureToVehicleLayout;
 use \app\models\Constants;
+use \app\models\ConsumerGroups;
 use \app\models\EnergySources;
 use \app\models\EnergySourceToArchitecture;
 use \app\models\PumpEfficiency;
@@ -75,7 +76,8 @@ class PowerDataController extends Controller
             $importData = [];
             $importData['energySources'] = [];
             $importData['aircraftParts'] = [];
-            $architectureStartLetter = 'H';
+            $importData['consumerGroups'] = [];
+            $architectureStartLetter = 'I';
             $architectureEndLetter;
             $flightModeStartLetter = 'A';
             $flightModeEndLetter;
@@ -91,8 +93,9 @@ class PowerDataController extends Controller
                     C - КПД электро
                     D - Qпотр
                     E - Q0
-                    F - Часть аппарата
-                    G - пусто. Разделитель
+                    F - Зона аппарата
+                    G - Группа потребителей
+                    H - пусто. Разделитель
                     ... - архитектуры
                     ... - пусто. Разделитель
                     ... - режимы полёта
@@ -180,6 +183,22 @@ class PowerDataController extends Controller
 
                                         break;
 
+                                    case 'G':
+                                        $_exists = false;
+                                        foreach ($importData['consumerGroups'] as $key => $CG) {
+                                            if ($CG['name'] == $data) {
+                                                $_exists = true;
+                                                break;
+                                            }
+                                        }
+
+                                        if (!$_exists)
+                                            $importData['consumerGroups'][]['name'] = $data;
+
+                                        $consumer['consumerGroups'] = $data;
+
+                                        break;
+
                                     default:
                                         if ($architectureStarts)
                                             $consumer['energySourcesToArchitectures'][] = ($data === '-') ? null : $data;
@@ -240,6 +259,7 @@ class PowerDataController extends Controller
             $skippedData['flightModes'] = [];
             //$skippedData['energySources'] = []; Отключил
             $skippedData['aircraftParts'] = [];
+            $skippedData['consumerGroups'] = [];
             $skippedData['consumers'] = [];
             $skippedData['vehicleLayout'] = [];
 
@@ -320,10 +340,29 @@ class PowerDataController extends Controller
                 $importData['aircraftParts'][$key]['db_id'] = $aircraftPartsModel->id;
             }
 
+            foreach ($importData['consumerGroups'] as $key => $value) {
+                $consumerGroupsModel = ConsumerGroups::find()->where(['name' => $value['name']])->one();
+                if ($consumerGroupsModel === null) {
+                    $consumerGroupsModel = new ConsumerGroups();
+                    $consumerGroupsModel->name = $value['name'];
+                    $consumerGroupsModel->save();
+                } else
+                    $skippedData['consumerGroups'][] = $value['name'];
+
+                $importData['consumerGroups'][$key]['db_id'] = $consumerGroupsModel->id;
+            }
+
             foreach ($importData['consumers'] as $consumer) {
                 foreach ($importData['aircraftParts'] as $AP) {
                     if ($AP['name'] == $consumer['aircraftPart']) {
                         $aircraftPartsID = $AP['db_id'];
+                        break;
+                    }
+                }
+
+                foreach ($importData['consumerGroups'] as $CG) {
+                    if ($CG['name'] == $consumer['consumerGroups']) {
+                        $consumerGroupsID = $CG['db_id'];
                         break;
                     }
                 }
@@ -333,6 +372,7 @@ class PowerDataController extends Controller
                     $consumerModel = new Consumers();
                     $consumerModel->name = $consumer['name'];
                     $consumerModel->aircraftPart_id = $aircraftPartsID;
+                    $consumerModel->consumerGroup_id = $consumerGroupsID;
                     $consumerModel->efficiencyHydro = $consumer['efficiencyHydro'];
                     $consumerModel->efficiencyElectric = $consumer['efficiencyElectric'];
                     $consumerModel->q0 = $consumer['q0'];

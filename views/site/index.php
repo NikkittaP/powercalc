@@ -3,6 +3,7 @@
 /* @var $this yii\web\View */
 
 use \app\models\AircraftParts;
+use \app\models\ConsumerGroups;
 use \app\models\ArchitecturesNames;
 use \app\models\Consumers;
 use \app\models\EnergySources;
@@ -235,7 +236,31 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4">
+            <div class="col-lg-2">
+                <div class="panel panel-primary">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">
+                            <?= Html::a('Группы потребителей', ['consumer-groups/index']) ?>
+                        </h3>
+                    </div>
+
+                    <div class="panel-body" style="padding:0px;">
+                        <table class="table table-striped">
+
+                            <?php
+                            $consumerGroups = ConsumerGroups::find()->all();
+                            foreach ($consumerGroups as $consumerGroup)
+                            {
+                                echo '<tr><td>';
+                                echo Html::a($consumerGroup->name, ['consumer-groups/view', 'id' => $consumerGroup->id]);
+                                echo ' </td></tr>';
+                            }
+                            ?>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
                         <h3 class="panel-title">

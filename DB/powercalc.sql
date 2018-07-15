@@ -89,12 +89,30 @@ INSERT INTO `Constants` (`id`, `name`, `value`, `description`) VALUES
 	(4, 'defaultChartColors', '#2f7ed8,#0d233a,#8bbc21,#910000,#1aadce,#492970,#f28f43,#77a1e5,#c42525,#a6c96a', 'Список стандартных цветов для графиков архитектур');
 /*!40000 ALTER TABLE `Constants` ENABLE KEYS */;
 
+-- Дамп структуры для таблица PowerDistributionData.ConsumerGroups
+DROP TABLE IF EXISTS `ConsumerGroups`;
+CREATE TABLE IF NOT EXISTS `ConsumerGroups` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL COMMENT 'Название группы потребителей',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Индекс 2` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+
+-- Дамп данных таблицы PowerDistributionData.ConsumerGroups: ~3 rows (приблизительно)
+/*!40000 ALTER TABLE `ConsumerGroups` DISABLE KEYS */;
+INSERT INTO `ConsumerGroups` (`id`, `name`) VALUES
+	(1, 'Механизация'),
+	(2, 'Система приводов'),
+	(3, 'Двигатель');
+/*!40000 ALTER TABLE `ConsumerGroups` ENABLE KEYS */;
+
 -- Дамп структуры для таблица PowerDistributionData.Consumers
 DROP TABLE IF EXISTS `Consumers`;
 CREATE TABLE IF NOT EXISTS `Consumers` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(255) DEFAULT NULL COMMENT 'Название потребителя ["Закрылки лев."]',
   `aircraftPart_id` int(10) unsigned DEFAULT NULL,
+  `consumerGroup_id` int(10) unsigned DEFAULT NULL,
   `efficiencyHydro` float unsigned NOT NULL COMMENT 'КПД гидро',
   `efficiencyElectric` float unsigned NOT NULL COMMENT 'КПД электро',
   `q0` float unsigned NOT NULL COMMENT 'Q0',
@@ -102,7 +120,9 @@ CREATE TABLE IF NOT EXISTS `Consumers` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`),
   KEY `FK_Consumers_AircraftParts` (`aircraftPart_id`),
-  CONSTRAINT `FK_Consumers_AircraftParts` FOREIGN KEY (`aircraftPart_id`) REFERENCES `AircraftParts` (`id`)
+  KEY `FK_Consumers_ConsumerGroups` (`consumerGroup_id`),
+  CONSTRAINT `FK_Consumers_AircraftParts` FOREIGN KEY (`aircraftPart_id`) REFERENCES `AircraftParts` (`id`),
+  CONSTRAINT `FK_Consumers_ConsumerGroups` FOREIGN KEY (`consumerGroup_id`) REFERENCES `ConsumerGroups` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- Дамп данных таблицы PowerDistributionData.Consumers: ~0 rows (приблизительно)

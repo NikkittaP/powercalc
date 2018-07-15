@@ -9,7 +9,8 @@ use Yii;
  *
  * @property string $id
  * @property string $name Название потребителя ["Закрылки лев."]
- * @property string $aircraftPart_id
+ * @property int $aircraftPart_id
+ * @property int $consumerGroup_id
  * @property double $efficiencyHydro КПД гидро
  * @property double $efficiencyElectric КПД электро
  * @property double $q0 Q0
@@ -34,7 +35,7 @@ class Consumers extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['aircraftPart_id'], 'integer'],
+            [['aircraftPart_id', 'consumerGroup_id'], 'integer'],
             [['efficiencyHydro', 'efficiencyElectric', 'q0', 'qMax'], 'required'],
             [['efficiencyHydro', 'efficiencyElectric', 'q0', 'qMax'], 'number'],
             [['name'], 'string', 'max' => 255],
@@ -50,7 +51,8 @@ class Consumers extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'name' => 'Название',
-            'aircraftPart_id' => 'Часть аппарата',
+            'aircraftPart_id' => 'Зона аппарата',
+            'consumerGroup_id' => 'Группа потребителей',
             'efficiencyHydro' => 'КПД гидро',
             'efficiencyElectric' => 'КПД электро',
             'q0' => 'Q0',
