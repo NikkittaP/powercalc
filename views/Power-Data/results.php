@@ -25,6 +25,9 @@ $script = <<< JS
         $(chart_id).height(height);
         chart.setSize(width, height, false);
         document.getElementById("sizeLabel").innerHTML = "Размеры графика: "+width+"x"+height;
+
+        $("#chartBlock").height(height + $(".highcharts-data-table").height() + 150);
+        $(".highcharts-data-table").css('margin-top', '40px');
     }
 JS;
 $this->registerJs($script, yii\web\View::POS_HEAD);
@@ -59,7 +62,7 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
     <?= Html::endForm() ?>
 
 <br /><br />
-<div class="row">
+<div class="row" id="chartBlock">
     <div class="col-sm-12">
         <?php
         $items_root = [];
@@ -172,6 +175,7 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
 
 <?php
         // Текстовые данные в виде таблицы
+        /*
         echo Collapse::widget([
            'items' => [
                [
@@ -186,34 +190,36 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
                ],
             ]
         ]);
+        */
         ?>
     </div>
 </div>
 
-<?php
-$items = [];
-foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitectureName) {
-        $items[] = [
-            'label' => $currentArchitectureName,
-            'content' => $this->render('_results_per_architecture', [
-                'resultsConsumersBasic' => $resultsConsumersBasic,
-                'resultsConsumersAlternative' => $resultsConsumersAlternative,
-                'currentFlightMode' => $currentFlightMode,
-                'currentArchitectureID' => $currentArchitectureID,
-                'basicArchitecture' => $basicArchitecture,
-                'currentArchitectureName' => $currentArchitectureName,
-                'resultsEnergySourcesBasic' => $resultsEnergySourcesBasic,
-                'resultsEnergySourcesAlternative' => $resultsEnergySourcesAlternative,
-                'flightModeModel' => $flightModeModel,
-            ]),
-        ];
-}
+<div class="row">
+    <?php
+    $items = [];
+    foreach ($alternativeArchitectures as $currentArchitectureID => $currentArchitectureName) {
+            $items[] = [
+                'label' => $currentArchitectureName,
+                'content' => $this->render('_results_per_architecture', [
+                    'resultsConsumersBasic' => $resultsConsumersBasic,
+                    'resultsConsumersAlternative' => $resultsConsumersAlternative,
+                    'currentFlightMode' => $currentFlightMode,
+                    'currentArchitectureID' => $currentArchitectureID,
+                    'basicArchitecture' => $basicArchitecture,
+                    'currentArchitectureName' => $currentArchitectureName,
+                    'resultsEnergySourcesBasic' => $resultsEnergySourcesBasic,
+                    'resultsEnergySourcesAlternative' => $resultsEnergySourcesAlternative,
+                    'flightModeModel' => $flightModeModel,
+                ]),
+            ];
+    }
 
-echo Tabs::widget([
-    'items' => $items,
-]);
-?>
-
+    echo Tabs::widget([
+        'items' => $items,
+    ]);
+    ?>
+</div>
 
 <br /><br />
 

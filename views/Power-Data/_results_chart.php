@@ -291,6 +291,7 @@ echo Highcharts::widget([
     ],
     'scripts' => [
         'modules/exporting',
+        'modules/export-data',
         'themes/avocado',
     ],
     'options' => [
@@ -299,7 +300,7 @@ echo Highcharts::widget([
             'height' => $chartHeight,
             'width' => $chartWidth,
             'style' => [
-                //'fontFamily' => 'Arial',
+            //'fontFamily' => 'Arial',
             ],
         ],
         'title' => ['text' => $title],
