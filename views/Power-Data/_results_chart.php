@@ -66,6 +66,8 @@ return;
 
 if ($chartType == 'ENERGYSOURCE_Q') {
     $yAxisTitle = 'Потребление';
+    if (!$isElectric)
+        $yAxisTitle = 'Объемный расход, л/мин';
 
     $seriesColumnData = [];
     $seriesLineData = [];
@@ -137,7 +139,7 @@ if ($chartType == 'ENERGYSOURCE_Q') {
     }
 
 } else if ($chartType == 'DELTA_N') {
-    $yAxisTitle = 'ΔN_отбора';
+    $yAxisTitle = 'ΔN_отбора, кВт';
 
     $seriesColumnData = [];
     $series = [];

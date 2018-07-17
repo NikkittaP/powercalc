@@ -81,6 +81,7 @@ echo $this->render('_header_links', ['currentPage' => 'results', 'vehicleLayoutN
                         'flightModeModel' => $flightModeModel,
                         'selectedArchitectures' => $selectedArchitectures,
                         'energySourceID' => $currentEnergySource->id,
+                        'isElectric' => ($currentEnergySource->energySourceType_id == 4) ? true : false,
                     ]),
                 ];
             }
