@@ -8,6 +8,7 @@ use app\models\ConsumersSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\helpers\VarDumper;
 
 /**
  * ConsumersController implements the CRUD actions for Consumers model.
@@ -35,12 +36,21 @@ class ConsumersController extends Controller
      */
     public function actionIndex()
     {
+        $selectedConsumerGroup = 0;
+        $post = \Yii::$app->request->post();
+        if (isset($post['isPost'])) {
+            if (isset($post['selected_consumer_group'])) {
+                $selectedConsumerGroup = (int)$post['selected_consumer_group'];
+            }
+        }
+
         $searchModel = new ConsumersSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $selectedConsumerGroup);
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'selectedConsumerGroup' => $selectedConsumerGroup,
         ]);
     }
 

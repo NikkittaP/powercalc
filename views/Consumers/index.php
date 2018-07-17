@@ -1,5 +1,6 @@
 <?php
 
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\grid\GridView;
 
@@ -18,6 +19,20 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a('Создать потребителя', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
+
+    <h3>Выберите группу потребителей для отображения данных по ним:</h3>
+    <?php
+    echo Html::beginForm(['consumers/index'], 'post', ['class'=>'form-group']);
+    echo Html::hiddenInput('isPost', '1');
+    $items = ArrayHelper::map(app\models\ConsumerGroups::find()->all(), 'id', 'name');
+    array_unshift($items,'Все');
+    echo Html::dropDownList('selected_consumer_group', $selectedConsumerGroup, $items, ['class'=>'form-control', 'style'=>'width:300px;']);
+    ?>
+    <br />
+    <div class="form-group">
+        <?= Html::submitButton('Показать', ['class' => 'btn btn-primary']) ?>
+    </div>
+    <?= Html::endForm() ?>
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

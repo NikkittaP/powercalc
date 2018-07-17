@@ -40,9 +40,14 @@ class ConsumersSearch extends Consumers
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search($params, $selectedConsumerGroup)
     {
         $query = Consumers::find();
+
+        if ($selectedConsumerGroup == 0)
+            $query = Consumers::find();
+        else
+            $query = Consumers::find()->where(['consumerGroup_id' => $selectedConsumerGroup]);
 
         // add conditions that should always apply here
 
