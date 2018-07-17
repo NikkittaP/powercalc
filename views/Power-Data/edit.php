@@ -37,7 +37,9 @@ echo $this->render('_header_links', ['currentPage' => 'edit', 'vehicleLayoutName
     $gridColumns = [
         [
             'attribute' => 'id',
-            'width' => '70px',
+            'contentOptions' => [
+                'style' => 'font-size:12px;padding:0px;margin:0px;',
+            ],
             'hAlign' => 'center',
             'vAlign' => 'center',
         ],
@@ -58,9 +60,10 @@ echo $this->render('_header_links', ['currentPage' => 'edit', 'vehicleLayoutName
         [
             'class' => 'kartik\grid\EditableColumn',
             'attribute' => 'consumer_id',
-            'content'=>function ($model, $key, $index, $column) use($consumers) {
-                return $consumers[$model->consumer_id];
-            },
+            'width' => '250px',
+            'contentOptions' => [
+                'style' => 'min-width:250px;padding:0px;margin:0px;'
+            ], 
             'readonly' => false,
             'editableOptions' => [
                 'asPopover' => false,
@@ -70,10 +73,9 @@ echo $this->render('_header_links', ['currentPage' => 'edit', 'vehicleLayoutName
                 'displayValueConfig'=>$consumers,
                 'options' => [
                     'class'=>'form-control input-sm',
-                    'prompt'=>'Выберите потребителя...'
+                    'prompt'=>'Выберите потребителя...',
                 ],
             ],
-            //'width' => '400px',
         ],
     ];
 
@@ -91,7 +93,7 @@ echo $this->render('_header_links', ['currentPage' => 'edit', 'vehicleLayoutName
         if ($architecturesName->isBasic == 1)
             $background = 'background-color:#e0f0d7;';
 
-        $style =['style' => $border.$background];
+        $style =['style' => 'min-width:80px;padding:0px;margin:0px;'.$border.$background];
 
         $gridColumns[] = [
             'class' => 'kartik\grid\EditableColumn',
@@ -125,7 +127,9 @@ echo $this->render('_header_links', ['currentPage' => 'edit', 'vehicleLayoutName
             'contentOptions' => $style,
             'headerOptions' => $style,
             'filterOptions' => $style,
-            'width' => '10%',
+            //'width' => '10%',
+            'hAlign' => 'center',
+            'vAlign' => 'center',
         ];
 
         $i++;
@@ -188,12 +192,12 @@ echo $this->render('_header_links', ['currentPage' => 'edit', 'vehicleLayoutName
                     if (count($border) != 0)
                         $style.='border-left:5px solid green;';
 
-                    return ['style' => $style, 'class' => $class];
+                    return ['style' => 'padding:0px;margin:0px;'.$style, 'class' => $class];
                 }
             },
             'headerOptions' => $border,
             'filterOptions' => $border,
-            'width' => '10%',
+            //'width' => '10%',
             'hAlign' => 'center',
             'vAlign' => 'center',
         ];
@@ -212,7 +216,7 @@ echo $this->render('_header_links', ['currentPage' => 'edit', 'vehicleLayoutName
         ],
         'export' => [
             'fontAwesome' => false,
-            'options' => ['style' => 'margin-top:32px;'],
+            'options' => ['style' => 'margin-top:32px;width:100%;'],
         ],
         'striped' => true,
         'responsive'=>true,
