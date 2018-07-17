@@ -60,17 +60,14 @@ class Consumers extends \yii\db\ActiveRecord
         ];
     }
 
-    /**
-     * @return \yii\db\ActiveQuery
-     */
     public function getAircraftPart()
     {
         return $this->hasOne(AircraftParts::className(), ['id' => 'aircraftPart_id']);
     }
-
-    /**
-     * @return \yii\db\ActiveQuery
-     */
+    public function getConsumerGroup()
+    {
+        return $this->hasOne(ConsumerGroups::className(), ['id' => 'consumerGroup_id']);
+    }
     public function getVehicleLayouts()
     {
         return $this->hasMany(VehicleLayout::className(), ['consumer_id' => 'id']);

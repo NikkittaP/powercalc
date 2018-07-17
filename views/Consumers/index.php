@@ -35,6 +35,10 @@ $this->params['breadcrumbs'][] = $this->title;
                 'value' => 'aircraftPart.name',
             ],
             [
+                'attribute' => 'consumerGroup_id',
+                'value' => 'consumerGroup.name',
+            ],
+            [
                 'attribute' => 'efficiencyHydro',
                 'contentOptions'=>['style'=>'width: 150px;']
             ],
