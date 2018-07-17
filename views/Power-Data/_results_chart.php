@@ -223,7 +223,7 @@ if ($chartType == 'ENERGYSOURCE_Q') {
                 if ($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['N_generator_out'] == 0) {
                     $value = 0;
                 } else {
-                    $value = round(($NMax[$currentArchitectureID] / $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['N_generator_out']), 1);
+                    $value = round(($NMax[$currentArchitectureID] / $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['N_generator_out']), 2);
                     if ($value > 1) {
                         $value = 1;
                     }
@@ -232,7 +232,7 @@ if ($chartType == 'ENERGYSOURCE_Q') {
                 if ($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['QpumpUF1'] == 0) {
                     $value = 0;
                 } else {
-                    $value = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable'] / $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['QpumpUF1']), 1);
+                    $value = round(($chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['Qdisposable'] / $chart_data[$currentArchitectureID][$currentFlightMode->id][$energySourceID]['QpumpUF1']), 2);
                     if ($value > 1) {
                         $value = 1;
                     }
