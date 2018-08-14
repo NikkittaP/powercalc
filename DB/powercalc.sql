@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `Constants` (
 -- Дамп данных таблицы PowerDistributionData.Constants: ~4 rows (приблизительно)
 /*!40000 ALTER TABLE `Constants` DISABLE KEYS */;
 INSERT INTO `Constants` (`id`, `name`, `value`, `description`) VALUES
-	(1, 'isEfficiencyFixed', '1', 'КПД fix?'),
+	(1, 'isEfficiencyFixed', '0', 'КПД fix?'),
 	(2, 'chartWidth', '1450', 'Ширина графика'),
 	(3, 'chartHeight', '850', 'Высота графика'),
 	(4, 'defaultChartColors', '#2f7ed8,#0d233a,#8bbc21,#910000,#1aadce,#492970,#f28f43,#77a1e5,#c42525,#a6c96a', 'Список стандартных цветов для графиков архитектур');
@@ -96,14 +96,10 @@ CREATE TABLE IF NOT EXISTS `ConsumerGroups` (
   `name` varchar(255) NOT NULL COMMENT 'Название группы потребителей',
   PRIMARY KEY (`id`),
   UNIQUE KEY `Индекс 2` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.ConsumerGroups: ~3 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.ConsumerGroups: ~0 rows (приблизительно)
 /*!40000 ALTER TABLE `ConsumerGroups` DISABLE KEYS */;
-INSERT INTO `ConsumerGroups` (`id`, `name`) VALUES
-	(1, 'Механизация'),
-	(2, 'Система приводов'),
-	(3, 'Двигатель');
 /*!40000 ALTER TABLE `ConsumerGroups` ENABLE KEYS */;
 
 -- Дамп структуры для таблица PowerDistributionData.Consumers
@@ -343,7 +339,7 @@ CREATE TABLE IF NOT EXISTS `Vehicles` (
   UNIQUE KEY `name_UNIQUE` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.Vehicles: ~0 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.Vehicles: ~1 rows (приблизительно)
 /*!40000 ALTER TABLE `Vehicles` DISABLE KEYS */;
 INSERT INTO `Vehicles` (`id`, `name`) VALUES
 	(1, 'Ил-96-300');
@@ -363,7 +359,7 @@ CREATE TABLE IF NOT EXISTS `VehiclesLayoutsNames` (
   CONSTRAINT `FK_VehiclesLayoutsNames_Vehicles` FOREIGN KEY (`vehicle_id`) REFERENCES `Vehicles` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- Дамп данных таблицы PowerDistributionData.VehiclesLayoutsNames: ~0 rows (приблизительно)
+-- Дамп данных таблицы PowerDistributionData.VehiclesLayoutsNames: ~1 rows (приблизительно)
 /*!40000 ALTER TABLE `VehiclesLayoutsNames` DISABLE KEYS */;
 INSERT INTO `VehiclesLayoutsNames` (`id`, `vehicle_id`, `name`, `usingArchitectures`, `usingFlightModes`) VALUES
 	(1, 1, 'Базовая компоновка', NULL, NULL);
