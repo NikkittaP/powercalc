@@ -41,9 +41,13 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
             <div class="col-lg-6">
                 <div class="panel panel-primary" style = "border-color: black;">
                     <div class="panel-heading" style = "background-color: black;">
-                        <h3 class="panel-title">
+                        <div class="panel-title pull-left">
                             <?= Html::a('Компоновки', ['vehicles-layouts-names/index']) ?>
-                        </h3>
+                        </div>
+                        <div class="panel-title pull-right">
+                            <?= Html::a('<span class="glyphicon glyphicon-plus"></span>', ['vehicles-layouts-names/create']) ?>
+                        </div>
+                        <div class="clearfix"></div>
                     </div>
 
                     <div class="panel-body" style="padding:0px;">
@@ -77,9 +81,13 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
             <div class="col-lg-2">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">
+                        <div class="panel-title pull-left">
                             <?= Html::a('Аппараты', ['vehicles/index']) ?>
-                        </h3>
+                        </div>
+                        <div class="panel-title pull-right">
+                            <?= Html::a('<span class="glyphicon glyphicon-plus"></span>', ['vehicles/create']) ?>
+                        </div>
+                        <div class="clearfix"></div>
                     </div>
 
                     <div class="panel-body" style="padding:0px;">
@@ -101,9 +109,13 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
             <div class="col-lg-4">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">
+                        <div class="panel-title pull-left">
                             <?= Html::a('Архитектуры', ['architectures-names/index']) ?>
-                        </h3>
+                        </div>
+                        <div class="panel-title pull-right">
+                            <?= Html::a('<span class="glyphicon glyphicon-plus"></span>', ['architectures-names/create']) ?>
+                        </div>
+                        <div class="clearfix"></div>
                     </div>
 
                     <div class="panel-body" style="padding:0px;">
@@ -125,9 +137,13 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
             <div class="col-lg-2">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">
+                        <div class="panel-title pull-left">
                             <?= Html::a('Режимы полёта', ['flight-modes/index']) ?>
-                        </h3>
+                        </div>
+                        <div class="panel-title pull-right">
+                            <?= Html::a('<span class="glyphicon glyphicon-plus"></span>', ['flight-modes/create']) ?>
+                        </div>
+                        <div class="clearfix"></div>
                     </div>
 
                     <div class="panel-body" style="padding:0px;">
@@ -215,9 +231,13 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
             <div class="col-lg-2">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">
+                        <div class="panel-title pull-left">
                             <?= Html::a('Зоны аппарата', ['aircraft-parts/index']) ?>
-                        </h3>
+                        </div>
+                        <div class="panel-title pull-right">
+                            <?= Html::a('<span class="glyphicon glyphicon-plus"></span>', ['aircraft-parts/create']) ?>
+                        </div>
+                        <div class="clearfix"></div>
                     </div>
 
                     <div class="panel-body" style="padding:0px;">
@@ -239,9 +259,13 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
             <div class="col-lg-2">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">
+                        <div class="panel-title pull-left">
                             <?= Html::a('Группы потребителей', ['consumer-groups/index']) ?>
-                        </h3>
+                        </div>
+                        <div class="panel-title pull-right">
+                            <?= Html::a('<span class="glyphicon glyphicon-plus"></span>', ['consumer-groups/create']) ?>
+                        </div>
+                        <div class="clearfix"></div>
                     </div>
 
                     <div class="panel-body" style="padding:0px;">
@@ -263,9 +287,13 @@ $this->title = 'PowerCalc - Инструмент для анализа энер�
             <div class="col-lg-2">
                 <div class="panel panel-primary">
                     <div class="panel-heading">
-                        <h3 class="panel-title">
+                        <div class="panel-title pull-left">
                             <?= Html::a('Потребители', ['consumers/index']) ?>
-                        </h3>
+                        </div>
+                        <div class="panel-title pull-right">
+                            <?= Html::a('<span class="glyphicon glyphicon-plus"></span>', ['consumers/create']) ?>
+                        </div>
+                        <div class="clearfix"></div>
                     </div>
 
                     <div class="panel-body" style="padding:0px;">
